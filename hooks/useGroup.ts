@@ -26,7 +26,7 @@ const createGroup = async (id: string) => {
 const addUserToGroup = async (userId: string, groupId: string) => {
   const updateProfileResponse = await supabase
     .from("profiles")
-    .update([{ current_group_id: groupId }])
+    .update([{ group_id: groupId }])
     .eq("id", userId);
   if (updateProfileResponse.error) {
     console.error("Error adding user to group:", updateProfileResponse.error);
@@ -37,7 +37,7 @@ const fetchGroupUsers = async (groupId: string) => {
   const groupProfilesResponse = await supabase
     .from("profiles")
     .select("*")
-    .eq("current_group_id", groupId);
+    .eq("group_id", groupId);
   if (groupProfilesResponse.error) {
     console.error("Error getting group profiles:", groupProfilesResponse.error);
   } else {
@@ -53,7 +53,9 @@ export function useGroup(user: User | null): Group | null {
 
   const updateGroupUsers = async () => {
     if (groupId) {
-      setUsersId((await fetchGroupUsers(groupId)) ?? []);
+      const usersIds = await fetchGroupUsers(groupId);
+      console.log("Group users:", usersIds);
+      setUsersId(usersIds ?? []);
     }
   };
 
@@ -107,9 +109,10 @@ export function useGroup(user: User | null): Group | null {
           event: "*",
           schema: "public",
           table: "profiles",
-          filter: "current_group_id=eq." + groupId,
+          filter: "group_id=eq." + groupId,
         },
         (payload) => {
+          console.log("Change received!", payload.new);
           updateGroupUsers();
         }
       )

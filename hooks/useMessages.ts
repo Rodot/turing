@@ -3,13 +3,13 @@ import { supabase } from "@/utils/supabase/client";
 
 export type Message = {
   id: number;
-  created_at: string;
   user_id: string;
   author: string;
   content: string;
+  group_id: string;
 };
 
-export function useMessages(): Message[] {
+export function useMessages(groupId: string | undefined): Message[] {
   const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
@@ -19,14 +19,17 @@ export function useMessages(): Message[] {
       .channel("messages")
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages" },
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter: "group_id=eq." + groupId,
+        },
         (payload) => {
-          console.log("Change received!", payload.new);
-          setMessages((prevMessages) =>
-            [...prevMessages, payload.new as Message].sort((a, b) =>
-              a.created_at.localeCompare(b.created_at)
-            )
-          );
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            payload.new as Message,
+          ]);
         }
       )
       .subscribe();
@@ -37,7 +40,10 @@ export function useMessages(): Message[] {
   }, []);
 
   const fetchMessages = async () => {
-    const { data, error } = await supabase.from("messages").select("*");
+    const { data, error } = await supabase
+      .from("messages")
+      .select("*")
+      .eq("group_id", groupId);
 
     if (error) {
       console.error("Error fetching messages:", error);

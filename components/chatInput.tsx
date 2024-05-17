@@ -1,12 +1,13 @@
 import React, { useContext, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
-import { UserContext } from "./contextProvider";
+import { GroupContext, UserContext } from "./contextProvider";
 import { formatUser } from "@/utils/user";
 import { Box, Button, TextField } from "@mui/material";
 
 const ChatInput: React.FC = () => {
   const [content, setContent] = useState("");
   const user = useContext(UserContext);
+  const group = useContext(GroupContext);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setContent(event.target.value);
@@ -18,6 +19,7 @@ const ChatInput: React.FC = () => {
         {
           user_id: user?.id,
           author: formatUser(user),
+          group_id: group?.id,
           content,
         },
       ]);
@@ -48,6 +50,10 @@ const ChatInput: React.FC = () => {
           value={content}
           onChange={handleInputChange}
           sx={{ flexGrow: 1, mr: 1 }}
+          label={formatUser(user)}
+          InputLabelProps={{
+            shrink: true,
+          }}
         />
         <Button type="submit" variant="contained" color="primary">
           Send

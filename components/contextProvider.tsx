@@ -19,8 +19,8 @@ export default function ContextProvider({
   children,
 }: React.PropsWithChildren<{}>) {
   const user = useUser();
-  const messages = useMessages();
   const group = useGroup(user);
+  const messages = useMessages(group?.id);
 
   return (
     <AppRouterCacheProvider>
