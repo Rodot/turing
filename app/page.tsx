@@ -1,15 +1,16 @@
 "use client";
-
-import { useAuth } from "./hooks/useAuth";
+import { UserContext } from "@/components/contextProvider";
+import { useContext } from "react";
+import { formatUser } from "./utils/user";
 
 export default function Index() {
-  const user = useAuth();
+  const user = useContext(UserContext);
 
   return (
     <div className="flex-1 w-full flex flex-col gap-20 items-center">
       <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
         <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
-          <div>Welcome {user?.id}</div>
+          <div>Welcome {formatUser(user)}</div>
         </div>
       </nav>
 
