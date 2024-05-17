@@ -47,16 +47,7 @@ const fetchGroupUsers = async (groupId: string) => {
 
 export function useGroup(user: User | null): Group | null {
   const [usersId, setUsersId] = useState<string[]>([]);
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  // prevent SSR to access undefined window object
-  if (!isClient) return null;
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const groupId = urlParams.get("group");
+  const [groupId, setGroupId] = useState<string | null>(null);
 
   const updateGroupUsers = async () => {
     if (groupId) {
@@ -105,6 +96,9 @@ export function useGroup(user: User | null): Group | null {
   };
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window?.location?.search);
+    setGroupId(urlParams.get("group") ?? null);
+
     createOrLoadGroup();
 
     // listen for changes to group users

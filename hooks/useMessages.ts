@@ -13,6 +13,7 @@ export function useMessages(groupId: string | undefined): Message[] {
   const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
+    if (!groupId) return;
     fetchMessages();
 
     const channel = supabase
