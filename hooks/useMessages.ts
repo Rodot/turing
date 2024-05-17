@@ -38,7 +38,7 @@ export function useMessages(groupId: string | undefined): Message[] {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [groupId]);
 
   const fetchMessages = async () => {
     const { data, error } = await supabase
