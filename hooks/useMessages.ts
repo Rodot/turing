@@ -4,6 +4,7 @@ import { supabase } from "@/utils/supabase/client";
 export type Message = {
   id: number;
   created_at: string;
+  user_id: string;
   author: string;
   content: string;
 };

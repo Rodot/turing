@@ -1,5 +1,3 @@
-import { GeistSans } from "geist/font/sans";
-import "./globals.css";
 import ContextProvider from "@/components/contextProvider";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -19,12 +17,8 @@ export default function RootLayout({
 }) {
   return (
     <ContextProvider>
-      <html lang="en" className={GeistSans.className}>
-        <body className="bg-background text-foreground">
-          <main className="min-h-screen flex flex-col items-center">
-            {children}
-          </main>
-        </body>
+      <html lang="en">
+        <body style={{ margin: 0 }}>{children}</body>
       </html>
     </ContextProvider>
   );

@@ -1,20 +1,20 @@
 "use client";
 
 import React, { useContext } from "react";
-import { MessagesContext } from "./contextProvider";
+import { MessagesContext, UserContext } from "./contextProvider";
+import { List } from "@mui/material";
+import ChatMessage from "./chatMessage";
 
 export const ChatHistory: React.FC = () => {
   const messages = useContext(MessagesContext);
+  const user = useContext(UserContext);
+  if (!user) return null;
 
   return (
-    <div>
-      <ul>
-        {messages.map((message, id) => (
-          <li key={id}>
-            {message.author} : {message.content}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <List>
+      {messages.map((message) => (
+        <ChatMessage key={message.id} message={message} user={user} />
+      ))}
+    </List>
   );
 };

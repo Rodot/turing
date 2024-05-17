@@ -34,6 +34,7 @@ CREATE TABLE public.messages(
     created_at timestamp with time zone DEFAULT now(),
     -- game_id uuid NOT NULL REFERENCES public.games ON DELETE CASCADE,
     author text,
+    user_id text,
     content text
 );
 
