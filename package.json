@@ -1,8 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "dev": "npx supabase start && next dev",
-    "reset": "npx supabase stop --no-backup && npm run dev",
+    "dev": "next dev",
+    "supadev": "npx supabase start && npx supabase functions serve --env-file ./.env",
+    "supareset": "npx supabase stop --no-backup && npm run supadev",
     "build": "next build",
     "start": "next start"
   },
