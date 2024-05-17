@@ -3,14 +3,23 @@
 import React, { createContext } from "react";
 import { useUser } from "@/hooks/useUser";
 import { User } from "@supabase/supabase-js";
+import { useMessages, Message } from "@/hooks/useMessages";
 
 // Create the context
 export const UserContext = createContext<User | null>(null);
+export const MessagesContext = createContext<Message[]>([]);
 
 // Create the wrapper component
 export default function ContextProvider({
   children,
 }: React.PropsWithChildren<{}>) {
   const user = useUser();
-  return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
+  const messages = useMessages();
+  return (
+    <UserContext.Provider value={user}>
+      <MessagesContext.Provider value={messages}>
+        {children}
+      </MessagesContext.Provider>
+    </UserContext.Provider>
+  );
 }
