@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext } from "react";
-import { useUser } from "@/app/hooks/useUser";
+import { useUser } from "@/hooks/useUser";
 import { User } from "@supabase/supabase-js";
 
 // Create the context

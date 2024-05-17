@@ -1,7 +1,7 @@
 "use client";
 import { UserContext } from "@/components/contextProvider";
 import { useContext } from "react";
-import { formatUser } from "./utils/user";
+import { formatUser } from "@/utils/user";
 
 export default function Index() {
   const user = useContext(UserContext);
