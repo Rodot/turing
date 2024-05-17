@@ -1,7 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "npx supabase start && next dev",
+    "reset": "npx supabase stop --no-backup && npm run dev",
     "build": "next build",
     "start": "next start"
   },

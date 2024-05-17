@@ -1,9 +1,8 @@
 ``` bash
-npx supabase start
+# initial setup
 npm install
+# run local supabase and next
 npm run dev
-```
-
-``` bash
-npx supabase stop --no-backup
+# wipe database and restart everything
+npm run reset 
 ```
