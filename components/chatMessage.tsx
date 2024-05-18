@@ -1,9 +1,9 @@
 "use client";
 
-import { Message } from "@/hooks/useMessages";
 import React from "react";
 import { User } from "@supabase/supabase-js";
 import { Box, Typography } from "@mui/material";
+import { Message } from "@/types/Database.type";
 
 export default function ChatMessage({
   message,

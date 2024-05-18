@@ -5,7 +5,7 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
-import { Message } from "../../../hooks/useMessages.ts";
+import { Message } from "../../../types/Database.type.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js";
 
@@ -16,27 +16,6 @@ const messagesToPrompt = (messages: Array<Message>) =>
     participant: message.author,
     message: message.content,
   }));
-
-export type GptResponse = {
-  id: string;
-  object: string;
-  created: number;
-  model: string;
-  usage: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
-  choices: Array<{
-    message: {
-      role: string;
-      content: string;
-    };
-    logprobs: null;
-    finish_reason: string;
-    index: number;
-  }>;
-};
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {

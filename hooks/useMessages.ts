@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
-
-export type Message = {
-  id: number;
-  user_id: string;
-  author: string;
-  content: string;
-  group_id: string;
-};
+import { Message } from "@/types/Database.type";
 
 export function useMessages(groupId: string | undefined): Message[] {
   const [messages, setMessages] = useState<Message[]>([]);

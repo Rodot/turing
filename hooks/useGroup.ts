@@ -1,15 +1,11 @@
 "use client";
 
+import { Group } from "@/types/Database.type";
 import { supabase } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 
 var loadingGroup = false;
-
-export type Group = {
-  id: string;
-  usersId: string[];
-};
 
 const fetchGroup = (id: string) =>
   supabase.from("groups").select("*").eq("id", id);
