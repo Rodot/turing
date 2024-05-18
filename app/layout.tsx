@@ -1,3 +1,4 @@
+import BaseLayout from "@/components/baseLayout";
 import ContextProvider from "@/components/contextProvider";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -18,7 +19,9 @@ export default function RootLayout({
   return (
     <ContextProvider>
       <html lang="en">
-        <body style={{ margin: 0 }}>{children}</body>
+        <body style={{ margin: 0 }}>
+          <BaseLayout>{children}</BaseLayout>
+        </body>
       </html>
     </ContextProvider>
   );

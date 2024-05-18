@@ -1,10 +1,9 @@
 "use client";
 import { GroupContext, UserContext } from "@/components/contextProvider";
 import { useContext } from "react";
-import { formatUser, shortenId } from "@/utils/user";
 import ChatInput from "@/components/chatInput";
 import { ChatHistory } from "@/components/chatHistory";
-import { Container, AppBar, Toolbar, Typography, Button } from "@mui/material";
+import { Container, Button } from "@mui/material";
 import { supabase } from "@/utils/supabase/client";
 
 export default function Index() {
@@ -16,26 +15,16 @@ export default function Index() {
       body: { groupId: group?.id },
     });
 
+  if (!group?.id) return <div>Group not found</div>;
+
   return (
     <>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6">
-            Welcome {formatUser(user)} ! In group :{" "}
-            {group?.usersId.map((user) => shortenId(user)).join(", ")}
-          </Typography>
-          <Button
-            variant="contained"
-            onClick={callEdgeFunction}
-            disabled={!group?.id}
-          >
-            +
-          </Button>
-        </Toolbar>
-      </AppBar>
       <Container maxWidth="sm">
         <ChatHistory />
         <ChatInput />
+        <Button variant="contained" onClick={callEdgeFunction}>
+          +
+        </Button>
       </Container>
     </>
   );
