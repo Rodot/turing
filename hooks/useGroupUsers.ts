@@ -31,7 +31,7 @@ export function useGroupUsers(groupId: string | null) {
           event: "*",
           schema: "public",
           table: "profiles",
-          filter: "group_id=eq." + groupId,
+          // filter: "group_id=eq." + groupId,
         },
         (payload) => {
           updateGroupUsers();
