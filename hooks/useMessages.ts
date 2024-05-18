@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { Message } from "@/types/Database.type";
 
-export function useMessages(groupId: string | undefined): Message[] {
+export function useMessages(groupId: string | null): Message[] {
   const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {

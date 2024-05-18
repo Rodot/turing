@@ -6,7 +6,10 @@ export type Message = {
   group_id: string;
 };
 
-export type Group = {
+export type Profile = {
   id: string;
-  usersId: string[];
+  group_id: string;
+  created_at: string;
+  updated_at: string;
+  name: string;
 };

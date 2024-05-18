@@ -4,7 +4,7 @@ import { GroupContext, UserContext } from "./contextProvider";
 import { formatUser } from "@/utils/user";
 import { Box, Button, TextField } from "@mui/material";
 
-const ChatInput: React.FC = () => {
+export const ChatInput: React.FC = () => {
   const [content, setContent] = useState("");
   const user = useContext(UserContext);
   const group = useContext(GroupContext);
@@ -62,5 +62,3 @@ const ChatInput: React.FC = () => {
     </form>
   );
 };
-
-export default ChatInput;

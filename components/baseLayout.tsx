@@ -1,35 +1,26 @@
 "use client";
-
-import React, { ReactNode, useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   AppBar,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
   Toolbar,
   Typography,
   IconButton,
-  ListItemIcon,
   SwipeableDrawer,
 } from "@mui/material";
-import {
-  Menu as MenuIcon,
-  ChevronLeft as ChevronLeftIcon,
-} from "@mui/icons-material";
+import { Menu as MenuIcon } from "@mui/icons-material";
 import { formatUser, shortenId } from "@/utils/user";
-import { GroupContext, UserContext } from "./contextProvider";
+import {
+  GroupContext,
+  GroupProfilesContext,
+  UserContext,
+} from "./contextProvider";
+import { DrawerContent } from "./drawerContent";
 
-type BaseLayoutProps = {
-  children: ReactNode;
-};
-
-const BaseLayout = ({ children }: BaseLayoutProps) => {
+export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
   const user = useContext(UserContext);
   const group = useContext(GroupContext);
+  const groupUsers = useContext(GroupProfilesContext);
   const [open, setOpen] = useState(false);
-
-  const drawerWidth = 240;
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -51,10 +42,14 @@ const BaseLayout = ({ children }: BaseLayoutProps) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography>
-            Welcome {formatUser(user)} ! In group :{" "}
-            {group?.usersId.map((user) => shortenId(user)).join(", ")}
-          </Typography>
+          <Typography>👤 {shortenId(user?.id)}</Typography>
+          {group?.id && (
+            <Typography>
+              🏠 {shortenId(group?.id)}
+              👥 x {groupUsers.length} :{" "}
+              {groupUsers.map((profile) => shortenId(profile.id)).join(" ")}
+            </Typography>
+          )}
         </Toolbar>
       </AppBar>
       <Toolbar /> {/* empty toolbar to avoid covering page content */}
@@ -63,31 +58,10 @@ const BaseLayout = ({ children }: BaseLayoutProps) => {
         onClose={handleDrawerClose}
         onOpen={handleDrawerOpen}
         open={open}
-        sx={{
-          minWidth: drawerWidth,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            minWidth: drawerWidth,
-            boxSizing: "border-box",
-          },
-        }}
       >
-        <List>
-          <ListItem
-            onClick={handleDrawerClose}
-            secondaryAction={
-              <IconButton edge="end" aria-label="comments">
-                <ChevronLeftIcon />
-              </IconButton>
-            }
-          >
-            <ListItemText> Turing Trial </ListItemText>
-          </ListItem>
-        </List>
+        <DrawerContent onCloseButtonClick={handleDrawerClose} />
       </SwipeableDrawer>
       {children}
     </>
   );
 };
-
-export default BaseLayout;

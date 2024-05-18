@@ -3,7 +3,7 @@
 import React, { useContext } from "react";
 import { MessagesContext, UserContext } from "./contextProvider";
 import { List } from "@mui/material";
-import ChatMessage from "./chatMessage";
+import { ChatMessage } from "./chatMessage";
 
 export const ChatHistory: React.FC = () => {
   const messages = useContext(MessagesContext);

@@ -1,5 +1,5 @@
-import BaseLayout from "@/components/baseLayout";
-import ContextProvider from "@/components/contextProvider";
+import { BaseLayout } from "@/components/baseLayout";
+import { ContextProvider } from "@/components/contextProvider";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
