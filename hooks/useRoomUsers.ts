@@ -1,24 +1,24 @@
 "use client";
 
-import { fetchRoomContextProfiles } from "@/queries/profile.query";
+import { fetchRoomProfiles } from "@/queries/profile.query";
 import { Profile } from "@/types/Database.type";
 import { supabase } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 
-export function useRoomContextUsers(roomId: string | null) {
+export function useRoomUsers(roomId: string | null) {
   const [roomProfiles, setRoomProfiles] = useState<Profile[]>([]);
 
-  const updateRoomContextUsers = async () => {
+  const updateRoomUsers = async () => {
     if (!roomId?.length) {
       setRoomProfiles([]);
       return;
     }
-    const newRoomContextProfiles = await fetchRoomContextProfiles(roomId);
-    setRoomProfiles(newRoomContextProfiles ?? []);
+    const newRoomProfiles = await fetchRoomProfiles(roomId);
+    setRoomProfiles(newRoomProfiles ?? []);
   };
 
   useEffect(() => {
-    updateRoomContextUsers();
+    updateRoomUsers();
 
     if (!roomId?.length) return;
 
@@ -34,7 +34,7 @@ export function useRoomContextUsers(roomId: string | null) {
           // filter: "room_id=eq." + roomId,
         },
         (payload) => {
-          updateRoomContextUsers();
+          updateRoomUsers();
         }
       )
       .subscribe();

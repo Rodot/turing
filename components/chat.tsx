@@ -2,11 +2,11 @@ import React, { useContext } from "react";
 import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
 import { Button, Container } from "@mui/material";
-import { RoomContextContext, UserContext } from "./contextProvider";
+import { RoomContext } from "./contextProvider";
 import { supabase } from "@/utils/supabase/client";
 
 export const Chat: React.FC = () => {
-  const room = useContext(RoomContextContext);
+  const room = useContext(RoomContext);
 
   const callEdgeFunction = async () => {
     if (!room?.id) return;

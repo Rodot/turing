@@ -10,7 +10,7 @@ import {
   ChevronLeft as ChevronLeftIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
-import { RoomContextContext } from "./contextProvider";
+import { RoomContext } from "./contextProvider";
 
 interface DrawerContentProps {
   onCloseButtonClick: () => void;
@@ -19,10 +19,10 @@ interface DrawerContentProps {
 export const DrawerContent: React.FC<DrawerContentProps> = ({
   onCloseButtonClick,
 }) => {
-  const room = useContext(RoomContextContext);
+  const room = useContext(RoomContext);
 
-  const handleLeaveRoomContext = () => {
-    room?.leaveRoomContext();
+  const handleLeaveRoom = () => {
+    room?.leaveRoom();
     onCloseButtonClick();
   };
 
@@ -38,8 +38,8 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
       </ListItem>
       {room?.id && (
         <ListItem>
-          <ListItemButton onClick={handleLeaveRoomContext}>
-            <ListItemText> Leave RoomContext</ListItemText>
+          <ListItemButton onClick={handleLeaveRoom}>
+            <ListItemText> Leave Room</ListItemText>
             <IconButton>
               <DeleteIcon />
             </IconButton>

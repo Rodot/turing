@@ -1,6 +1,7 @@
 -- rooms
 CREATE TABLE public.rooms(
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid()
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    state text DEFAULT 'lobby' ::text,
 );
 
 -- user profiles

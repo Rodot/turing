@@ -1,7 +1,7 @@
 import { Profile } from "@/types/Database.type";
 import { supabase } from "@/utils/supabase/client";
 
-export const addUserToRoomContext = async (userId: string, roomId: string) => {
+export const addUserToRoom = async (userId: string, roomId: string) => {
   const req = await supabase
     .from("profiles")
     .update([{ room_id: roomId }])
@@ -11,7 +11,7 @@ export const addUserToRoomContext = async (userId: string, roomId: string) => {
   }
 };
 
-export const removeUserFromRoomContext = async (userId: string) => {
+export const removeUserFromRoom = async (userId: string) => {
   const req = await supabase
     .from("profiles")
     .update([{ room_id: null }])
@@ -21,9 +21,7 @@ export const removeUserFromRoomContext = async (userId: string) => {
   }
 };
 
-export const fetchRoomContextProfiles = async (
-  room: string
-): Promise<Profile[]> => {
+export const fetchRoomProfiles = async (room: string): Promise<Profile[]> => {
   const req = await supabase.from("profiles").select("*").eq("room_id", room);
   if (req.error) {
     throw new Error(req.error.message);

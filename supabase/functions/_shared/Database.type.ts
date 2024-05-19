@@ -13,3 +13,8 @@ export type Profile = {
   updated_at: string;
   name: string;
 };
+
+export type Room = {
+  id: string;
+  state: string;
+};

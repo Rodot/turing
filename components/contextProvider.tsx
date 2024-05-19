@@ -7,34 +7,34 @@ import { useMessages } from "@/hooks/useMessages";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../theme";
-import { RoomContext, useRoomContext } from "@/hooks/useRoom";
+import { Room, useRoom } from "@/hooks/useRoom";
 import { Message, Profile } from "@/types/Database.type";
-import { useRoomContextUsers } from "@/hooks/useRoomUsers";
+import { useRoomUsers } from "@/hooks/useRoomUsers";
 
 // Create the context
 export const UserContext = createContext<User | null>(null);
 export const MessagesContext = createContext<Message[]>([]);
-export const RoomContextContext = createContext<RoomContext | null>(null);
-export const RoomContextProfilesContext = createContext<Profile[]>([]);
+export const RoomContext = createContext<Room | null>(null);
+export const RoomProfilesContext = createContext<Profile[]>([]);
 
 // Create the wrapper component
 export function ContextProvider({ children }: React.PropsWithChildren<{}>) {
   const user = useUser();
-  const room = useRoomContext(user);
-  const roomUsers = useRoomContextUsers(room?.id ?? null);
+  const room = useRoom(user);
+  const roomUsers = useRoomUsers(room?.id ?? null);
   const messages = useMessages(room?.id ?? null);
 
   return (
     <AppRouterCacheProvider>
       <ThemeProvider theme={theme}>
         <UserContext.Provider value={user}>
-          <RoomContextContext.Provider value={room}>
-            <RoomContextProfilesContext.Provider value={roomUsers}>
+          <RoomContext.Provider value={room}>
+            <RoomProfilesContext.Provider value={roomUsers}>
               <MessagesContext.Provider value={messages}>
                 {children}
               </MessagesContext.Provider>
-            </RoomContextProfilesContext.Provider>
-          </RoomContextContext.Provider>
+            </RoomProfilesContext.Provider>
+          </RoomContext.Provider>
         </UserContext.Provider>
       </ThemeProvider>
     </AppRouterCacheProvider>

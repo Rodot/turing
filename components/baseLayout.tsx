@@ -10,8 +10,8 @@ import {
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { shortenId } from "@/utils/user";
 import {
-  RoomContextContext,
-  RoomContextProfilesContext,
+  RoomContext,
+  RoomProfilesContext,
   UserContext,
 } from "./contextProvider";
 import { DrawerContent } from "./drawerContent";
@@ -20,8 +20,8 @@ import { Chat } from "./chat";
 
 export const BaseLayout = () => {
   const user = useContext(UserContext);
-  const room = useContext(RoomContextContext);
-  const roomUsers = useContext(RoomContextProfilesContext);
+  const room = useContext(RoomContext);
+  const roomUsers = useContext(RoomProfilesContext);
   const [open, setOpen] = useState(false);
 
   const handleDrawerOpen = () => {

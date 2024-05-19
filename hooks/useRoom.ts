@@ -1,75 +1,72 @@
 "use client";
 
-import { insertRoomContext, fetchRoomContext } from "@/queries/room.query";
-import {
-  addUserToRoomContext,
-  removeUserFromRoomContext,
-} from "@/queries/profile.query";
+import { insertRoom, fetchRoom } from "@/queries/room.query";
+import { addUserToRoom, removeUserFromRoom } from "@/queries/profile.query";
 import { User } from "@supabase/supabase-js";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-export type RoomContext = {
+export type Room = {
   id: string | null;
-  createRoomContext: () => void;
-  leaveRoomContext: () => void;
+  createRoom: () => void;
+  leaveRoom: () => void;
 };
 
-var loadingRoomContext = false;
+var loadingRoom = false;
 
-export function useRoomContext(user: User | null): RoomContext | null {
+export function useRoom(user: User | null): Room | null {
   const [roomId, setRoomId] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const createRoomContext = async () => {
-    const newRoomContextId = uuidv4();
-    setRoomId(newRoomContextId);
-    router.push("/?room=" + newRoomContextId);
+  const createRoom = async () => {
+    const newRoomId = uuidv4();
+    setRoomId(newRoomId);
+    router.push("/?room=" + newRoomId);
   };
 
-  const leaveRoomContext = async () => {
-    removeUserFromRoomContext(user?.id ?? "");
+  const leaveRoom = async () => {
+    removeUserFromRoom(user?.id ?? "");
     setRoomId(null);
     router.push("/");
   };
 
-  const createAndJoinRoomContext = async (newRoomContextId: string) => {
+  const createAndJoinRoom = async (newRoomId: string) => {
     try {
-      if (!newRoomContextId?.length) return;
+      if (!newRoomId?.length) return;
       if (!user?.id) return;
-      if (loadingRoomContext) return;
-      loadingRoomContext = true;
+      if (loadingRoom) return;
+      loadingRoom = true;
 
-      const roomResponse = await fetchRoomContext(newRoomContextId);
+      const roomResponse = await fetchRoom(newRoomId);
       if (!roomResponse?.data?.length) {
-        await insertRoomContext(newRoomContextId);
-        console.log("Created room", newRoomContextId);
+        await insertRoom(newRoomId);
+        console.log("Created room", newRoomId);
       }
 
-      await addUserToRoomContext(user.id, newRoomContextId);
+      await addUserToRoom(user.id, newRoomId);
 
-      setRoomId(newRoomContextId);
-      console.log("Joined room", newRoomContextId);
+      setRoomId(newRoomId);
+      console.log("Joined room", newRoomId);
     } catch (error) {
-      console.error("joinRoomContext: ", error);
+      console.error("joinRoom: ", error);
     } finally {
-      loadingRoomContext = false;
+      loadingRoom = false;
     }
   };
 
   useEffect(() => {
-    const newRoomContextId = searchParams.get("room") ?? null;
-    console.log("roomId from URL:", newRoomContextId);
-    if (newRoomContextId?.length) {
-      createAndJoinRoomContext(newRoomContextId);
+    const newRoomId = searchParams.get("room") ?? null;
+    console.log("roomId from URL:", newRoomId);
+    if (newRoomId?.length) {
+      createAndJoinRoom(newRoomId);
     }
   }, [user, searchParams]);
 
   return {
     id: roomId,
-    createRoomContext,
-    leaveRoomContext,
+    createRoom: createRoom,
+    leaveRoom: leaveRoom,
   };
 }
