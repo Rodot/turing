@@ -4,7 +4,7 @@
     "dev": "next dev",
     "supadev": "npx supabase start && npx supabase functions serve --env-file ./.env",
     "supareset": "npx supabase stop --no-backup && npm run supadev",
-    "supareset-remote": "npx supabase functions deploy --linked && npx supabase secrets set --env-file ./.env && npx supabase db reset",
+    "supareset-remote": "npx supabase functions deploy && npx supabase secrets set --env-file ./.env && npx supabase db reset --linked",
     "build": "next build",
     "start": "next start"
   },

@@ -13,11 +13,11 @@ export const useUser = () => {
         if (loadingUser) return;
         loadingUser = true;
         const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (session) {
-          setUser(session.user);
-          console.log("Signed in " + session.user.id);
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (user) {
+          setUser(user);
+          console.log("Signed in " + user.id);
         } else {
           const { data, error } = await supabase.auth.signInAnonymously();
           setUser(data?.user ?? null);

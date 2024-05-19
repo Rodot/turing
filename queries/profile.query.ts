@@ -35,3 +35,13 @@ export const fetchGroupProfiles = async (
     return groupUsers ?? [];
   }
 };
+
+export const fetchProfile = async (userId: string): Promise<Profile> => {
+  const req = await supabase.from("profiles").select("*").eq("id", userId);
+  if (req.error) {
+    throw new Error(req.error.message);
+  } else {
+    const profile = req?.data?.[0];
+    return profile;
+  }
+};
