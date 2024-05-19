@@ -1,12 +1,12 @@
 "use client";
 
 import { fetchRoomProfiles } from "@/queries/profile.query";
-import { Profile } from "@/types/Database.type";
+import { ProfileData } from "@/types/Database.type";
 import { supabase } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 
 export function useRoomUsers(roomId: string | null) {
-  const [roomProfiles, setRoomProfiles] = useState<Profile[]>([]);
+  const [roomProfiles, setRoomProfiles] = useState<ProfileData[]>([]);
 
   const updateRoomUsers = async () => {
     if (!roomId?.length) {
@@ -24,7 +24,7 @@ export function useRoomUsers(roomId: string | null) {
 
     // listen for changes to room users
     const channel = supabase
-      .channel("room_profiles")
+      .channel("room_profiles" + roomId)
       .on(
         "postgres_changes",
         {

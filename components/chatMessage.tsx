@@ -3,13 +3,13 @@
 import React from "react";
 import { User } from "@supabase/supabase-js";
 import { Box, Typography } from "@mui/material";
-import { Message } from "@/types/Database.type";
+import { MessageData } from "@/types/Database.type";
 
 export function ChatMessage({
   message,
   user,
 }: {
-  message: Message;
+  message: MessageData;
   user: User;
 }) {
   const is_me = message.user_id === user.id;

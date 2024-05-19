@@ -19,15 +19,15 @@ export const GameCreate: React.FC = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: "1rem",
-        padding: "1rem",
+        gap: 2,
+        p: 2,
       }}
     >
       <Button variant="contained" onClick={startNewGame}>
         Start New Game
       </Button>
       <Typography sx={{ textAlign: "center" }}>
-        ... or to join a friend's game, ask them to send you the link.
+        ...or to join a friend's game, ask them to send you the link.
       </Typography>
     </Container>
   );

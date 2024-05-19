@@ -36,7 +36,7 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
           </IconButton>
         </ListItemButton>
       </ListItem>
-      {room?.id && (
+      {room?.data?.id && (
         <ListItem>
           <ListItemButton onClick={handleLeaveRoom}>
             <ListItemText> Leave Room</ListItemText>

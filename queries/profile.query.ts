@@ -1,4 +1,4 @@
-import { Profile } from "@/types/Database.type";
+import { ProfileData } from "@/types/Database.type";
 import { supabase } from "@/utils/supabase/client";
 
 export const addUserToRoom = async (userId: string, roomId: string) => {
@@ -21,7 +21,9 @@ export const removeUserFromRoom = async (userId: string) => {
   }
 };
 
-export const fetchRoomProfiles = async (room: string): Promise<Profile[]> => {
+export const fetchRoomProfiles = async (
+  room: string
+): Promise<ProfileData[]> => {
   const req = await supabase.from("profiles").select("*").eq("room_id", room);
   if (req.error) {
     throw new Error(req.error.message);
@@ -31,7 +33,7 @@ export const fetchRoomProfiles = async (room: string): Promise<Profile[]> => {
   }
 };
 
-export const fetchProfile = async (userId: string): Promise<Profile> => {
+export const fetchProfile = async (userId: string): Promise<ProfileData> => {
   const req = await supabase.from("profiles").select("*").eq("id", userId);
   if (req.error) {
     throw new Error(req.error.message);

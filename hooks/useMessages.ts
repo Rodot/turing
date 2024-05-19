@@ -1,16 +1,23 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
-import { Message } from "@/types/Database.type";
+import { MessageData } from "@/types/Database.type";
+import { fetchMessages } from "@/queries/messages.query";
 
-export function useMessages(roomId: string | null): Message[] {
-  const [messages, setMessages] = useState<Message[]>([]);
+export function useMessages(roomId: string | null): MessageData[] {
+  const [messages, setMessages] = useState<MessageData[]>([]);
+
+  const updateMessages = async (roomId: string) => {
+    const messages = await fetchMessages(roomId);
+    setMessages(messages);
+    return;
+  };
 
   useEffect(() => {
     if (!roomId) return;
-    fetchMessages();
+    updateMessages(roomId);
 
     const channel = supabase
-      .channel("messages")
+      .channel("messages" + roomId)
       .on(
         "postgres_changes",
         {
@@ -22,7 +29,7 @@ export function useMessages(roomId: string | null): Message[] {
         (payload) => {
           setMessages((prevMessages) => [
             ...prevMessages,
-            payload.new as Message,
+            payload.new as MessageData,
           ]);
         }
       )
@@ -32,19 +39,6 @@ export function useMessages(roomId: string | null): Message[] {
       supabase.removeChannel(channel);
     };
   }, [roomId]);
-
-  const fetchMessages = async () => {
-    const { data, error } = await supabase
-      .from("messages")
-      .select("*")
-      .eq("room_id", roomId);
-
-    if (error) {
-      console.error("Error fetching messages:", error);
-    } else {
-      setMessages(data);
-    }
-  };
 
   return messages;
 }

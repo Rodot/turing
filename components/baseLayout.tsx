@@ -45,9 +45,9 @@ export const BaseLayout = () => {
             <MenuIcon />
           </IconButton>
           <Typography>👤 {shortenId(user?.id)}</Typography>
-          {room?.id && (
+          {room?.data?.id && (
             <Typography>
-              🏠 {shortenId(room?.id)}
+              🏠 {shortenId(room?.data?.id)} : {room?.data?.state}
               👥 x {roomUsers.length} :{" "}
               {roomUsers.map((profile) => shortenId(profile.id)).join(" ")}
             </Typography>
@@ -63,7 +63,7 @@ export const BaseLayout = () => {
       >
         <DrawerContent onCloseButtonClick={handleDrawerClose} />
       </SwipeableDrawer>
-      {!room?.id ? <GameCreate /> : <Chat />}
+      {!room?.data?.id ? <GameCreate /> : <Chat />}
     </>
   );
 };

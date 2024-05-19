@@ -19,7 +19,7 @@ export const ChatInput: React.FC = () => {
         {
           user_id: user?.id,
           author: formatUser(user),
-          room_id: room?.id,
+          room_id: room?.data?.id,
           content,
         },
       ]);

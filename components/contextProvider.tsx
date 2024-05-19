@@ -8,21 +8,21 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../theme";
 import { Room, useRoom } from "@/hooks/useRoom";
-import { Message, Profile } from "@/types/Database.type";
+import { MessageData, ProfileData } from "@/types/Database.type";
 import { useRoomUsers } from "@/hooks/useRoomUsers";
 
 // Create the context
 export const UserContext = createContext<User | null>(null);
-export const MessagesContext = createContext<Message[]>([]);
+export const MessagesContext = createContext<MessageData[]>([]);
 export const RoomContext = createContext<Room | null>(null);
-export const RoomProfilesContext = createContext<Profile[]>([]);
+export const RoomProfilesContext = createContext<ProfileData[]>([]);
 
 // Create the wrapper component
 export function ContextProvider({ children }: React.PropsWithChildren<{}>) {
   const user = useUser();
   const room = useRoom(user);
-  const roomUsers = useRoomUsers(room?.id ?? null);
-  const messages = useMessages(room?.id ?? null);
+  const roomUsers = useRoomUsers(room?.data?.id ?? null);
+  const messages = useMessages(room?.data?.id ?? null);
 
   return (
     <AppRouterCacheProvider>

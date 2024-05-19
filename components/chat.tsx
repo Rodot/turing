@@ -9,9 +9,9 @@ export const Chat: React.FC = () => {
   const room = useContext(RoomContext);
 
   const callEdgeFunction = async () => {
-    if (!room?.id) return;
+    if (!room?.data?.id) return;
     supabase.functions.invoke("generate-message", {
-      body: { roomId: room?.id },
+      body: { roomId: room?.data?.id },
     });
   };
 
