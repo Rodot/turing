@@ -1,4 +1,4 @@
-export type Message = {
+export type MessageData = {
   id: number;
   user_id: string;
   author: string;
@@ -6,7 +6,7 @@ export type Message = {
   room_id: string;
 };
 
-export type Profile = {
+export type ProfileData = {
   id: string;
   room_id: string;
   created_at: string;
@@ -14,7 +14,7 @@ export type Profile = {
   name: string;
 };
 
-export type Room = {
+export type RoomData = {
   id: string;
   state: string;
 };

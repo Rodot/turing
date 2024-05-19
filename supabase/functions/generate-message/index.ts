@@ -5,14 +5,15 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
-import { Message } from "../_shared/Database.type.ts";
-import { GptResponse } from "../_shared/Gpt.type.ts";
+import { MessageData } from "../_types/Database.type.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { fetchChatCompletionJson } from "../_queries/gpt.query.ts";
+import { fetchMessages, insertMessage } from "../_queries/messages.query.ts";
 
 const systemPrompt = `You will be provided by a chat history as a list JSON format. Your job is to create the next message in the chat. It's an informal group conversation between friends, reply as such. That means short answers, informal text, slangs, some typos and emojis. DO NOT reply as a helpful ai. Only include a single message as a JSON object without the list, so it can be appended to the existing list.`;
 
-const messagesToPrompt = (messages: Array<Message>) =>
+const messagesToPrompt = (messages: Array<MessageData>) =>
   messages.map((message) => ({
     participant: message.author,
     message: message.content,
@@ -39,16 +40,7 @@ Deno.serve(async (req) => {
       }
     );
 
-    const messagesResponse = await supabase
-      .from("messages")
-      .select("*")
-      .eq("room_id", roomId);
-    if (messagesResponse.error) {
-      throw new Error(
-        "Error fetching messages: " + messagesResponse.error.message
-      );
-    }
-    console.log(messagesResponse.data);
+    const messagesData = await fetchMessages(supabase, roomId);
 
     const messages = [
       {
@@ -57,51 +49,17 @@ Deno.serve(async (req) => {
       },
       {
         role: "user",
-        content: JSON.stringify(messagesToPrompt(messagesResponse.data)),
+        content: JSON.stringify(messagesToPrompt(messagesData)),
       },
     ];
 
-    console.log("Prompt:");
-    console.log(messages);
+    const gptAnswer = await fetchChatCompletionJson(messages);
 
-    const gptResponse = await fetch(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          response_format: { type: "json_object" },
-          messages,
-          temperature: 0.7,
-        }),
-      }
-    );
-
-    console.log(gptResponse);
-    if (!gptResponse.ok) {
-      const errorText = await gptResponse.text();
-      console.error("Error response from OpenAI:", errorText);
-    }
-
-    const gptAnswerRaw = ((await gptResponse.json()) as GptResponse).choices[0]
-      .message.content;
-    const gptAnswer = JSON.parse(gptAnswerRaw);
-
-    console.log(gptAnswer);
-
-    const insertMessageResponse = await supabase.from("messages").insert([
-      {
-        author: gptAnswer.participant,
-        room_id: roomId,
-        content: gptAnswer.message,
-      },
-    ]);
-
-    console.log(insertMessageResponse);
+    await insertMessage(supabase, {
+      author: gptAnswer.participant,
+      room_id: roomId,
+      content: gptAnswer.message,
+    });
 
     const data = {};
 

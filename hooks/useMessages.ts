@@ -7,7 +7,7 @@ export function useMessages(roomId: string | null): MessageData[] {
   const [messages, setMessages] = useState<MessageData[]>([]);
 
   const updateMessages = async (roomId: string) => {
-    const messages = await fetchMessages(roomId);
+    const messages = await fetchMessages(supabase, roomId);
     setMessages(messages);
     return;
   };
