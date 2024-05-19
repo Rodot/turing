@@ -30,7 +30,7 @@ export function ContextProvider({ children }: React.PropsWithChildren<{}>) {
   return (
     <AppRouterCacheProvider>
       <ThemeProvider theme={theme}>
-        <UserContext.Provider value={user}>
+        <UserContext.Provider value={user as any}>
           <UserProfileContext.Provider value={userProfile}>
             <RoomContext.Provider value={room}>
               <RoomProfilesContext.Provider value={roomProfiles}>
