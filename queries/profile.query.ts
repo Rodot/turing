@@ -1,38 +1,35 @@
 import { Profile } from "@/types/Database.type";
 import { supabase } from "@/utils/supabase/client";
 
-export const addUserToGroup = async (userId: string, groupId: string) => {
+export const addUserToRoomContext = async (userId: string, roomId: string) => {
   const req = await supabase
     .from("profiles")
-    .update([{ group_id: groupId }])
+    .update([{ room_id: roomId }])
     .eq("id", userId);
   if (req.error) {
     throw new Error(req.error.message);
   }
 };
 
-export const removeUserFromGroup = async (userId: string) => {
+export const removeUserFromRoomContext = async (userId: string) => {
   const req = await supabase
     .from("profiles")
-    .update([{ group_id: null }])
+    .update([{ room_id: null }])
     .eq("id", userId);
   if (req.error) {
     throw new Error(req.error.message);
   }
 };
 
-export const fetchGroupProfiles = async (
-  groupId: string
+export const fetchRoomContextProfiles = async (
+  room: string
 ): Promise<Profile[]> => {
-  const req = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("group_id", groupId);
+  const req = await supabase.from("profiles").select("*").eq("room_id", room);
   if (req.error) {
     throw new Error(req.error.message);
   } else {
-    const groupUsers = req?.data;
-    return groupUsers ?? [];
+    const roomUsers = req?.data;
+    return roomUsers ?? [];
   }
 };
 

@@ -10,8 +10,8 @@ import {
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { shortenId } from "@/utils/user";
 import {
-  GroupContext,
-  GroupProfilesContext,
+  RoomContextContext,
+  RoomContextProfilesContext,
   UserContext,
 } from "./contextProvider";
 import { DrawerContent } from "./drawerContent";
@@ -20,8 +20,8 @@ import { Chat } from "./chat";
 
 export const BaseLayout = () => {
   const user = useContext(UserContext);
-  const group = useContext(GroupContext);
-  const groupUsers = useContext(GroupProfilesContext);
+  const room = useContext(RoomContextContext);
+  const roomUsers = useContext(RoomContextProfilesContext);
   const [open, setOpen] = useState(false);
 
   const handleDrawerOpen = () => {
@@ -45,11 +45,11 @@ export const BaseLayout = () => {
             <MenuIcon />
           </IconButton>
           <Typography>👤 {shortenId(user?.id)}</Typography>
-          {group?.id && (
+          {room?.id && (
             <Typography>
-              🏠 {shortenId(group?.id)}
-              👥 x {groupUsers.length} :{" "}
-              {groupUsers.map((profile) => shortenId(profile.id)).join(" ")}
+              🏠 {shortenId(room?.id)}
+              👥 x {roomUsers.length} :{" "}
+              {roomUsers.map((profile) => shortenId(profile.id)).join(" ")}
             </Typography>
           )}
         </Toolbar>
@@ -63,7 +63,7 @@ export const BaseLayout = () => {
       >
         <DrawerContent onCloseButtonClick={handleDrawerClose} />
       </SwipeableDrawer>
-      {!group?.id ? <GameCreate /> : <Chat />}
+      {!room?.id ? <GameCreate /> : <Chat />}
     </>
   );
 };

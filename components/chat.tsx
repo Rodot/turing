@@ -2,16 +2,16 @@ import React, { useContext } from "react";
 import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
 import { Button, Container } from "@mui/material";
-import { GroupContext, UserContext } from "./contextProvider";
+import { RoomContextContext, UserContext } from "./contextProvider";
 import { supabase } from "@/utils/supabase/client";
 
 export const Chat: React.FC = () => {
-  const group = useContext(GroupContext);
+  const room = useContext(RoomContextContext);
 
   const callEdgeFunction = async () => {
-    if (!group?.id) return;
+    if (!room?.id) return;
     supabase.functions.invoke("generate-message", {
-      body: { groupId: group?.id },
+      body: { roomId: room?.id },
     });
   };
 

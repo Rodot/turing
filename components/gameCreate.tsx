@@ -3,12 +3,12 @@
 import React, { useContext } from "react";
 import { Button, Container, Typography } from "@mui/material";
 
-import { GroupContext } from "./contextProvider";
+import { RoomContextContext } from "./contextProvider";
 
 export const GameCreate: React.FC = () => {
-  const group = useContext(GroupContext);
+  const room = useContext(RoomContextContext);
   const startNewGame = async () => {
-    group?.createGroup();
+    room?.createRoomContext();
   };
 
   return (

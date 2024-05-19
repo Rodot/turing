@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { Message } from "@/types/Database.type";
 
-export function useMessages(groupId: string | null): Message[] {
+export function useMessages(roomId: string | null): Message[] {
   const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
-    if (!groupId) return;
+    if (!roomId) return;
     fetchMessages();
 
     const channel = supabase
@@ -17,7 +17,7 @@ export function useMessages(groupId: string | null): Message[] {
           event: "INSERT",
           schema: "public",
           table: "messages",
-          filter: "group_id=eq." + groupId,
+          filter: "room_id=eq." + roomId,
         },
         (payload) => {
           setMessages((prevMessages) => [
@@ -31,13 +31,13 @@ export function useMessages(groupId: string | null): Message[] {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [groupId]);
+  }, [roomId]);
 
   const fetchMessages = async () => {
     const { data, error } = await supabase
       .from("messages")
       .select("*")
-      .eq("group_id", groupId);
+      .eq("room_id", roomId);
 
     if (error) {
       console.error("Error fetching messages:", error);

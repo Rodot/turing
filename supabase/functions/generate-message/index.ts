@@ -24,9 +24,9 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { groupId } = await req.json();
-    if (!groupId) {
-      throw new Error("Missing groupId");
+    const { roomId } = await req.json();
+    if (!roomId) {
+      throw new Error("Missing roomId");
     }
 
     const supabase = createClient(
@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
     const messagesResponse = await supabase
       .from("messages")
       .select("*")
-      .eq("group_id", groupId);
+      .eq("room_id", roomId);
     if (messagesResponse.error) {
       throw new Error(
         "Error fetching messages: " + messagesResponse.error.message
@@ -96,7 +96,7 @@ Deno.serve(async (req) => {
     const insertMessageResponse = await supabase.from("messages").insert([
       {
         author: gptAnswer.participant,
-        group_id: groupId,
+        room_id: roomId,
         content: gptAnswer.message,
       },
     ]);
@@ -125,6 +125,6 @@ Deno.serve(async (req) => {
   curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/generate-message' \
     --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
     --header 'Content-Type: application/json' \
-    --data '{"groupId":"01ec474f-4966-47bc-85ba-e6b6e6d2fc06"}'
+    --data '{"roomId":"01ec474f-4966-47bc-85ba-e6b6e6d2fc06"}'
 
 */

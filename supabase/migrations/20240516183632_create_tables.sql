@@ -1,5 +1,5 @@
--- groups
-CREATE TABLE public.groups(
+-- rooms
+CREATE TABLE public.rooms(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid()
 );
 
@@ -8,7 +8,7 @@ CREATE TABLE public.profiles(
     id uuid NOT NULL REFERENCES auth.users ON DELETE CASCADE,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
-    group_id uuid REFERENCES public.groups ON DELETE SET NULL,
+    room_id uuid REFERENCES public.rooms ON DELETE SET NULL,
     name text,
     PRIMARY KEY (id)
 );
@@ -20,7 +20,7 @@ ALTER publication supabase_realtime
 CREATE TABLE public.messages(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     created_at timestamp with time zone DEFAULT now(),
-    group_id uuid NOT NULL REFERENCES public.groups ON DELETE CASCADE,
+    room_id uuid NOT NULL REFERENCES public.rooms ON DELETE CASCADE,
     author text,
     user_id text,
     content text
