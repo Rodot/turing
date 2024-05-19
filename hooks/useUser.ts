@@ -9,11 +9,12 @@ export const useUser = () => {
   const [user, setUser] = useState<User | null>(null);
 
   const signUp = async (name: string) => {
-    const { data, error } = await supabase.auth.signInAnonymously();
+    const { data, error } = await supabase.auth.signInAnonymously({
+      options: { data: { name } },
+    });
     if (error) throw new Error(error.message);
     if (!data?.user?.id) throw new Error("No user returned from sign up");
     setUser(data.user);
-    updateProfileName(supabase, data.user.id, name);
     console.log("Signed up " + data.user.id);
   };
 

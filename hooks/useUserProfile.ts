@@ -12,6 +12,7 @@ export function useUserProfile(userId: string | null) {
     if (!userId) return;
 
     fetchUserProfile(supabase, userId).then((newProfile) => {
+      console.log("Profile fetched", newProfile?.id);
       setUserProfile(newProfile ?? null);
     });
 
@@ -27,6 +28,7 @@ export function useUserProfile(userId: string | null) {
           filter: "id=eq." + userId,
         },
         (payload) => {
+          console.log("Profile updated", payload.new?.id);
           setUserProfile(payload.new as ProfileData);
         }
       )

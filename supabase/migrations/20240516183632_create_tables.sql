@@ -41,8 +41,8 @@ CREATE FUNCTION public.handle_new_user()
     SET search_path = ''
     AS $$
 BEGIN
-    INSERT INTO public.profiles(id)
-        VALUES(NEW.id);
+    INSERT INTO public.profiles(id, name)
+        VALUES(NEW.id, NEW.raw_user_meta_data ->> 'name');
     RETURN new;
 END;
 $$;
