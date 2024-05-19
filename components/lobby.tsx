@@ -7,7 +7,6 @@ import {
   RoomProfilesContext,
   UserContext,
 } from "./contextProvider";
-import { shortenId } from "@/utils/user";
 import { ButtonShare } from "./buttonShare";
 import { Logout } from "@mui/icons-material";
 import { Spinner } from "./spinner";

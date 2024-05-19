@@ -5,19 +5,15 @@ import { ProfileData } from "@/types/Database.type";
 import { supabase } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 
-export function userUserProfile(userId: string | null) {
+export function useUserProfile(userId: string | null) {
   const [userProfile, setUserProfile] = useState<ProfileData | null>(null);
-
-  const updateUserProfile = async () => {
-    if (!userId) return;
-    const newProfile = await fetchUserProfile(supabase, userId);
-    setUserProfile(newProfile ?? null);
-  };
 
   useEffect(() => {
     if (!userId) return;
 
-    updateUserProfile();
+    fetchUserProfile(supabase, userId).then((newProfile) => {
+      setUserProfile(newProfile ?? null);
+    });
 
     // listen for changes to user profile
     const channel = supabase

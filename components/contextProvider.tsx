@@ -10,7 +10,7 @@ import { theme } from "../theme";
 import { Room, useRoom } from "@/hooks/useRoom";
 import { MessageData, ProfileData } from "@/types/Database.type";
 import { useRoomProfiles } from "@/hooks/useRoomProfiles";
-import { userUserProfile } from "@/hooks/useUserProfile";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 // Create the context
 export const UserContext = createContext<User | null>(null);
@@ -20,9 +20,9 @@ export const RoomContext = createContext<Room | null>(null);
 export const RoomProfilesContext = createContext<ProfileData[]>([]);
 
 // Create the wrapper component
-export function ContextProvider({ children }: React.PropsWithChildren<{}>) {
+export function ContextProvider({ children }: React.PropsWithChildren) {
   const user = useUser();
-  const userProfile = userUserProfile(user?.id ?? null);
+  const userProfile = useUserProfile(user?.id ?? null);
   const room = useRoom(userProfile);
   const roomProfiles = useRoomProfiles(room?.data?.id ?? null);
   const messages = useMessages(room?.data?.id ?? null);

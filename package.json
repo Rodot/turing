@@ -6,7 +6,8 @@
     "supareset": "npx supabase stop --no-backup && npm run supadev",
     "supareset-remote": "npx supabase functions deploy && npx supabase secrets set --env-file ./.env && npx supabase db reset --linked",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "fix": "eslint . --fix --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
     "@emotion/cache": "^11.11.0",
@@ -30,6 +31,7 @@
     "@types/react": "18.2.48",
     "@types/react-dom": "18.2.18",
     "@types/uuid": "^9.0.8",
-    "encoding": "^0.1.13"
+    "encoding": "^0.1.13",
+    "eslint-config-react-app": "^7.0.1"
   }
 }

@@ -1,7 +1,4 @@
-import { BaseLayout } from "@/components/baseLayout";
-import { ContextProvider } from "@/components/contextProvider";
-import { CircularProgress } from "@mui/material";
-import { Suspense } from "react";
+import React from "react";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`

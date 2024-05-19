@@ -2,7 +2,7 @@
 import { BaseLayout } from "@/components/baseLayout";
 import { ContextProvider } from "@/components/contextProvider";
 import { Spinner } from "@/components/spinner";
-import { Suspense } from "react";
+import React, { Suspense } from "react";
 
 export default function Index() {
   return (

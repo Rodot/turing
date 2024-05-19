@@ -33,7 +33,7 @@ export const GameCreate: React.FC = () => {
         {loading && <Spinner />}
       </Button>
       <Typography sx={{ textAlign: "center" }}>
-        ...or ask a friend for their game's link.
+        ...or ask a friend for their game&aposs link.
       </Typography>
     </Container>
   );

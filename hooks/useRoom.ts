@@ -26,13 +26,6 @@ export function useRoom(userProfile: ProfileData | null): Room | null {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const updateRoomData = async () => {
-    if (!userProfile?.room_id) return;
-    const roomData = await fetchRoom(supabase, userProfile?.room_id);
-    setRoomData(roomData);
-    return;
-  };
-
   // get room id from url and push to server
   useEffect(() => {
     if (!userProfile?.id) return;
@@ -41,7 +34,7 @@ export function useRoom(userProfile: ProfileData | null): Room | null {
     if (newRoomId?.length) {
       updateProfileRoom(supabase, userProfile?.id, newRoomId);
     }
-  }, []);
+  }, [searchParams, router, userProfile?.id]);
 
   // listen for changes to room data
   useEffect(() => {
@@ -53,7 +46,9 @@ export function useRoom(userProfile: ProfileData | null): Room | null {
     }
     console.log("Joined room", userProfile.room_id);
 
-    updateRoomData();
+    fetchRoom(supabase, userProfile?.room_id).then((roomData) =>
+      setRoomData(roomData)
+    );
 
     const channel = supabase
       .channel("room" + userProfile.room_id)

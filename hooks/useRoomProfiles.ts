@@ -8,16 +8,16 @@ import { useEffect, useState } from "react";
 export function useRoomProfiles(roomId: string | null) {
   const [roomProfiles, setRoomProfiles] = useState<ProfileData[]>([]);
 
-  const updateRoomProfiles = async () => {
-    if (!roomId?.length) {
-      setRoomProfiles([]);
-      return;
-    }
-    const newRoomProfiles = await fetchRoomProfiles(supabase, roomId);
-    setRoomProfiles(newRoomProfiles ?? []);
-  };
-
   useEffect(() => {
+    const updateRoomProfiles = async () => {
+      if (!roomId?.length) {
+        setRoomProfiles([]);
+        return;
+      }
+      const newRoomProfiles = await fetchRoomProfiles(supabase, roomId);
+      setRoomProfiles(newRoomProfiles ?? []);
+    };
+
     updateRoomProfiles();
 
     if (!roomId?.length) return;
@@ -33,7 +33,7 @@ export function useRoomProfiles(roomId: string | null) {
           table: "profiles",
           // filter: "room_id=eq." + roomId,
         },
-        (payload) => {
+        () => {
           updateRoomProfiles();
         }
       )

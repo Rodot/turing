@@ -3,7 +3,7 @@ import { supabase } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 
-var loadingUser = false;
+let loadingUser = false;
 
 export const useUser = () => {
   const [user, setUser] = useState<User | null>(null);
