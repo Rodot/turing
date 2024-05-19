@@ -46,7 +46,7 @@ export const Lobby: React.FC = () => {
       </Typography>
 
       {roomProfiles?.map((profile) => (
-        <Chip key={profile.id} label={shortenId(profile.id)} />
+        <Chip key={profile.id} label={profile.name} />
       ))}
 
       <ButtonShare />

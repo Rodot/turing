@@ -1,7 +1,21 @@
 import { ProfileData } from "@/types/Database.type";
 import { SupabaseClient } from "@supabase/supabase-js";
 
-export const addProfileToRoom = async (
+export const updateProfileName = async (
+  supabase: SupabaseClient,
+  userId: string,
+  name: string
+) => {
+  const req = await supabase
+    .from("profiles")
+    .update([{ name }])
+    .eq("id", userId);
+  if (req.error) {
+    throw new Error(req.error.message);
+  }
+};
+
+export const updateProfileRoom = async (
   supabase: SupabaseClient,
   userId: string,
   roomId: string

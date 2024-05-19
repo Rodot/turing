@@ -1,3 +1,4 @@
+import { updateProfileName } from "@/queries/db/profile.query";
 import { supabase } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
@@ -6,6 +7,15 @@ var loadingUser = false;
 
 export const useUser = () => {
   const [user, setUser] = useState<User | null>(null);
+
+  const signUp = async (name: string) => {
+    const { data, error } = await supabase.auth.signInAnonymously();
+    if (error) throw new Error(error.message);
+    if (!data?.user?.id) throw new Error("No user returned from sign up");
+    setUser(data.user);
+    updateProfileName(supabase, data.user.id, name);
+    console.log("Signed up " + data.user.id);
+  };
 
   useEffect(() => {
     const signInOrUp = async () => {
@@ -18,10 +28,6 @@ export const useUser = () => {
         if (user) {
           setUser(user);
           console.log("Signed in " + user.id);
-        } else {
-          const { data, error } = await supabase.auth.signInAnonymously();
-          setUser(data?.user ?? null);
-          console.log("Signed up " + data?.user?.id);
         }
       } finally {
         loadingUser = false;
@@ -31,5 +37,5 @@ export const useUser = () => {
     signInOrUp();
   }, []);
 
-  return user;
+  return { ...user, signUp };
 };

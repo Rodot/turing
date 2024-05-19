@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { ProfileData, RoomData } from "@/types/Database.type";
 import {
-  addProfileToRoom,
+  updateProfileRoom,
   removeProfileFromRoom,
 } from "@/queries/db/profile.query";
 import { fetchRoom } from "@/queries/db/room.query";
@@ -39,7 +39,7 @@ export function useRoom(userProfile: ProfileData | null): Room | null {
     const newRoomId = searchParams.get("room") ?? null;
     router.push("/");
     if (newRoomId?.length) {
-      addProfileToRoom(supabase, userProfile?.id, newRoomId);
+      updateProfileRoom(supabase, userProfile?.id, newRoomId);
     }
   }, [searchParams, userProfile?.id]);
 

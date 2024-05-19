@@ -1,26 +1,17 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Button, Container, Typography } from "@mui/material";
-import { RoomContext, UserContext } from "./contextProvider";
+import { RoomContext } from "./contextProvider";
 import { Spinner } from "./spinner";
 
 export const GameCreate: React.FC = () => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const room = useContext(RoomContext);
-  const user = useContext(UserContext);
   const startNewGame = async () => {
     setLoading(true);
     room?.createRoom();
   };
-
-  useEffect(() => {
-    if (user?.id) {
-      setLoading(false);
-    } else {
-      setLoading(true);
-    }
-  }, [user?.id]);
 
   return (
     <Container

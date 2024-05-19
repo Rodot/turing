@@ -8,19 +8,14 @@ import {
   SwipeableDrawer,
 } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
-import { shortenId } from "@/utils/user";
-import {
-  RoomContext,
-  UserContext,
-  UserProfileContext,
-} from "./contextProvider";
+import { RoomContext, UserProfileContext } from "./contextProvider";
 import { DrawerContent } from "./drawerContent";
 import { GameCreate } from "./gameCreate";
 import { Chat } from "./chat";
 import { Lobby } from "./lobby";
+import { SignUp } from "./signUp";
 
 export const BaseLayout = () => {
-  const user = useContext(UserContext);
   const userProfile = useContext(UserProfileContext);
   const room = useContext(RoomContext);
   const [open, setOpen] = useState(false);
@@ -34,6 +29,7 @@ export const BaseLayout = () => {
   };
 
   const router = () => {
+    if (!userProfile?.id) return <SignUp />;
     if (!room?.data?.id) return <GameCreate />;
     if (room.data.status === "lobby") return <Lobby />;
     return <Chat />;
@@ -51,7 +47,7 @@ export const BaseLayout = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography>👤 {userProfile?.name ?? shortenId(user?.id)}</Typography>
+          <Typography>{userProfile?.name}</Typography>
         </Toolbar>
       </AppBar>
       <Toolbar /> {/* empty toolbar to avoid covering page content */}
