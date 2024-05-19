@@ -41,10 +41,11 @@ export function useRoom(userProfile: ProfileData | null): Room | null {
     if (newRoomId?.length) {
       updateProfileRoom(supabase, userProfile?.id, newRoomId);
     }
-  }, [searchParams, userProfile?.id]);
+  }, []);
 
   // listen for changes to room data
   useEffect(() => {
+    if (!userProfile?.id) return;
     if (!userProfile?.room_id) {
       console.log("Left room");
       setRoomData(null);
@@ -73,7 +74,7 @@ export function useRoom(userProfile: ProfileData | null): Room | null {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userProfile?.room_id]);
+  }, [userProfile?.id, userProfile?.room_id]);
 
   const createRoom = async () => {
     createRoomFunction(supabase);

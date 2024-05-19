@@ -9,18 +9,15 @@ export function userUserProfile(userId: string | null) {
   const [userProfile, setUserProfile] = useState<ProfileData | null>(null);
 
   const updateUserProfile = async () => {
-    if (!userId?.length) {
-      setUserProfile(null);
-      return;
-    }
+    if (!userId) return;
     const newProfile = await fetchUserProfile(supabase, userId);
     setUserProfile(newProfile ?? null);
   };
 
   useEffect(() => {
-    updateUserProfile();
+    if (!userId) return;
 
-    if (!userId?.length) return;
+    updateUserProfile();
 
     // listen for changes to user profile
     const channel = supabase
@@ -34,7 +31,6 @@ export function userUserProfile(userId: string | null) {
           filter: "id=eq." + userId,
         },
         (payload) => {
-          console.log(payload);
           setUserProfile(payload.new as ProfileData);
         }
       )
