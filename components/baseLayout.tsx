@@ -15,8 +15,10 @@ import {
   UserContext,
 } from "./contextProvider";
 import { DrawerContent } from "./drawerContent";
+import { GameCreate } from "./gameCreate";
+import { Chat } from "./chat";
 
-export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
+export const BaseLayout = () => {
   const user = useContext(UserContext);
   const group = useContext(GroupContext);
   const groupUsers = useContext(GroupProfilesContext);
@@ -61,7 +63,7 @@ export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
       >
         <DrawerContent onCloseButtonClick={handleDrawerClose} />
       </SwipeableDrawer>
-      {children}
+      {!group?.id ? <GameCreate /> : <Chat />}
     </>
   );
 };

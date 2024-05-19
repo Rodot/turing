@@ -24,6 +24,7 @@ export function useGroup(user: User | null): Group | null {
     const newGroupId = uuidv4();
     setGroupId(newGroupId);
     router.push("/?group=" + newGroupId);
+    // window.location.href = "/?group=" + newGroupId;
   };
 
   const leaveGroup = async () => {
@@ -32,21 +33,23 @@ export function useGroup(user: User | null): Group | null {
     router.push("/");
   };
 
-  const createAndJoinGroup = async () => {
+  const createAndJoinGroup = async (newGroupId: string) => {
     try {
-      if (!groupId?.length) return;
+      if (!newGroupId?.length) return;
       if (!user?.id) return;
       if (loadingGroup) return;
       loadingGroup = true;
 
-      const groupResponse = await fetchGroup(groupId);
+      const groupResponse = await fetchGroup(newGroupId);
       if (!groupResponse?.data?.length) {
-        await insertGroup(groupId);
-        console.log("Created group", groupId);
+        await insertGroup(newGroupId);
+        console.log("Created group", newGroupId);
       }
 
-      await addUserToGroup(user.id, groupId);
-      console.log("Joined group", groupId);
+      await addUserToGroup(user.id, newGroupId);
+
+      setGroupId(newGroupId);
+      console.log("Joined group", newGroupId);
     } catch (error) {
       console.error("joinGroup: ", error);
     } finally {
@@ -55,10 +58,10 @@ export function useGroup(user: User | null): Group | null {
   };
 
   useEffect(() => {
-    const newGroupId = searchParams.get("group") ?? "";
+    const newGroupId = searchParams.get("group") ?? null;
+    console.log("groupId from URL:", newGroupId);
     if (newGroupId?.length) {
-      setGroupId(newGroupId);
-      createAndJoinGroup();
+      createAndJoinGroup(newGroupId);
     }
   }, [user, searchParams]);
 

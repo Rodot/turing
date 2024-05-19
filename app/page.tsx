@@ -9,13 +9,11 @@ import { Suspense, useContext } from "react";
 export default function Index() {
   const group = useContext(GroupContext);
 
-  const content = !group?.id ? <GameCreate /> : <Chat />;
-
   return (
     <>
       <Suspense fallback={<CircularProgress />}>
         <ContextProvider>
-          <BaseLayout>{content}</BaseLayout>
+          <BaseLayout />
         </ContextProvider>
       </Suspense>
     </>
