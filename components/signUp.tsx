@@ -1,19 +1,30 @@
 "use client";
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Box, Button, Container, TextField, Typography } from "@mui/material";
 import { UserContext } from "./contextProvider";
 import { Spinner } from "./spinner";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export const SignUp: React.FC = () => {
   const user = useContext(UserContext);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
+  const [roomId, setRoomId] = useState<string | null>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const newRoomId = searchParams.get("room") ?? null;
+    if (newRoomId?.length) {
+      setRoomId(newRoomId);
+    }
+  }, [searchParams, router]);
 
   const signUp = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
-    await (user as any)?.signUp(name);
+    await (user as any)?.signUp(name, roomId);
   };
 
   return (

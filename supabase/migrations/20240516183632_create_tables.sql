@@ -41,8 +41,8 @@ CREATE FUNCTION public.handle_new_user()
     SET search_path = ''
     AS $$
 BEGIN
-    INSERT INTO public.profiles(id, name)
-        VALUES(NEW.id, NEW.raw_user_meta_data ->> 'name');
+    INSERT INTO public.profiles(id, name, room_id)
+        VALUES(NEW.id, COALESCE(NEW.raw_user_meta_data ->> 'name', NULL), COALESCE(NEW.raw_user_meta_data ->> 'room_id', NULL)::uuid);
     RETURN new;
 END;
 $$;

@@ -1,4 +1,3 @@
-import { updateProfileName } from "@/queries/db/profile.query";
 import { supabase } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
@@ -8,9 +7,9 @@ let loadingUser = false;
 export const useUser = () => {
   const [user, setUser] = useState<User | null>(null);
 
-  const signUp = async (name: string) => {
+  const signUp = async (name: string | null, room_id: string | null) => {
     const { data, error } = await supabase.auth.signInAnonymously({
-      options: { data: { name } },
+      options: { data: { name, room_id } },
     });
     if (error) throw new Error(error.message);
     if (!data?.user?.id) throw new Error("No user returned from sign up");

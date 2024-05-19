@@ -30,11 +30,14 @@ export function useRoom(userProfile: ProfileData | null): Room | null {
   useEffect(() => {
     if (!userProfile?.id) return;
     const newRoomId = searchParams.get("room") ?? null;
-    router.push("/");
     if (newRoomId?.length) {
-      updateProfileRoom(supabase, userProfile?.id, newRoomId);
+      if (newRoomId === userProfile?.room_id) {
+        router.push("/");
+      } else {
+        updateProfileRoom(supabase, userProfile?.id, newRoomId);
+      }
     }
-  }, [searchParams, router, userProfile?.id]);
+  }, [searchParams, router, userProfile?.id, userProfile?.room_id]);
 
   // listen for changes to room data
   useEffect(() => {
