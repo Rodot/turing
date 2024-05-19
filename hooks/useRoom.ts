@@ -1,18 +1,19 @@
 "use client";
 
-import { insertRoom, fetchRoom } from "@/queries/room.query";
-import { addUserToRoom, removeUserFromRoom } from "@/queries/profile.query";
 import { User } from "@supabase/supabase-js";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { RoomData } from "@/types/Database.type";
 import { supabase } from "@/utils/supabase/client";
+import { RoomData } from "@/types/Database.type";
+import { addUserToRoom, removeUserFromRoom } from "@/queries/profile.query";
+import { fetchRoom, insertRoom } from "@/queries/room.query";
 
 export type Room = {
   data: RoomData | null;
   createRoom: () => void;
   leaveRoom: () => void;
+  startGame: () => void;
 };
 
 var loadingRoom = false;
@@ -35,9 +36,12 @@ export function useRoom(user: User | null): Room | null {
     router.push("/");
   };
 
+  const startGame = async () => {
+    console.log("Starting game");
+  };
+
   const updateRoomData = async (roomId: string) => {
     const roomData = await fetchRoom(roomId);
-    console.log("Room data", roomData);
     setRoomData(roomData);
     return;
   };
@@ -91,7 +95,6 @@ export function useRoom(user: User | null): Room | null {
           filter: "id=eq." + roomId,
         },
         (payload) => {
-          console.log("Room data updated", payload.new);
           setRoomData(payload.new as RoomData);
         }
       )
@@ -107,5 +110,6 @@ export function useRoom(user: User | null): Room | null {
     data,
     createRoom,
     leaveRoom,
+    startGame,
   };
 }

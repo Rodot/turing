@@ -9,19 +9,15 @@ import {
 } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { shortenId } from "@/utils/user";
-import {
-  RoomContext,
-  RoomProfilesContext,
-  UserContext,
-} from "./contextProvider";
+import { RoomContext, UserContext } from "./contextProvider";
 import { DrawerContent } from "./drawerContent";
 import { GameCreate } from "./gameCreate";
 import { Chat } from "./chat";
+import { Lobby } from "./lobby";
 
 export const BaseLayout = () => {
   const user = useContext(UserContext);
   const room = useContext(RoomContext);
-  const roomUsers = useContext(RoomProfilesContext);
   const [open, setOpen] = useState(false);
 
   const handleDrawerOpen = () => {
@@ -30,6 +26,12 @@ export const BaseLayout = () => {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const router = () => {
+    if (!room?.data?.id) return <GameCreate />;
+    if (room.data.state === "lobby") return <Lobby />;
+    return <Chat />;
   };
 
   return (
@@ -45,13 +47,6 @@ export const BaseLayout = () => {
             <MenuIcon />
           </IconButton>
           <Typography>👤 {shortenId(user?.id)}</Typography>
-          {room?.data?.id && (
-            <Typography>
-              🏠 {shortenId(room?.data?.id)} : {room?.data?.state}
-              👥 x {roomUsers.length} :{" "}
-              {roomUsers.map((profile) => shortenId(profile.id)).join(" ")}
-            </Typography>
-          )}
         </Toolbar>
       </AppBar>
       <Toolbar /> {/* empty toolbar to avoid covering page content */}
@@ -63,7 +58,7 @@ export const BaseLayout = () => {
       >
         <DrawerContent onCloseButtonClick={handleDrawerClose} />
       </SwipeableDrawer>
-      {!room?.data?.id ? <GameCreate /> : <Chat />}
+      {router()}
     </>
   );
 };

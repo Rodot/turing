@@ -1,15 +1,26 @@
 "use client";
 
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Container, Typography } from "@mui/material";
-
-import { RoomContext } from "./contextProvider";
+import { RoomContext, UserContext } from "./contextProvider";
+import { Spinner } from "./spinner";
 
 export const GameCreate: React.FC = () => {
+  const [loading, setLoading] = useState(true);
   const room = useContext(RoomContext);
+  const user = useContext(UserContext);
   const startNewGame = async () => {
+    setLoading(true);
     room?.createRoom();
   };
+
+  useEffect(() => {
+    if (user?.id) {
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+  }, [user?.id]);
 
   return (
     <Container
@@ -23,8 +34,12 @@ export const GameCreate: React.FC = () => {
         p: 2,
       }}
     >
-      <Button variant="contained" onClick={startNewGame}>
+      <Typography variant="h4" color="primary">
+        The Turing Trial
+      </Typography>
+      <Button variant="contained" onClick={startNewGame} disabled={loading}>
         Start New Game
+        {loading && <Spinner />}
       </Button>
       <Typography sx={{ textAlign: "center" }}>
         ...or to join a friend's game, ask them to send you the link.
