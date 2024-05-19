@@ -5,10 +5,10 @@ import { ProfileData } from "@/types/Database.type";
 import { supabase } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 
-export function useRoomUsers(roomId: string | null) {
+export function useRoomProfiles(roomId: string | null) {
   const [roomProfiles, setRoomProfiles] = useState<ProfileData[]>([]);
 
-  const updateRoomUsers = async () => {
+  const updateRoomProfiles = async () => {
     if (!roomId?.length) {
       setRoomProfiles([]);
       return;
@@ -18,11 +18,11 @@ export function useRoomUsers(roomId: string | null) {
   };
 
   useEffect(() => {
-    updateRoomUsers();
+    updateRoomProfiles();
 
     if (!roomId?.length) return;
 
-    // listen for changes to room users
+    // listen for changes to room profiles
     const channel = supabase
       .channel("room_profiles" + roomId)
       .on(
@@ -34,7 +34,7 @@ export function useRoomUsers(roomId: string | null) {
           // filter: "room_id=eq." + roomId,
         },
         (payload) => {
-          updateRoomUsers();
+          updateRoomProfiles();
         }
       )
       .subscribe();

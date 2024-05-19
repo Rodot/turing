@@ -9,7 +9,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../theme";
 import { Room, useRoom } from "@/hooks/useRoom";
 import { MessageData, ProfileData } from "@/types/Database.type";
-import { useRoomUsers } from "@/hooks/useRoomUsers";
+import { useRoomProfiles } from "@/hooks/useRoomProfiles";
 
 // Create the context
 export const UserContext = createContext<User | null>(null);
@@ -21,7 +21,7 @@ export const RoomProfilesContext = createContext<ProfileData[]>([]);
 export function ContextProvider({ children }: React.PropsWithChildren<{}>) {
   const user = useUser();
   const room = useRoom(user);
-  const roomUsers = useRoomUsers(room?.data?.id ?? null);
+  const roomProfiles = useRoomProfiles(room?.data?.id ?? null);
   const messages = useMessages(room?.data?.id ?? null);
 
   return (
@@ -29,7 +29,7 @@ export function ContextProvider({ children }: React.PropsWithChildren<{}>) {
       <ThemeProvider theme={theme}>
         <UserContext.Provider value={user}>
           <RoomContext.Provider value={room}>
-            <RoomProfilesContext.Provider value={roomUsers}>
+            <RoomProfilesContext.Provider value={roomProfiles}>
               <MessagesContext.Provider value={messages}>
                 {children}
               </MessagesContext.Provider>
