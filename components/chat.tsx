@@ -4,15 +4,14 @@ import { ChatInput } from "./chatInput";
 import { Button, Container } from "@mui/material";
 import { RoomContext } from "./contextProvider";
 import { supabase } from "@/utils/supabase/client";
+import { generateMessageFunction } from "@/queries/functions/functions.query";
 
 export const Chat: React.FC = () => {
   const room = useContext(RoomContext);
 
   const callEdgeFunction = async () => {
     if (!room?.data?.id) return;
-    supabase.functions.invoke("generate-message", {
-      body: { roomId: room?.data?.id },
-    });
+    generateMessageFunction(supabase, room.data.id);
   };
 
   return (

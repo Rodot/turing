@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { MessageData } from "@/types/Database.type";
-import { fetchMessages } from "@/queries/messages.query";
+import { fetchMessages } from "@/queries/db/messages.query";
 
 export function useMessages(roomId: string | null): MessageData[] {
   const [messages, setMessages] = useState<MessageData[]>([]);

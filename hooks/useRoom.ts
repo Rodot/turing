@@ -6,8 +6,9 @@ import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "@/utils/supabase/client";
 import { RoomData } from "@/types/Database.type";
-import { addUserToRoom, removeUserFromRoom } from "@/queries/profile.query";
-import { fetchRoom, insertRoom } from "@/queries/room.query";
+import { addUserToRoom, removeUserFromRoom } from "@/queries/db/profile.query";
+import { fetchRoom, insertRoom } from "@/queries/db/room.query";
+import { startGameFunction } from "@/queries/functions/functions.query";
 
 export type Room = {
   data: RoomData | null;
@@ -30,6 +31,7 @@ export function useRoom(user: User | null): Room | null {
   };
 
   const leaveRoom = async () => {
+    console.log("Leaving room", roomId);
     removeUserFromRoom(user?.id ?? "");
     setRoomId(null);
     setRoomData(null);
@@ -37,11 +39,13 @@ export function useRoom(user: User | null): Room | null {
   };
 
   const startGame = async () => {
-    console.log("Starting game");
+    if (!roomId) return;
+    console.log("Starting game", roomId);
+    await startGameFunction(supabase, roomId);
   };
 
   const updateRoomData = async (roomId: string) => {
-    const roomData = await fetchRoom(roomId);
+    const roomData = await fetchRoom(supabase, roomId);
     setRoomData(roomData);
     return;
   };
@@ -53,10 +57,10 @@ export function useRoom(user: User | null): Room | null {
       if (loadingRoom) return;
       loadingRoom = true;
 
-      const newRoomData = await fetchRoom(newRoomId);
+      const newRoomData = await fetchRoom(supabase, newRoomId);
       if (!newRoomData) {
         console.log("Creating room", newRoomId);
-        await insertRoom(newRoomId);
+        await insertRoom(supabase, newRoomId);
       }
 
       console.log("Joining room", newRoomId);

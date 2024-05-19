@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchRoomProfiles } from "@/queries/profile.query";
+import { fetchRoomProfiles } from "@/queries/db/profile.query";
 import { ProfileData } from "@/types/Database.type";
 import { supabase } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";

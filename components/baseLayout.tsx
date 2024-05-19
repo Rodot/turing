@@ -30,7 +30,7 @@ export const BaseLayout = () => {
 
   const router = () => {
     if (!room?.data?.id) return <GameCreate />;
-    if (room.data.state === "lobby") return <Lobby />;
+    if (room.data.status === "lobby") return <Lobby />;
     return <Chat />;
   };
 

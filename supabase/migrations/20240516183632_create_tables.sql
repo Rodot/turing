@@ -1,7 +1,7 @@
 -- rooms
 CREATE TABLE public.rooms(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    state text DEFAULT 'lobby' ::text
+    status text DEFAULT 'lobby' ::text
 );
 
 ALTER publication supabase_realtime
