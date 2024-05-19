@@ -1,5 +1,7 @@
 import { BaseLayout } from "@/components/baseLayout";
 import { ContextProvider } from "@/components/contextProvider";
+import { CircularProgress } from "@mui/material";
+import { Suspense } from "react";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -17,12 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ContextProvider>
-      <html lang="en">
-        <body style={{ margin: 0 }}>
-          <BaseLayout>{children}</BaseLayout>
-        </body>
-      </html>
-    </ContextProvider>
+    <html lang="en">
+      <body style={{ margin: 0 }}>{children}</body>
+    </html>
   );
 }

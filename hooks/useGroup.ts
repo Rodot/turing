@@ -4,7 +4,7 @@ import { insertGroup, fetchGroup } from "@/queries/group.query";
 import { addUserToGroup, removeUserFromGroup } from "@/queries/profile.query";
 import { User } from "@supabase/supabase-js";
 import { useRouter, useSearchParams } from "next/navigation";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export type Group = {

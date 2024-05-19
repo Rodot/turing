@@ -1,13 +1,23 @@
 "use client";
+import { BaseLayout } from "@/components/baseLayout";
 import { Chat } from "@/components/chat";
-import { GroupContext } from "@/components/contextProvider";
+import { ContextProvider, GroupContext } from "@/components/contextProvider";
 import { GameCreate } from "@/components/gameCreate";
-import { useContext } from "react";
+import { CircularProgress } from "@mui/material";
+import { Suspense, useContext } from "react";
 
 export default function Index() {
   const group = useContext(GroupContext);
 
-  if (!group?.id) return <GameCreate />;
+  const content = !group?.id ? <GameCreate /> : <Chat />;
 
-  return <Chat />;
+  return (
+    <>
+      <Suspense fallback={<CircularProgress />}>
+        <ContextProvider>
+          <BaseLayout>{content}</BaseLayout>
+        </ContextProvider>
+      </Suspense>
+    </>
+  );
 }

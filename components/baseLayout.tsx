@@ -8,7 +8,7 @@ import {
   SwipeableDrawer,
 } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
-import { formatUser, shortenId } from "@/utils/user";
+import { shortenId } from "@/utils/user";
 import {
   GroupContext,
   GroupProfilesContext,
