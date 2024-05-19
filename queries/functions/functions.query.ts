@@ -19,3 +19,7 @@ export const startGameFunction = async (
     body: { roomId },
   });
 };
+
+export const createRoomFunction = async (supabase: SupabaseClient) => {
+  supabase.functions.invoke("create-room");
+};

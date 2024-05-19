@@ -13,7 +13,7 @@ export function useRoomProfiles(roomId: string | null) {
       setRoomProfiles([]);
       return;
     }
-    const newRoomProfiles = await fetchRoomProfiles(roomId);
+    const newRoomProfiles = await fetchRoomProfiles(supabase, roomId);
     setRoomProfiles(newRoomProfiles ?? []);
   };
 

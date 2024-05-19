@@ -5,7 +5,8 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
-import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
+import { addProfileToRoom } from "../_queries/profiles.query.ts";
+import { insertRoom } from "../_queries/room.query.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { createSupabaseClient } from "../_shared/supabase.ts";
 
@@ -15,18 +16,15 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { roomId } = await req.json();
-    if (!roomId) {
-      throw new Error("Missing roomId");
-    }
-
     const supabase = createSupabaseClient(req);
+    const userResponse = await supabase.auth.getUser();
+    if (userResponse.error) {
+      throw new Error(userResponse.error.message);
+    }
+    const user = userResponse.data.user;
 
-    const room = await fetchRoom(supabase, roomId);
-    if (!room) throw new Error("Room not found");
-    const newRoom = { ...room, status: "started" };
-    console.log("newRoom", newRoom);
-    await updateRoom(supabase, roomId, newRoom);
+    const room = await insertRoom(supabase);
+    await addProfileToRoom(supabase, user?.id, room.id);
 
     const data = {};
 
@@ -47,9 +45,7 @@ Deno.serve(async (req) => {
   1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
   2. Make an HTTP request:
 
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/start-game' \
+  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/create-room' \
     --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
     --header 'Content-Type: application/json' \
-    --data '{"roomId":"01ec474f-4966-47bc-85ba-e6b6e6d2fc06"}'
-
 */
