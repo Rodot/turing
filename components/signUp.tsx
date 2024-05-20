@@ -24,7 +24,15 @@ export const SignUp: React.FC = () => {
   const signUp = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
-    await (user as any)?.signUp(name, roomId);
+    try {
+      await (user as any)?.signUp(name, roomId);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setRoomId(null);
+      router.push("/");
+      setLoading(false);
+    }
   };
 
   return (
