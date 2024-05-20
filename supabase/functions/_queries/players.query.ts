@@ -1,6 +1,5 @@
 import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2/dist/module/index.js";
 import { PlayerData, PlayerDataInsert } from "../_types/Database.type.ts";
-
 export const fetchPlayers = async (
   supabase: SupabaseClient,
   roomId: string
@@ -24,7 +23,6 @@ export const insertPlayers = async (
 ) => {
   const insertPlayerResponse = await supabase.from("players").insert(players);
   if (insertPlayerResponse.error) {
-    console.log(insertPlayerResponse);
     throw new Error(
       "Error inserting player: " + insertPlayerResponse.error.message
     );
@@ -42,5 +40,21 @@ export const updatePlayer = async (
 
   if (updateResponse.error) {
     throw new Error("Error updating player: " + updateResponse.error.message);
+  }
+};
+
+export const updateRoomPlayers = async (
+  supabase: SupabaseClient,
+  player: Partial<PlayerData> & { room_id: string }
+) => {
+  const updateResponse = await supabase
+    .from("players")
+    .update(player)
+    .eq("room_id", player.room_id);
+
+  if (updateResponse.error) {
+    throw new Error(
+      "Error updating room players: " + updateResponse.error.message
+    );
   }
 };

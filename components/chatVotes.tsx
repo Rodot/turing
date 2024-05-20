@@ -1,31 +1,41 @@
 import React, { useContext } from "react";
 import { PlayersContext, RoomContext, UserContext } from "./contextProvider";
 import { Box, Chip, LinearProgress, Typography } from "@mui/material";
-import { updatePlayer } from "@/queries/db/players.query";
 import { supabase } from "@/utils/supabase/client";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
+import { playerVoteFunction } from "@/queries/functions/functions.query";
 
 export const ChatVote: React.FC = () => {
   const user = useContext(UserContext);
   const room = useContext(RoomContext);
   const players = useContext(PlayersContext);
+
   const me = players?.find((player) => player.user_id === user?.id);
+  const numLivingHumans = players
+    .filter((player) => player.user_id)
+    .filter((player) => !player.is_dead).length;
   const numVotes = players?.filter((player) => player?.vote !== null).length;
-  const voteProgress = (100 * numVotes) / (players.length / 2 + 1);
+  const voteProgress = (100 * numVotes) / numLivingHumans;
 
   const vote = async (playerId: string) => {
     if (!me) return;
-    updatePlayer(supabase, { id: me.id, vote: playerId });
+    if (!room?.data?.id) return;
+    playerVoteFunction(supabase, {
+      roomId: room.data.id,
+      playerId: me.id,
+      vote: playerId,
+    });
   };
 
   const chipLabel = (player: PlayerData) => {
+    const isDead = player.is_dead ? "💀" : "";
     const name = player.name;
     const you = me?.id === player.id ? " (you)" : "";
     const numVotes = players
       ?.filter((other) => other.vote === player.id)
-      .map(() => "💀")
+      .map(() => "❌")
       .join("");
-    return `${name} ${you} ${numVotes}`;
+    return `${name} ${you} ${isDead} ${numVotes}`;
   };
 
   return (
@@ -49,7 +59,7 @@ export const ChatVote: React.FC = () => {
           label={chipLabel(player)}
           color={me?.vote === player.id ? "primary" : "default"}
           onClick={() => vote(player.id)}
-          disabled={!!me?.vote}
+          disabled={!!me?.vote || player.is_dead}
         />
       ))}
     </Box>

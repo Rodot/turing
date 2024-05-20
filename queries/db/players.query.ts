@@ -46,3 +46,19 @@ export const updatePlayer = async (
     throw new Error("Error updating player: " + updateResponse.error.message);
   }
 };
+
+export const updateRoomPlayers = async (
+  supabase: SupabaseClient,
+  player: Partial<PlayerData> & { room_id: string }
+) => {
+  const updateResponse = await supabase
+    .from("players")
+    .update(player)
+    .eq("room_id", player.room_id);
+
+  if (updateResponse.error) {
+    throw new Error(
+      "Error updating room players: " + updateResponse.error.message
+    );
+  }
+};
