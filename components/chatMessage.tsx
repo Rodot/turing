@@ -3,7 +3,7 @@
 import React from "react";
 import { User } from "@supabase/supabase-js";
 import { Box, Typography } from "@mui/material";
-import { MessageData } from "@/types/Database.type";
+import { MessageData } from "@/supabase/functions/_types/Database.type";
 
 export function ChatMessage({
   message,

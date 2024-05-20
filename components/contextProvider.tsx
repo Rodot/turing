@@ -8,9 +8,12 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../theme";
 import { Room, useRoom } from "@/hooks/useRoom";
-import { MessageData, ProfileData } from "@/types/Database.type";
 import { useRoomProfiles } from "@/hooks/useRoomProfiles";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import {
+  MessageData,
+  ProfileData,
+} from "@/supabase/functions/_types/Database.type";
 
 // Create the context
 export const UserContext = createContext<User | null>(null);

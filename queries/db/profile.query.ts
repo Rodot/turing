@@ -1,4 +1,4 @@
-import { ProfileData } from "@/types/Database.type";
+import { ProfileData } from "@/supabase/functions/_types/Database.type";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export const updateProfileName = async (

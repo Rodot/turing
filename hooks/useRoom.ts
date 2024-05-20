@@ -3,7 +3,6 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
-import { ProfileData, RoomData } from "@/types/Database.type";
 import {
   updateProfileRoom,
   removeProfileFromRoom,
@@ -13,6 +12,10 @@ import {
   createRoomFunction,
   startGameFunction,
 } from "@/queries/functions/functions.query";
+import {
+  ProfileData,
+  RoomData,
+} from "@/supabase/functions/_types/Database.type";
 
 export type Room = {
   data: RoomData | null;

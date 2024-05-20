@@ -5,9 +5,12 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
+import { insertPlayers } from "../_queries/players.query.ts";
+import { fetchRoomProfiles } from "../_queries/profiles.query.ts";
 import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { createSupabaseClient } from "../_shared/supabase.ts";
+import { PlayerData, PlayerDataInsert } from "../_types/Database.type.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -22,8 +25,66 @@ Deno.serve(async (req) => {
 
     const supabase = createSupabaseClient(req);
 
+    // fetch room
     const room = await fetchRoom(supabase, roomId);
     if (!room) throw new Error("Room not found");
+
+    // fetch profiles
+    const profiles = await fetchRoomProfiles(supabase, roomId);
+    if (!profiles?.length) throw new Error("Room not found");
+
+    const humanNumber = profiles.length;
+    const botNumber = profiles.length;
+    const playerNumber = humanNumber + botNumber;
+
+    const players: PlayerDataInsert[] = [];
+
+    const names = [
+      "Alice",
+      "Bob",
+      "Charlie",
+      "David",
+      "Eve",
+      "Frank",
+      "Grace",
+      "Heidi",
+      "Ivan",
+      "Judy",
+      "Kevin",
+      "Mallory",
+      "Nancy",
+      "Olivia",
+      "Peggy",
+      "Quentin",
+      "Romeo",
+      "Sybil",
+      "Trent",
+      "Ursula",
+      "Victor",
+      "Walter",
+      "Xavier",
+      "Yvonne",
+      "Zelda",
+    ];
+
+    const popRandom = (array: Array<any>) => {
+      const index = Math.floor(Math.random() * array.length);
+      return array.splice(index, 1)[0];
+    };
+
+    // human players
+    profiles.forEach((profile) => {
+      players.push({
+        user_id: profile.id,
+        name: popRandom(names) ?? "Player",
+        room_id: roomId,
+      });
+    });
+
+    // insert players
+    await insertPlayers(supabase, players);
+
+    // start the game
     const newRoom = { ...room, status: "started" };
     console.log("newRoom", newRoom);
     await updateRoom(supabase, roomId, newRoom);

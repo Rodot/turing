@@ -1,4 +1,4 @@
-import { RoomData } from "@/types/Database.type";
+import { RoomData } from "@/supabase/functions/_types/Database.type";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export const fetchRoom = async (supabase: SupabaseClient, id: string) => {
