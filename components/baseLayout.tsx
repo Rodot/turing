@@ -8,7 +8,11 @@ import {
   SwipeableDrawer,
 } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
-import { RoomContext, UserProfileContext } from "./contextProvider";
+import {
+  PlayersContext,
+  RoomContext,
+  UserProfileContext,
+} from "./contextProvider";
 import { DrawerContent } from "./drawerContent";
 import { GameCreate } from "./gameCreate";
 import { Chat } from "./chat";
@@ -18,6 +22,7 @@ import { SignUp } from "./signUp";
 export const BaseLayout = () => {
   const userProfile = useContext(UserProfileContext);
   const room = useContext(RoomContext);
+  const players = useContext(PlayersContext);
   const [open, setOpen] = useState(false);
 
   const handleDrawerOpen = () => {
@@ -62,6 +67,8 @@ export const BaseLayout = () => {
         <pre>{JSON.stringify(userProfile, null, 2)}</pre>
         room
         <pre>{JSON.stringify(room, null, 2)}</pre>
+        players
+        <pre>{JSON.stringify(players, null, 2)}</pre>
       </SwipeableDrawer>
       {router()}
     </>

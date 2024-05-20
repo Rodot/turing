@@ -1,13 +1,14 @@
 import React, { useContext, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
-import { RoomContext, UserContext } from "./contextProvider";
-import { formatUser } from "@/utils/user";
+import { PlayersContext, RoomContext, UserContext } from "./contextProvider";
+import { formatUser, playerName } from "@/utils/user";
 import { Box, Button, TextField } from "@mui/material";
 
 export const ChatInput: React.FC = () => {
   const [content, setContent] = useState("");
   const user = useContext(UserContext);
   const room = useContext(RoomContext);
+  const players = useContext(PlayersContext);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setContent(event.target.value);
@@ -18,7 +19,7 @@ export const ChatInput: React.FC = () => {
       const { data, error } = await supabase.from("messages").insert([
         {
           user_id: user?.id,
-          author: formatUser(user),
+          author: playerName(user?.id, players),
           room_id: room?.data?.id,
           content,
         },
@@ -50,10 +51,7 @@ export const ChatInput: React.FC = () => {
           value={content}
           onChange={handleInputChange}
           sx={{ flexGrow: 1, mr: 1 }}
-          label={formatUser(user)}
-          InputLabelProps={{
-            shrink: true,
-          }}
+          label={"Talk as " + playerName(user?.id, players)}
         />
         <Button type="submit" variant="contained" color="primary">
           Send

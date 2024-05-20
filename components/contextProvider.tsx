@@ -12,8 +12,10 @@ import { useRoomProfiles } from "@/hooks/useRoomProfiles";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import {
   MessageData,
+  PlayerData,
   ProfileData,
 } from "@/supabase/functions/_types/Database.type";
+import { usePlayers } from "@/hooks/usePlayers";
 
 // Create the context
 export const UserContext = createContext<User | null>(null);
@@ -21,6 +23,7 @@ export const UserProfileContext = createContext<ProfileData | null>(null);
 export const MessagesContext = createContext<MessageData[]>([]);
 export const RoomContext = createContext<Room | null>(null);
 export const RoomProfilesContext = createContext<ProfileData[]>([]);
+export const PlayersContext = createContext<PlayerData[]>([]);
 
 // Create the wrapper component
 export function ContextProvider({ children }: React.PropsWithChildren) {
@@ -28,6 +31,7 @@ export function ContextProvider({ children }: React.PropsWithChildren) {
   const userProfile = useUserProfile(user?.id ?? null);
   const room = useRoom(userProfile);
   const roomProfiles = useRoomProfiles(room?.data?.id ?? null);
+  const players = usePlayers(room ?? null);
   const messages = useMessages(room?.data?.id ?? null);
 
   return (
@@ -37,9 +41,11 @@ export function ContextProvider({ children }: React.PropsWithChildren) {
           <UserProfileContext.Provider value={userProfile}>
             <RoomContext.Provider value={room}>
               <RoomProfilesContext.Provider value={roomProfiles}>
-                <MessagesContext.Provider value={messages}>
-                  {children}
-                </MessagesContext.Provider>
+                <PlayersContext.Provider value={players}>
+                  <MessagesContext.Provider value={messages}>
+                    {children}
+                  </MessagesContext.Provider>
+                </PlayersContext.Provider>
               </RoomProfilesContext.Provider>
             </RoomContext.Provider>
           </UserProfileContext.Provider>
