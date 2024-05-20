@@ -34,8 +34,7 @@ Deno.serve(async (req) => {
     if (!profiles?.length) throw new Error("Room not found");
 
     const humanNumber = profiles.length;
-    const botNumber = profiles.length;
-    const playerNumber = humanNumber + botNumber;
+    const botNumber = humanNumber;
 
     const players: PlayerDataInsert[] = [];
 
@@ -76,10 +75,19 @@ Deno.serve(async (req) => {
     profiles.forEach((profile) => {
       players.push({
         user_id: profile.id,
-        name: popRandom(names) ?? "Player",
+        name: popRandom(names) ?? "Roberto",
         room_id: roomId,
       });
     });
+
+    // bot players
+    for (let i = 0; i < botNumber; i++) {
+      players.push({
+        user_id: null,
+        name: popRandom(names) ?? "Roberto",
+        room_id: roomId,
+      });
+    }
 
     // insert players
     await insertPlayers(supabase, players);
