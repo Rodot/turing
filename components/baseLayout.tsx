@@ -54,7 +54,7 @@ export const BaseLayout = () => {
             <MenuIcon />
           </IconButton>
           <Typography sx={{ flexGrow: "1" }}>The Turing Trial</Typography>
-          <Button color="secondary" href="https://betaLab.fr">
+          <Button color="secondary" href="https://betaLab.fr" target="_blank">
             By BetaLab.fr
           </Button>
         </Toolbar>
