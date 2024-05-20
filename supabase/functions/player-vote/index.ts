@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
       const looser = players.find(
         (player) => player.id === randomMostVotedPlayerId
       );
-      const message = `${looser?.name} was voted out! 💀`;
+      const message = `${looser?.name} was voted out! 💀💀💀`;
       await insertMessage(supabase, {
         author: "System",
         content: message,
@@ -90,7 +90,7 @@ Deno.serve(async (req) => {
         const winner = livingHumansAfter[0];
         if (!winner.user_id) throw new Error("Winner is not human");
         const winnerProfile = await fetchUserProfile(supabase, winner.user_id);
-        const message = `${livingHumansAfter[0].name} aka "${winnerProfile.name}" wins! 🏆`;
+        const message = `"${winnerProfile.name}" aka ${livingHumansAfter[0].name} wins! 🏆🏆🏆`;
         await insertMessage(supabase, {
           author: "System",
           content: message,
