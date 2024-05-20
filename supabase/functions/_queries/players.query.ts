@@ -22,10 +22,11 @@ export const insertPlayers = async (
   supabase: SupabaseClient,
   players: PlayerDataInsert[]
 ) => {
-  const insertMessageResponse = await supabase.from("messages").insert(players);
-  if (insertMessageResponse.error) {
+  const insertPlayerResponse = await supabase.from("players").insert(players);
+  if (insertPlayerResponse.error) {
+    console.log(insertPlayerResponse);
     throw new Error(
-      "Error inserting message: " + insertMessageResponse.error.message
+      "Error inserting player: " + insertPlayerResponse.error.message
     );
   }
 };

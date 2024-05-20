@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { PlayersContext, RoomContext, UserContext } from "./contextProvider";
-import { Box, Chip } from "@mui/material";
+import { Box, Chip, LinearProgress, Typography } from "@mui/material";
 import { updatePlayer } from "@/queries/db/players.query";
 import { supabase } from "@/utils/supabase/client";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
@@ -10,6 +10,8 @@ export const ChatVote: React.FC = () => {
   const room = useContext(RoomContext);
   const players = useContext(PlayersContext);
   const me = players?.find((player) => player.user_id === user?.id);
+  const numVotes = players?.filter((player) => player?.vote !== null).length;
+  const voteProgress = (100 * numVotes) / (players.length / 2 + 1);
 
   const vote = async (playerId: string) => {
     if (!me) return;
@@ -32,10 +34,15 @@ export const ChatVote: React.FC = () => {
         display: "flex",
         alignContent: "center",
         justifyContent: "center",
-        direction: "row",
+        flexDirection: "column",
         p: 1,
+        gap: 1,
       }}
     >
+      <Typography sx={{ textAlign: "center" }}>
+        {me?.vote ? "Waiting for others to vote" : "Vote to eliminate a human"}
+      </Typography>
+      <LinearProgress variant="determinate" value={voteProgress} />
       {players?.map((player) => (
         <Chip
           key={player.id}
