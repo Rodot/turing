@@ -51,7 +51,7 @@ export const SignUp: React.FC = () => {
         The Turing Trial
       </Typography>
 
-      <Typography>Will you know your friends from the AI?</Typography>
+      <Typography>Can you distinguish AIs from your friends?</Typography>
 
       <form onSubmit={signUp} style={{ width: "100%" }}>
         <Box
@@ -73,7 +73,7 @@ export const SignUp: React.FC = () => {
             variant="contained"
             disabled={loading || name.length < 3}
           >
-            Join
+            Play
             {loading && <Spinner />}
           </Button>
         </Box>

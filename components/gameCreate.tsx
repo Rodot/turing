@@ -29,7 +29,7 @@ export const GameCreate: React.FC = () => {
         The Turing Trial
       </Typography>
       <Button variant="contained" onClick={startNewGame} disabled={loading}>
-        Start New Game
+        New Game
         {loading && <Spinner />}
       </Button>
       <Typography sx={{ textAlign: "center" }}>

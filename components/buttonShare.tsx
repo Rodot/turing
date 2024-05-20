@@ -1,17 +1,17 @@
-"use client";
-
 import { Check, ContentCopy as ContentCopyIcon } from "@mui/icons-material";
-import { Button } from "@mui/material";
-import React, { useContext, useState } from "react";
-import { UserProfileContext } from "./contextProvider";
+import { Button, SxProps, Theme } from "@mui/material";
+import React, { useState } from "react";
 
-export const ButtonShare: React.FC = () => {
+interface Props {
+  url: string;
+  sx?: SxProps<Theme>;
+}
+
+export const ButtonShare: React.FC<Props> = ({ url: urlToCopy, sx }) => {
   const [clicked, setClicked] = useState(false);
-  const userProfile = useContext(UserProfileContext);
 
   const share = async () => {
-    const url = window.location.href + "?room=" + userProfile?.room_id;
-    await navigator.clipboard.writeText(url);
+    await navigator.clipboard.writeText(urlToCopy);
     setClicked(true);
     setTimeout(() => {
       setClicked(false);
@@ -19,9 +19,9 @@ export const ButtonShare: React.FC = () => {
   };
 
   return (
-    <Button onClick={share}>
+    <Button onClick={share} sx={sx}>
       {clicked ? <Check sx={{ mr: 1 }} /> : <ContentCopyIcon sx={{ mr: 1 }} />}
-      {clicked ? "Copied!" : "Copy Game Link"}
+      {clicked ? "Link Copied!" : "Copy Game Link"}
     </Button>
   );
 };
