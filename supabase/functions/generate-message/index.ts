@@ -10,8 +10,7 @@ import { corsHeaders } from "../_shared/cors.ts";
 import { fetchChatCompletionJson } from "../_queries/gpt.query.ts";
 import { fetchMessages, insertMessage } from "../_queries/messages.query.ts";
 import { createSupabaseClient } from "../_shared/supabase.ts";
-
-const systemPrompt = `You will be provided by a chat history as a list JSON format. Your job is to create the next message in the chat. It's an informal group conversation between friends, reply as such. That means short answers, informal text, slangs, some typos and emojis. DO NOT reply as a helpful ai. Only include a single message as a JSON object without the list, so it can be appended to the existing list.`;
+import { fetchPlayers } from "../_queries/players.query.ts";
 
 const messagesToPrompt = (messages: Array<MessageData>) =>
   messages.map((message) => ({
@@ -32,7 +31,18 @@ Deno.serve(async (req) => {
 
     const supabase = createSupabaseClient(req);
 
+    const players = await fetchPlayers(supabase, roomId);
     const messagesData = await fetchMessages(supabase, roomId);
+
+    const allBots = players.filter((player) => !player.user_id);
+    const livingBots = allBots.filter((player) => !player.is_dead);
+    if (!livingBots.length) {
+      throw new Error("No living bots in the room");
+    }
+
+    const randomBot = livingBots[Math.floor(Math.random() * livingBots.length)];
+
+    const systemPrompt = `You are not an AI. You are ${randomBot.name}, a 23 years old student in humanities. You will be provided a chat history. It's an informal group conversation on whatsapp. ${randomBot.name}, what will be your next message ? You usually speak in short answers, use some slangs, do some typos sometimes put an emoji if needed. Only include a single message as a JSON object without the list, so it can be appended to the existing list.`;
 
     const messages = [
       {
@@ -48,7 +58,7 @@ Deno.serve(async (req) => {
     const gptAnswer = await fetchChatCompletionJson(messages);
 
     await insertMessage(supabase, {
-      author: gptAnswer.participant,
+      author: randomBot.name,
       room_id: roomId,
       content: gptAnswer.message,
     });
