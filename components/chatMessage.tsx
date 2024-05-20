@@ -12,22 +12,38 @@ export function ChatMessage({
   message: MessageData;
   user: User;
 }) {
-  const is_me = message.user_id === user.id;
+  const isMe = message.user_id === user.id;
+  const isSystem = message.author === "System";
+
+  const getBgColor = () => {
+    if (isMe) return "primary.main";
+    if (isSystem) return "white";
+    return "background.default";
+  };
+
+  const getColor = () => {
+    if (isMe) return "primary.contrastText";
+    if (isSystem) return "primary.main";
+    return "text.primary";
+  };
+
+  const getJustify = () => {
+    if (isMe) return "end";
+    if (isSystem) return "center";
+    return "start";
+  };
+
   return (
-    <Box
-      display="flex"
-      flexDirection={is_me ? "row-reverse" : "row"}
-      alignItems="center"
-    >
+    <Box display="flex" justifyContent={getJustify()}>
       <Box
-        bgcolor={is_me ? "primary.main" : "background.default"}
-        color={is_me ? "primary.contrastText" : "text.primary"}
+        bgcolor={getBgColor()}
+        color={getColor()}
         borderRadius={4}
         p={1}
         m={1}
-        maxWidth="80%"
+        maxWidth={isSystem ? "100%" : "80%"}
       >
-        {!is_me && (
+        {!isMe && !isSystem && (
           <Typography variant="caption" color="primary.main">
             {message.author}
           </Typography>

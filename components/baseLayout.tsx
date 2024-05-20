@@ -6,6 +6,7 @@ import {
   Typography,
   IconButton,
   SwipeableDrawer,
+  Button,
 } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import {
@@ -18,11 +19,11 @@ import { GameCreate } from "./gameCreate";
 import { Chat } from "./chat";
 import { Lobby } from "./lobby";
 import { SignUp } from "./signUp";
+import { ButtonLeaveGame } from "./buttonLeaveGame";
 
 export const BaseLayout = () => {
   const userProfile = useContext(UserProfileContext);
   const room = useContext(RoomContext);
-  const players = useContext(PlayersContext);
   const [open, setOpen] = useState(false);
 
   const handleDrawerOpen = () => {
@@ -52,7 +53,10 @@ export const BaseLayout = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography>{userProfile?.name}</Typography>
+          <Typography sx={{ flexGrow: "1" }}>The Turing Trial</Typography>
+          <Button color="secondary" href="https://betaLab.fr">
+            By BetaLab.fr
+          </Button>
         </Toolbar>
       </AppBar>
       <Toolbar /> {/* empty toolbar to avoid covering page content */}
@@ -63,12 +67,7 @@ export const BaseLayout = () => {
         open={open}
       >
         <DrawerContent onCloseButtonClick={handleDrawerClose} />
-        userProfile
-        <pre>{JSON.stringify(userProfile, null, 2)}</pre>
-        room
-        <pre>{JSON.stringify(room, null, 2)}</pre>
-        players
-        <pre>{JSON.stringify(players, null, 2)}</pre>
+        <ButtonLeaveGame />
       </SwipeableDrawer>
       {router()}
     </>

@@ -25,10 +25,15 @@ export const GameCreate: React.FC = () => {
         p: 2,
       }}
     >
-      <Typography variant="h4" color="primary">
-        The Turing Trial
+      <Typography variant="h4" color="primary" fontWeight={900}>
+        The Turing <strong>Trial</strong>
       </Typography>
-      <Button variant="contained" onClick={startNewGame} disabled={loading}>
+      <Button
+        color="secondary"
+        variant="contained"
+        onClick={startNewGame}
+        disabled={loading}
+      >
         New Game
         {loading && <Spinner />}
       </Button>

@@ -6,6 +6,7 @@ import { CircularProgress } from "@mui/material";
 export const Spinner: React.FC = () => {
   return (
     <CircularProgress
+      color="secondary"
       size={24}
       sx={{
         position: "absolute",

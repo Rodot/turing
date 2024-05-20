@@ -11,7 +11,11 @@ import {
   updatePlayer,
   updateRoomPlayers,
 } from "../_queries/players.query.ts";
-import { fetchUserProfile } from "../_queries/profiles.query.ts";
+import { updateRoom } from "../_queries/room.query.ts";
+import {
+  fetchRoomProfiles,
+  fetchUserProfile,
+} from "../_queries/profiles.query.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { createSupabaseClient } from "../_shared/supabase.ts";
 
@@ -21,14 +25,20 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { roomId, playerId, vote } = await req.json();
+    const { roomId, playerId, vote } = (await req.json()) as {
+      roomId: string;
+      playerId: string;
+      vote: string;
+    };
     if (!roomId) throw new Error("Missing roomId");
     if (!playerId) throw new Error("Missing playerId");
     if (!vote) throw new Error("Missing vote");
 
     const supabase = createSupabaseClient(req);
 
+    // Apply player vote
     await updatePlayer(supabase, { id: playerId, room_id: roomId, vote });
+    const profiles = await fetchRoomProfiles(supabase, roomId);
     const players = await fetchPlayers(supabase, roomId);
     const numVotes = players.filter((player) => player.vote).length;
     const numLivingHumans = players
@@ -37,6 +47,8 @@ Deno.serve(async (req) => {
 
     // All players have voted
     if (numVotes >= numLivingHumans) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Find the most voted player
       const votes = players.reduce((acc, player) => {
         if (!player.vote) return acc;
@@ -67,10 +79,20 @@ Deno.serve(async (req) => {
       });
 
       // Post message in chat
+      let message = "";
       const looser = players.find(
         (player) => player.id === randomMostVotedPlayerId
       );
-      const message = `${looser?.name} was voted out! 💀💀💀`;
+      if (looser?.user_id) {
+        // it was a human
+        const looserProfile = profiles.find(
+          (profile) => profile.id === looser?.user_id
+        );
+        message = `${looser?.name} (${looserProfile?.name}) was voted out! 💀`;
+      } else {
+        // it was a bot
+        message = `${looser?.name} was voted out, but it was an AI! 💀`;
+      }
       await insertMessage(supabase, {
         author: "System",
         content: message,
@@ -86,16 +108,33 @@ Deno.serve(async (req) => {
         .filter((player) => !player.is_dead);
 
       // Game over
-      if (livingHumansAfter.length === 1) {
-        const winner = livingHumansAfter[0];
-        if (!winner.user_id) throw new Error("Winner is not human");
-        const winnerProfile = await fetchUserProfile(supabase, winner.user_id);
-        const message = `"${winnerProfile.name}" aka ${livingHumansAfter[0].name} wins! 🏆🏆🏆`;
-        await insertMessage(supabase, {
-          author: "System",
-          content: message,
-          room_id: roomId,
-        });
+      if (livingHumansAfter.length <= 1) {
+        if (livingHumansAfter.length === 1) {
+          // One human winner
+          const winner = livingHumansAfter[0];
+          if (!winner.user_id) throw new Error("Winner is not human");
+          const winnerProfile = await fetchUserProfile(
+            supabase,
+            winner.user_id
+          );
+          const message = `${livingHumansAfter[0].name} (${winnerProfile.name}) won! 🏆`;
+          await insertMessage(supabase, {
+            author: "System",
+            content: message,
+            room_id: roomId,
+          });
+        } else {
+          // No human left
+          const message = "All humans are gone! 🤖🤖🤖";
+          await insertMessage(supabase, {
+            author: "System",
+            content: message,
+            room_id: roomId,
+          });
+        }
+
+        // Reset game
+        await updateRoom(supabase, roomId, { status: "over" });
       }
     }
 

@@ -21,7 +21,7 @@ export const ChatInput: React.FC = () => {
           user_id: user?.id,
           author: playerName(user?.id, players),
           room_id: room?.data?.id,
-          content,
+          content: content.toLowerCase(),
         },
       ]);
       if (error) {
@@ -53,7 +53,7 @@ export const ChatInput: React.FC = () => {
           sx={{ flexGrow: 1, mr: 1 }}
           label={"Talk as " + playerName(user?.id, players)}
         />
-        <Button type="submit" variant="contained" color="primary">
+        <Button type="submit" variant="contained" color="secondary">
           Send
         </Button>
       </Box>

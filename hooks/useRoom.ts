@@ -84,7 +84,7 @@ export function useRoom(userProfile: ProfileData | null): Room | null {
   const leaveRoom = async () => {
     console.log("Leaving room", userProfile?.id);
     if (!userProfile?.id) return;
-    removeProfileFromRoom(supabase, userProfile?.id);
+    await removeProfileFromRoom(supabase, userProfile?.id);
   };
 
   const startGame = async () => {

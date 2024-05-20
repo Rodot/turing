@@ -47,8 +47,8 @@ export const SignUp: React.FC = () => {
         p: 2,
       }}
     >
-      <Typography variant="h4" color="primary">
-        The Turing Trial
+      <Typography variant="h4" color="primary" fontWeight={900}>
+        The Turing <strong>Trial</strong>
       </Typography>
 
       <Typography>Can you distinguish AIs from your friends?</Typography>
@@ -66,11 +66,13 @@ export const SignUp: React.FC = () => {
             label="Name"
             value={name}
             onChange={(e: any) => setName(e.target.value)}
+            sx={{ mr: 1 }}
           />
 
           <Button
             type="submit"
             variant="contained"
+            color="secondary"
             disabled={loading || name.length < 3}
           >
             Play

@@ -8,9 +8,9 @@ import {
   UserContext,
 } from "./contextProvider";
 import { ButtonShare } from "./buttonShare";
-import { Logout } from "@mui/icons-material";
 import { Spinner } from "./spinner";
 import QRCode from "react-qr-code";
+import { ButtonLeaveGame } from "./buttonLeaveGame";
 
 export const Lobby: React.FC = () => {
   const user = useContext(UserContext);
@@ -24,11 +24,6 @@ export const Lobby: React.FC = () => {
   const startGame = async () => {
     setLoading(true);
     room?.startGame();
-  };
-
-  const leaveGame = async () => {
-    setLoading(true);
-    room?.leaveRoom();
   };
 
   useEffect(() => {
@@ -46,23 +41,23 @@ export const Lobby: React.FC = () => {
         p: 2,
       }}
     >
-      <Typography variant="h4" color="primary">
-        Invite players
+      <Typography variant="h4" color="primary" fontWeight={900}>
+        Invite <strong>humans</strong>
       </Typography>
       <Typography sx={{ textAlign: "center" }}>
-        Ask players to scan the QR or send them the game link
+        Ask players to scan the QR or send them the link
       </Typography>
 
       <QRCode size={150} value={url} />
       <ButtonShare url={url} sx={{ mb: 4 }} />
 
-      <Typography variant="h4" color="primary">
+      <Typography variant="h4" color="primary" fontWeight={900}>
         {isHost ? "Ready?" : "Get ready..."}
       </Typography>
 
       <Typography>
         {isHost
-          ? "Star the game once all players are here"
+          ? "Start once all players are here"
           : `Wait for ${roomProfiles?.[0]?.name} to start the game`}
       </Typography>
       <Box
@@ -81,21 +76,18 @@ export const Lobby: React.FC = () => {
       </Box>
 
       {isHost && (
-        <Button variant="contained" onClick={startGame} disabled={loading}>
+        <Button
+          color="secondary"
+          variant="contained"
+          onClick={startGame}
+          disabled={loading}
+        >
           Start Game
           {loading && <Spinner />}
         </Button>
       )}
 
-      <Button
-        color="error"
-        onClick={leaveGame}
-        disabled={loading}
-        sx={{ mt: 4 }}
-      >
-        <Logout sx={{ mr: 1 }} />
-        Leave Game
-      </Button>
+      <ButtonLeaveGame sx={{ mt: 4 }} />
     </Container>
   );
 };

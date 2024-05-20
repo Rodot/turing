@@ -1,3 +1,4 @@
+import { CssBaseline, GlobalStyles } from "@mui/material";
 import React from "react";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -17,6 +18,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <CssBaseline />
+      <GlobalStyles
+        styles={{ strong: { color: "#f50057", fontWeight: 900 } }}
+      />
       <body style={{ margin: 0 }}>{children}</body>
     </html>
   );

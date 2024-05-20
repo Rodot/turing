@@ -52,12 +52,16 @@ export const ChatVote: React.FC = () => {
       <Typography sx={{ textAlign: "center" }}>
         {me?.vote ? "Waiting for others to vote" : "Vote to eliminate a human"}
       </Typography>
-      <LinearProgress variant="determinate" value={voteProgress} />
+      <LinearProgress
+        color="secondary"
+        variant="determinate"
+        value={voteProgress}
+      />
       {players?.map((player) => (
         <Chip
           key={player.id}
           label={chipLabel(player)}
-          color={me?.vote === player.id ? "primary" : "default"}
+          color={me?.vote === player.id ? "secondary" : "default"}
           onClick={() => vote(player.id)}
           disabled={!!me?.vote || player.is_dead}
         />

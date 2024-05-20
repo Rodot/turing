@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
 
     const randomBot = livingBots[Math.floor(Math.random() * livingBots.length)];
 
-    const systemPrompt = `You are not an AI. You are ${randomBot.name}, a 23 years old student in humanities. You will be provided a chat history. It's an informal group conversation on whatsapp. ${randomBot.name}, what will be your next message ? You usually speak in short answers, use some slangs, do some typos sometimes put an emoji if needed. Only include a single message as a JSON object without the list, so it can be appended to the existing list.`;
+    const systemPrompt = `You are not an AI. You are ${randomBot.name}, a 14 years old filthy teenager. You will be provided a chat history. It's an informal group conversation on whatsapp. You usually speak in short answers, use slangs, have a broken english like a foreigner who's learning, and do a least one grammar mistake or typo per answer. You don't use emojis. ${randomBot.name}, what will be your next message ? Only include a single message as a JSON object without the list, so it can be appended to the existing list.`;
 
     const messages = [
       {
@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
     await insertMessage(supabase, {
       author: randomBot.name,
       room_id: roomId,
-      content: gptAnswer.message,
+      content: gptAnswer.message.toLowerCase(),
     });
 
     const data = {};

@@ -75,7 +75,7 @@ Deno.serve(async (req) => {
     profiles.forEach((profile) => {
       players.push({
         user_id: profile.id,
-        name: popRandom(names) ?? "Roberto",
+        name: popRandom(names) ?? "No Name",
         room_id: roomId,
       });
     });
@@ -84,7 +84,7 @@ Deno.serve(async (req) => {
     for (let i = 0; i < botNumber; i++) {
       players.push({
         user_id: null,
-        name: popRandom(names) ?? "Roberto",
+        name: popRandom(names) ?? "No Name",
         room_id: roomId,
       });
     }
@@ -93,7 +93,7 @@ Deno.serve(async (req) => {
     await insertPlayers(supabase, players);
 
     // start the game
-    const newRoom = { ...room, status: "started" };
+    const newRoom = { ...room, status: "playing" };
     console.log("newRoom", newRoom);
     await updateRoom(supabase, roomId, newRoom);
 
