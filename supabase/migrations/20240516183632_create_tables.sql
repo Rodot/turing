@@ -20,6 +20,21 @@ CREATE TABLE public.profiles(
 ALTER publication supabase_realtime
     ADD TABLE public.profiles;
 
+-- players
+CREATE TABLE public.players(
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    room_id uuid NOT NULL REFERENCES public.rooms ON DELETE CASCADE,
+    user_id uuid REFERENCES auth.users ON DELETE CASCADE,
+    vote uuid REFERENCES public.players ON DELETE SET NULL,
+    is_dead boolean DEFAULT FALSE,
+    name text
+);
+
+ALTER publication supabase_realtime
+    ADD TABLE public.players;
+
 -- messages
 CREATE TABLE public.messages(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
