@@ -18,7 +18,6 @@ export function usePlayers(room: Room | null) {
       const newPlayers = await fetchPlayers(supabase, room?.data?.id);
       newPlayers.sort((a, b) => a.name.localeCompare(b.name));
       setPlayers(newPlayers ?? []);
-      console.log("Players updated", newPlayers.map((p) => p.name).join(", "));
     };
 
     updatePlayers();

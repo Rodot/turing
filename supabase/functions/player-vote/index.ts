@@ -109,23 +109,14 @@ Deno.serve(async (req) => {
 
       // Game over
       if (livingHumansAfter.length <= 1) {
-        if (livingHumansAfter.length === 1) {
-          // One human winner
-          const winner = livingHumansAfter[0];
-          if (!winner.user_id) throw new Error("Winner is not human");
+        // Announce winner
+        const winner = livingHumansAfter?.[0];
+        if (winner?.user_id) {
           const winnerProfile = await fetchUserProfile(
             supabase,
             winner.user_id
           );
-          const message = `${livingHumansAfter[0].name} (${winnerProfile.name}) won! 🏆`;
-          await insertMessage(supabase, {
-            author: "System",
-            content: message,
-            room_id: roomId,
-          });
-        } else {
-          // No human left
-          const message = "All humans are gone! 🤖🤖🤖";
+          const message = `${winner.name} (${winnerProfile.name}) won! 🏆`;
           await insertMessage(supabase, {
             author: "System",
             content: message,

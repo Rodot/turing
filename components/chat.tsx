@@ -37,7 +37,6 @@ export const Chat: React.FC = () => {
           <ChatVote />
         </>
       )}
-      {gameOver && <ChatInput />}
       {gameOver && <ButtonLeaveGame sx={{ mt: 4 }} />}
       <Button sx={{ mt: 8 }} variant="contained" onClick={callEdgeFunction}>
         +
