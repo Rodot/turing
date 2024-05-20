@@ -87,7 +87,12 @@ export const Lobby: React.FC = () => {
         </Button>
       )}
 
-      <Button color="error" onClick={leaveGame} disabled={loading}>
+      <Button
+        color="error"
+        onClick={leaveGame}
+        disabled={loading}
+        sx={{ mt: 4 }}
+      >
         <Logout sx={{ mr: 1 }} />
         Leave Game
       </Button>
