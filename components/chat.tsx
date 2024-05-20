@@ -5,6 +5,7 @@ import { Button, Container } from "@mui/material";
 import { RoomContext } from "./contextProvider";
 import { supabase } from "@/utils/supabase/client";
 import { generateMessageFunction } from "@/queries/functions/functions.query";
+import { ChatVote } from "./chatVotes";
 
 export const Chat: React.FC = () => {
   const room = useContext(RoomContext);
@@ -18,6 +19,7 @@ export const Chat: React.FC = () => {
     <Container maxWidth="sm">
       <ChatHistory />
       <ChatInput />
+      <ChatVote />
       <Button variant="contained" onClick={callEdgeFunction}>
         +
       </Button>

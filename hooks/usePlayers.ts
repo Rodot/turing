@@ -16,8 +16,9 @@ export function usePlayers(room: Room | null) {
         return;
       }
       const newPlayers = await fetchPlayers(supabase, room?.data?.id);
-      console.log("Players updated", newPlayers.map((p) => p.name).join(", "));
+      newPlayers.sort((a, b) => a.name.localeCompare(b.name));
       setPlayers(newPlayers ?? []);
+      console.log("Players updated", newPlayers.map((p) => p.name).join(", "));
     };
 
     updatePlayers();
@@ -32,10 +33,12 @@ export function usePlayers(room: Room | null) {
         {
           event: "*",
           schema: "public",
-          table: "profiles",
+          table: "players",
           filter: "room_id=eq." + room?.data?.id,
         },
-        () => updatePlayers()
+        () => {
+          updatePlayers();
+        }
       )
       .subscribe();
 

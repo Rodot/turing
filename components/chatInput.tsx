@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { PlayersContext, RoomContext, UserContext } from "./contextProvider";
-import { formatUser, playerName } from "@/utils/user";
+import { playerName } from "@/utils/user";
 import { Box, Button, TextField } from "@mui/material";
 
 export const ChatInput: React.FC = () => {

@@ -32,3 +32,17 @@ export const insertPlayers = async (
     );
   }
 };
+
+export const updatePlayer = async (
+  supabase: SupabaseClient,
+  player: Partial<PlayerData> & { id: string }
+) => {
+  const updateResponse = await supabase
+    .from("players")
+    .update(player)
+    .eq("id", player.id);
+
+  if (updateResponse.error) {
+    throw new Error("Error updating player: " + updateResponse.error.message);
+  }
+};

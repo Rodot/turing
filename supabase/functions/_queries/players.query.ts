@@ -5,13 +5,16 @@ export const fetchPlayers = async (
   supabase: SupabaseClient,
   roomId: string
 ) => {
-  const req = await supabase.from("players").select("*").eq("room_id", roomId);
+  const { data, error } = await supabase
+    .from("players")
+    .select("*")
+    .eq("room_id", roomId);
 
-  if (req.error) {
-    console.error("Error fetching players:", req.error);
+  if (error) {
+    console.error("Error fetching players:", error);
     return [];
   } else {
-    return req.data as PlayerData[];
+    return data as PlayerData[];
   }
 };
 
@@ -19,8 +22,24 @@ export const insertPlayers = async (
   supabase: SupabaseClient,
   players: PlayerDataInsert[]
 ) => {
-  const req = await supabase.from("players").insert(players);
-  if (req.error) {
-    throw new Error("Error inserting message: " + req.error.message);
+  const insertMessageResponse = await supabase.from("messages").insert(players);
+  if (insertMessageResponse.error) {
+    throw new Error(
+      "Error inserting message: " + insertMessageResponse.error.message
+    );
+  }
+};
+
+export const updatePlayer = async (
+  supabase: SupabaseClient,
+  player: Partial<PlayerData> & { id: string }
+) => {
+  const updateResponse = await supabase
+    .from("players")
+    .update(player)
+    .eq("id", player.id);
+
+  if (updateResponse.error) {
+    throw new Error("Error updating player: " + updateResponse.error.message);
   }
 };
