@@ -1,7 +1,8 @@
 -- rooms
 CREATE TABLE public.rooms(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    status text DEFAULT 'lobby' ::text
+    status text DEFAULT 'lobby' ::text,
+    next_player_id uuid
 );
 
 ALTER publication supabase_realtime
@@ -40,8 +41,9 @@ CREATE TABLE public.messages(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     created_at timestamp with time zone DEFAULT now(),
     room_id uuid NOT NULL REFERENCES public.rooms ON DELETE CASCADE,
+    user_id uuid REFERENCES auth.users ON DELETE SET NULL,
+    player_id uuid REFERENCES public.players ON DELETE SET NULL,
     author text,
-    user_id text,
     content text
 );
 

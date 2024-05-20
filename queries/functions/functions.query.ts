@@ -1,3 +1,4 @@
+import { MessageData } from "@/supabase/functions/_types/Database.type";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export const generateMessageFunction = async (
@@ -33,4 +34,11 @@ export const playerVoteFunction = async (
   }
 ) => {
   supabase.functions.invoke("player-vote", { body: params });
+};
+
+export const postMessageFunction = async (
+  supabase: SupabaseClient,
+  message: Partial<MessageData>
+) => {
+  supabase.functions.invoke("post-message", { body: message });
 };

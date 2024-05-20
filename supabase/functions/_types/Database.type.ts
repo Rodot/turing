@@ -1,9 +1,10 @@
 export type MessageData = {
   id: number;
   user_id: string;
+  player_id: string;
+  room_id: string;
   author: string;
   content: string;
-  room_id: string;
 };
 
 export type ProfileData = {

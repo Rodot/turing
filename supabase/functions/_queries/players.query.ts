@@ -1,5 +1,6 @@
 import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2/dist/module/index.js";
 import { PlayerData, PlayerDataInsert } from "../_types/Database.type.ts";
+
 export const fetchPlayers = async (
   supabase: SupabaseClient,
   roomId: string
@@ -31,7 +32,7 @@ export const insertPlayers = async (
 
 export const updatePlayer = async (
   supabase: SupabaseClient,
-  player: Partial<PlayerData> & { id: string }
+  player: Partial<PlayerData>
 ) => {
   const updateResponse = await supabase
     .from("players")
@@ -45,7 +46,7 @@ export const updatePlayer = async (
 
 export const updateRoomPlayers = async (
   supabase: SupabaseClient,
-  player: Partial<PlayerData> & { room_id: string }
+  player: Partial<PlayerData>
 ) => {
   const updateResponse = await supabase
     .from("players")

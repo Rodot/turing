@@ -1,3 +1,4 @@
+import { MessageData } from "@/supabase/functions/_types/Database.type";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export const fetchMessages = async (
@@ -13,17 +14,13 @@ export const fetchMessages = async (
     console.error("Error fetching messages:", error);
     return [];
   } else {
-    return data;
+    return data as MessageData[];
   }
 };
 
 export const insertMessage = async (
   supabase: SupabaseClient,
-  message: {
-    author: string;
-    room_id: string;
-    content: string;
-  }
+  message: Partial<MessageData>
 ) => {
   const insertMessageResponse = await supabase
     .from("messages")

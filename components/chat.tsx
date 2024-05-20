@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
-import { Button, Container, Typography } from "@mui/material";
+import { Button, Container } from "@mui/material";
 import { PlayersContext, RoomContext, UserContext } from "./contextProvider";
 import { supabase } from "@/utils/supabase/client";
 import { generateMessageFunction } from "@/queries/functions/functions.query";

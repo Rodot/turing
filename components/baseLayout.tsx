@@ -9,11 +9,7 @@ import {
   Button,
 } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
-import {
-  PlayersContext,
-  RoomContext,
-  UserProfileContext,
-} from "./contextProvider";
+import { RoomContext, UserProfileContext } from "./contextProvider";
 import { DrawerContent } from "./drawerContent";
 import { GameCreate } from "./gameCreate";
 import { Chat } from "./chat";

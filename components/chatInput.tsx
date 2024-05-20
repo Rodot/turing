@@ -3,12 +3,14 @@ import { supabase } from "@/utils/supabase/client";
 import { PlayersContext, RoomContext, UserContext } from "./contextProvider";
 import { playerName } from "@/utils/user";
 import { Box, Button, TextField } from "@mui/material";
+import { postMessageFunction } from "@/queries/functions/functions.query";
 
 export const ChatInput: React.FC = () => {
   const [content, setContent] = useState("");
   const user = useContext(UserContext);
   const room = useContext(RoomContext);
   const players = useContext(PlayersContext);
+  const player = players.find((player) => player.user_id === user?.id);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setContent(event.target.value);
@@ -16,17 +18,13 @@ export const ChatInput: React.FC = () => {
 
   const sendMessage = async () => {
     if (content.trim() !== "") {
-      const { data, error } = await supabase.from("messages").insert([
-        {
-          user_id: user?.id,
-          author: playerName(user?.id, players),
-          room_id: room?.data?.id,
-          content: content.toLowerCase(),
-        },
-      ]);
-      if (error) {
-        throw error;
-      }
+      postMessageFunction(supabase, {
+        room_id: room?.data?.id,
+        user_id: user?.id,
+        player_id: player?.id,
+        author: player?.name,
+        content: content.toLowerCase(),
+      });
       setContent("");
     }
   };
