@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import {
   List,
   ListItem,
@@ -7,7 +7,6 @@ import {
   ListItemButton,
 } from "@mui/material";
 import { ChevronLeft as ChevronLeftIcon } from "@mui/icons-material";
-import { RoomContext } from "./contextProvider";
 
 interface DrawerContentProps {
   onCloseButtonClick: () => void;
