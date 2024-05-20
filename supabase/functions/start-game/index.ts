@@ -8,9 +8,10 @@
 import { insertPlayers } from "../_queries/players.query.ts";
 import { fetchRoomProfiles } from "../_queries/profiles.query.ts";
 import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
+import { nextChatTurn } from "../_shared/chat.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { createSupabaseClient } from "../_shared/supabase.ts";
-import { PlayerData, PlayerDataInsert } from "../_types/Database.type.ts";
+import { PlayerDataInsert } from "../_types/Database.type.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -96,6 +97,8 @@ Deno.serve(async (req) => {
     const newRoom = { ...room, status: "playing" };
     console.log("newRoom", newRoom);
     await updateRoom(supabase, roomId, newRoom);
+
+    await nextChatTurn(supabase, roomId);
 
     const data = {};
 

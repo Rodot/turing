@@ -5,18 +5,12 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
-import { MessageData } from "../_types/Database.type.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { fetchChatCompletionJson } from "../_queries/gpt.query.ts";
 import { fetchMessages, insertMessage } from "../_queries/messages.query.ts";
 import { createSupabaseClient } from "../_shared/supabase.ts";
 import { fetchPlayers } from "../_queries/players.query.ts";
-
-const messagesToPrompt = (messages: Array<MessageData>) =>
-  messages.map((message) => ({
-    participant: message.author,
-    message: message.content,
-  }));
+import { promptForNextMessage } from "../_shared/prompts.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -40,25 +34,15 @@ Deno.serve(async (req) => {
       throw new Error("No living bots in the room");
     }
 
-    const randomBot = livingBots[Math.floor(Math.random() * livingBots.length)];
+    const randomLivingBot =
+      livingBots[Math.floor(Math.random() * livingBots.length)];
 
-    const systemPrompt = `You are not an AI. You are ${randomBot.name}, a 14 years old filthy teenager. You will be provided a chat history. It's an informal group conversation on whatsapp. You usually speak in short answers, use slangs, have a broken english like a foreigner who's learning, and do a least one grammar mistake or typo per answer. You don't use emojis. ${randomBot.name}, what will be your next message ? Only include a single message as a JSON object without the list, so it can be appended to the existing list.`;
-
-    const messages = [
-      {
-        role: "system",
-        content: systemPrompt,
-      },
-      {
-        role: "user",
-        content: JSON.stringify(messagesToPrompt(messagesData)),
-      },
-    ];
+    const messages = promptForNextMessage(randomLivingBot.name, messagesData);
 
     const gptAnswer = await fetchChatCompletionJson(messages);
 
     await insertMessage(supabase, {
-      author: randomBot.name,
+      author: randomLivingBot.name,
       room_id: roomId,
       content: gptAnswer.message.toLowerCase(),
     });

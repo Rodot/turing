@@ -63,7 +63,11 @@ export const BaseLayout = () => {
         open={open}
       >
         <DrawerContent onCloseButtonClick={handleDrawerClose} />
-        <ButtonLeaveGame />
+        <ButtonLeaveGame sx={{ mb: 16 }} />
+        room
+        <pre>{JSON.stringify(room, null, 2)}</pre>
+        userProfile
+        <pre>{JSON.stringify(userProfile, null, 2)}</pre>
       </SwipeableDrawer>
       {router()}
     </>

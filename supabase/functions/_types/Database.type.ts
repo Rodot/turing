@@ -1,5 +1,6 @@
 export type MessageData = {
   id: number;
+  created_at: string;
   user_id: string;
   player_id: string;
   room_id: string;
@@ -18,6 +19,7 @@ export type ProfileData = {
 export type RoomData = {
   id: string;
   status: string;
+  next_player_id: string | null;
 };
 
 export type PlayerData = {

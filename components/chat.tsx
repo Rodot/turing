@@ -12,8 +12,13 @@ export const Chat: React.FC = () => {
   const user = useContext(UserContext);
   const room = useContext(RoomContext);
   const players = useContext(PlayersContext);
-  const me = players?.find((player) => player.user_id === user?.id);
+
+  const player = players?.find((player) => player.user_id === user?.id);
   const gameOver = room?.data?.status === "over";
+  const canTalk =
+    !player?.is_dead && !gameOver && room?.data?.status === "playing";
+  const canVote =
+    !player?.is_dead && !gameOver && room?.data?.status === "voting";
 
   const callEdgeFunction = async () => {
     if (!room?.data?.id) return;
@@ -31,12 +36,8 @@ export const Chat: React.FC = () => {
       }}
     >
       <ChatHistory />
-      {!me?.is_dead && !gameOver && (
-        <>
-          <ChatInput />
-          <ChatVote />
-        </>
-      )}
+      {canTalk && <ChatInput />}
+      {canVote && <ChatVote />}
       {gameOver && <ButtonLeaveGame sx={{ mt: 4 }} />}
       <Button sx={{ mt: 8 }} variant="contained" onClick={callEdgeFunction}>
         +

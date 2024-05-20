@@ -10,7 +10,9 @@ export const ChatInput: React.FC = () => {
   const user = useContext(UserContext);
   const room = useContext(RoomContext);
   const players = useContext(PlayersContext);
+
   const player = players.find((player) => player.user_id === user?.id);
+  const myTurnToTalk = room?.data?.next_player_id === player?.id;
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setContent(event.target.value);
@@ -51,7 +53,12 @@ export const ChatInput: React.FC = () => {
           sx={{ flexGrow: 1, mr: 1 }}
           label={"Talk as " + playerName(user?.id, players)}
         />
-        <Button type="submit" variant="contained" color="secondary">
+        <Button
+          type="submit"
+          variant="contained"
+          color="secondary"
+          disabled={!myTurnToTalk}
+        >
           Send
         </Button>
       </Box>
