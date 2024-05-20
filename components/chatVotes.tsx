@@ -49,6 +49,7 @@ export const ChatVote: React.FC = () => {
           label={chipLabel(player)}
           color={me?.vote === player.id ? "primary" : "default"}
           onClick={() => vote(player.id)}
+          disabled={!!me?.vote}
         />
       ))}
     </Box>
