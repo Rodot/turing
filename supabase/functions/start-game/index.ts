@@ -95,7 +95,6 @@ Deno.serve(async (req) => {
 
     // start the game
     const newRoom = { ...room, status: "playing" };
-    console.log("newRoom", newRoom);
     await updateRoom(supabase, roomId, newRoom);
 
     await nextChatTurn(supabase, roomId);

@@ -14,8 +14,9 @@ export const fetchChatCompletionJson = async (
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
         response_format: { type: "json_object" },
+        frequency_penalty: 2.0,
+        temperature: 1.5,
         messages,
-        temperature: 0.7,
       }),
     }
   );

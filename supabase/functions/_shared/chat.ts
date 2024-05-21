@@ -25,13 +25,9 @@ export const getPlayerWithOlderMessage = (
     }
   }
 
-  console.log("player age", mostRecentMessageIndexPerPlayer);
-
   const oldestIndex = Math.min(
     ...Object.values(mostRecentMessageIndexPerPlayer)
   );
-
-  console.log("oldest index", oldestIndex);
 
   const oldestPlayersIds = Object.entries(mostRecentMessageIndexPerPlayer)
     .filter(([_, index]) => index === oldestIndex)
@@ -57,7 +53,6 @@ export const nextChatTurn = async (
     if (!players || !messages) {
       throw new Error("Failed to fetch players or messages");
     }
-    console.log("messages", messages);
     const livingPlayers = players.filter((player) => !player.is_dead);
     const nextPlayer = getPlayerWithOlderMessage(livingPlayers, messages);
     await updateRoom(supabase, room_id, { next_player_id: nextPlayer.id });

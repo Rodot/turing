@@ -30,7 +30,6 @@ Deno.serve(async (req) => {
     await updateRoom(supabase, message.room_id, { next_player_id: null });
     await insertMessage(supabase, message);
 
-    console.log("Message inserted", message);
     await nextChatTurn(supabase, message.room_id);
 
     const data = {};
