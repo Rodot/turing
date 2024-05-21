@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import {
+  MessagesContext,
   PlayersContext,
   RoomContext,
   RoomProfilesContext,
@@ -24,6 +25,7 @@ export const Chat: React.FC = () => {
   const user = useContext(UserContext);
   const room = useContext(RoomContext);
   const players = useContext(PlayersContext);
+  const messages = useContext(MessagesContext);
   const roomProfiles = useContext(RoomProfilesContext);
 
   const player = players?.find((player) => player.user_id === user?.id);
@@ -37,7 +39,7 @@ export const Chat: React.FC = () => {
   return (
     <Container
       sx={{
-        maxWidth: "sm",
+        maxWidth: "720px!important",
         display: "flex",
         flexDirection: "column",
         height: "100vh",
@@ -55,7 +57,11 @@ export const Chat: React.FC = () => {
       <Paper elevation={8} sx={{ borderRadius: 0 }}>
         {isWarmup && (
           <Box>
-            <LinearProgress color="secondary" />
+            <LinearProgress
+              variant="determinate"
+              color="secondary"
+              value={(100 * messages.length) / 10}
+            />
             <Typography sx={{ textAlign: "center", p: 1 }}>
               Warming up...
             </Typography>

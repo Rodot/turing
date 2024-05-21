@@ -88,7 +88,7 @@ export const generateMessage = async (
 
   // delay to simulate typing
   const messageLength = gptAnswer.length;
-  const wordsPerMinute = Math.floor(Math.random() * 40 + 20);
+  const wordsPerMinute = Math.floor(Math.random() * 30 + 30);
   const charactersPerWord = 5;
   const charactersPerSecond = (wordsPerMinute * charactersPerWord) / 60;
   const typingDelayMs = (1000 * messageLength) / charactersPerSecond;

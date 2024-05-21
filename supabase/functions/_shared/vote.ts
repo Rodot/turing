@@ -2,8 +2,7 @@ import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2
 import { MessageData, PlayerData, RoomData } from "../_types/Database.type.ts";
 import { updateRoom } from "../_queries/room.query.ts";
 
-export const nextVoteLength = (numLivingPlayers: number) =>
-  4 * numLivingPlayers;
+export const nextVoteLength = (numLivingPlayers: number) => 10;
 
 export const triggerVoteIfNeeded = async (
   supabase: SupabaseClient,
