@@ -17,6 +17,7 @@ import {
   fetchUserProfile,
 } from "../_queries/profiles.query.ts";
 import { corsHeaders } from "../_shared/cors.ts";
+import { nextChatTurn } from "../_shared/chat.ts";
 import { createSupabaseClient } from "../_shared/supabase.ts";
 
 Deno.serve(async (req) => {
@@ -47,8 +48,6 @@ Deno.serve(async (req) => {
 
     // All players have voted
     if (numVotes >= numLivingHumans) {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       // Find the most voted player
       const votes = players.reduce((acc, player) => {
         if (!player.vote) return acc;
@@ -77,6 +76,9 @@ Deno.serve(async (req) => {
         room_id: roomId,
         is_dead: true,
       });
+
+      // wait before closing vote results
+      await new Promise((resolve) => setTimeout(resolve, 3000));
 
       // Post message in chat
       let message = "";
@@ -107,8 +109,8 @@ Deno.serve(async (req) => {
         .filter((player) => player.user_id)
         .filter((player) => !player.is_dead);
 
-      // Game over
       if (livingHumansAfter.length <= 1) {
+        // Game over
         // Announce winner
         const winner = livingHumansAfter?.[0];
         if (winner?.user_id) {
@@ -123,9 +125,11 @@ Deno.serve(async (req) => {
             room_id: roomId,
           });
         }
-
-        // Reset game
+        // Close the room
         await updateRoom(supabase, roomId, { status: "over" });
+      } else {
+        // Start next chat turn
+        await nextChatTurn(supabase, roomId);
       }
     }
 

@@ -65,7 +65,10 @@ export const nextChatTurn = async (
 
     const livingPlayers = players.filter((player) => !player.is_dead);
     const nextPlayer = getPlayerWithOlderMessage(livingPlayers, messages);
-    await updateRoom(supabase, room_id, { next_player_id: nextPlayer.id });
+    await updateRoom(supabase, room_id, {
+      next_player_id: nextPlayer.id,
+      status: "talking",
+    });
     if (isHuman(nextPlayer)) {
       console.log("Next player is human", nextPlayer.name);
       return;

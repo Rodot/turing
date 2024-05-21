@@ -16,14 +16,18 @@ export const triggerVoteIfNeeded = async (
 
   console.log("Voting time!");
 
+  // delay 1 second
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
   // set next vote
   const numLivingPlayers = players.filter((player) => !player.is_dead).length;
-  const nextVote = messages.length + 3 * (numLivingPlayers - 1);
+  const nextVote = messages.length + 2 * (numLivingPlayers - 1);
 
   // start voting
   await updateRoom(supabase, room.id, {
     next_vote: nextVote,
     status: "voting",
+    next_player_id: null,
   });
 
   return true;

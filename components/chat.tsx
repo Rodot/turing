@@ -15,8 +15,7 @@ export const Chat: React.FC = () => {
   const gameOver = room?.data?.status === "over";
   const canTalk =
     !player?.is_dead && !gameOver && room?.data?.status === "talking";
-  const canVote =
-    !player?.is_dead && !gameOver && room?.data?.status === "voting";
+  const showVotes = gameOver || room?.data?.status === "voting";
 
   return (
     <Container
@@ -36,9 +35,9 @@ export const Chat: React.FC = () => {
           overflowX: "hidden",
         }}
       />
-      <Paper elevation={3} sx={{ borderRadius: 0 }}>
+      <Paper elevation={8} sx={{ borderRadius: 0 }}>
         {canTalk && <ChatInput />}
-        {canVote && <ChatVote />}
+        {showVotes && <ChatVote />}
         {gameOver && <ButtonLeaveGame />}
       </Paper>
     </Container>

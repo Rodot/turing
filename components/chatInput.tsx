@@ -5,13 +5,13 @@ import { playerName } from "@/utils/user";
 import {
   Box,
   Button,
-  LinearProgress,
   SxProps,
   TextField,
   Theme,
   Typography,
 } from "@mui/material";
 import { postMessageFunction } from "@/queries/functions/functions.query";
+import { VoteCountdown } from "./voteCountdown";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -53,11 +53,12 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
 
   return (
     <Box sx={{ ...sx, display: "flex", flexDirection: "column" }}>
-      {!canTalk && <LinearProgress />}
+      <VoteCountdown />
       <Typography textAlign="center" sx={{ mt: 1 }}>
-        {canTalk
-          ? "Your turn!"
-          : `${talkingPLayer?.name} is typing, wait for your turn...`}
+        {canTalk && <strong>Your turn to talk</strong>}
+        {!canTalk && talkingPLayer?.name && (
+          <>{talkingPLayer?.name} is typing, wait for your turn...</>
+        )}
       </Typography>
       <form onSubmit={handleSubmit} style={{ width: "100%" }}>
         <Box

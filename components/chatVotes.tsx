@@ -1,5 +1,10 @@
 import React, { useContext } from "react";
-import { PlayersContext, RoomContext, UserContext } from "./contextProvider";
+import {
+  PlayersContext,
+  RoomContext,
+  RoomProfilesContext,
+  UserContext,
+} from "./contextProvider";
 import {
   Box,
   Chip,
@@ -20,6 +25,7 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   const user = useContext(UserContext);
   const room = useContext(RoomContext);
   const players = useContext(PlayersContext);
+  const profiles = useContext(RoomProfilesContext);
 
   const me = players?.find((player) => player.user_id === user?.id);
   const numLivingHumans = players
@@ -27,6 +33,10 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
     .filter((player) => !player.is_dead).length;
   const numVotes = players?.filter((player) => player?.vote !== null).length;
   const voteProgress = (100 * numVotes) / numLivingHumans;
+
+  const gameOver = room?.data?.status === "over";
+  const canVote =
+    !me?.is_dead && !me?.vote && !gameOver && room?.data?.status === "voting";
 
   const vote = async (playerId: string) => {
     if (!me) return;
@@ -39,14 +49,31 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   };
 
   const chipLabel = (player: PlayerData) => {
-    const isDead = player.is_dead ? "💀" : "";
-    const name = player.name;
+    const playerName = player.name;
     const you = me?.id === player.id ? " (you)" : "";
+    const profile = profiles?.find((profile) => profile.id === player.user_id);
+    const profileName = profile ? `(${profile?.name})` : "(AI)";
+    const showProfileName =
+      (player.is_dead || gameOver) && me?.id !== player.id;
+    return `${playerName} ${you}${showProfileName ? profileName : ""}`;
+  };
+  const votesRemaining = numLivingHumans - numVotes;
+
+  const playerStatus = (player: PlayerData) => {
     const numVotes = players
       ?.filter((other) => other.vote === player.id)
       .map(() => "❌")
       .join("");
-    return `${name} ${you} ${isDead} ${numVotes}`;
+    const isDead = player.is_dead ? "💀" : "";
+
+    return `${numVotes}${isDead}`;
+  };
+
+  const clueText = () => {
+    if (room?.data?.status !== "voting") return null;
+    if (votesRemaining <= 0) return null;
+    if (!me?.vote) return <strong>Vote to eliminate a human</strong>;
+    return <>Waiting for {votesRemaining} more vote(s)</>;
   };
 
   return (
@@ -54,31 +81,39 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
       <Box
         sx={{
           display: "flex",
-          alignContent: "center",
-          justifyContent: "center",
           flexDirection: "column",
-          p: 1,
           gap: 1,
+          justifyContent: "center",
+          alignContent: "center",
+          pb: 1,
         }}
       >
-        <Typography sx={{ textAlign: "center" }}>
-          {me?.vote
-            ? "Waiting for others to vote"
-            : "Vote to eliminate a human"}
-        </Typography>
         <LinearProgress
           color="secondary"
           variant="determinate"
           value={voteProgress}
         />
+        <Typography sx={{ textAlign: "center" }}>{clueText()}</Typography>
         {players?.map((player) => (
-          <Chip
+          <Box
             key={player.id}
-            label={chipLabel(player)}
-            color={me?.vote === player.id ? "secondary" : "default"}
-            onClick={() => vote(player.id)}
-            disabled={!!me?.vote || player.is_dead}
-          />
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Chip
+              label={chipLabel(player)}
+              color={me?.vote === player.id ? "secondary" : "default"}
+              onDelete={
+                !canVote || player.is_dead ? undefined : () => vote(player.id)
+              }
+              // disabled={}
+              sx={{}}
+            />
+            <Box>{playerStatus(player)}</Box>
+          </Box>
         ))}
       </Box>
     </Box>
