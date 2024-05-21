@@ -8,10 +8,12 @@
 import { insertPlayers } from "../_queries/players.query.ts";
 import { fetchRoomProfiles } from "../_queries/profiles.query.ts";
 import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
-import { nextChatTurn } from "../_shared/chat.ts";
+import { forceBotTurns, nextChatTurn } from "../_shared/chat.ts";
+import { nextVoteLength } from "../_shared/vote.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { createSupabaseClient } from "../_shared/supabase.ts";
-import { PlayerDataInsert } from "../_types/Database.type.ts";
+import { PlayerData } from "../_types/Database.type.ts";
+import { insertMessage } from "../_queries/messages.query.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -37,7 +39,7 @@ Deno.serve(async (req) => {
     const humanNumber = profiles.length;
     const botNumber = humanNumber;
 
-    const players: PlayerDataInsert[] = [];
+    const players: Partial<PlayerData>[] = [];
 
     const names = [
       "🐶 Alice",
@@ -67,7 +69,7 @@ Deno.serve(async (req) => {
       "🐎 Zelda",
     ];
 
-    const popRandom = (array: Array<any>) => {
+    const popRandom = <T>(array: Array<T>): T => {
       const index = Math.floor(Math.random() * array.length);
       return array.splice(index, 1)[0];
     };
@@ -93,11 +95,22 @@ Deno.serve(async (req) => {
     // insert players
     await insertPlayers(supabase, players);
 
-    // start the game
-    const nextVote = players.length * 2;
-    const newRoom = { ...room, status: "talking", next_vote: nextVote };
-    await updateRoom(supabase, roomId, newRoom);
+    // warmup room with bots
+    const warmupLength = 10;
+    const nextVote = warmupLength + nextVoteLength(players.length);
 
+    await updateRoom(supabase, roomId, { status: "warmup" });
+    await forceBotTurns(supabase, roomId, warmupLength);
+
+    await insertMessage(supabase, {
+      room_id: roomId,
+      author: "system",
+      content: "Warmup complete, good luck humans! 🤖",
+    });
+
+    // start the game
+    const newRoom = { status: "talking", next_vote: nextVote };
+    await updateRoom(supabase, roomId, newRoom);
     await nextChatTurn(supabase, roomId);
 
     const data = {};

@@ -2,6 +2,9 @@ import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2
 import { MessageData, PlayerData, RoomData } from "../_types/Database.type.ts";
 import { updateRoom } from "../_queries/room.query.ts";
 
+export const nextVoteLength = (numLivingPlayers: number) =>
+  4 * numLivingPlayers;
+
 export const triggerVoteIfNeeded = async (
   supabase: SupabaseClient,
   room: RoomData,
@@ -9,7 +12,7 @@ export const triggerVoteIfNeeded = async (
   messages: MessageData[]
 ) => {
   // not voting yet
-  if (messages.length < room.next_vote) return false;
+  if (messages.length <= room.next_vote) return false;
 
   console.log("Voting time!");
 
@@ -18,7 +21,7 @@ export const triggerVoteIfNeeded = async (
 
   // set next vote
   const numLivingPlayers = players.filter((player) => !player.is_dead).length;
-  const nextVote = messages.length + 2 * (numLivingPlayers - 1);
+  const nextVote = messages.length + nextVoteLength(numLivingPlayers);
 
   // start voting
   await updateRoom(supabase, room.id, {

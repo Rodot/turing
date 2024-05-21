@@ -47,13 +47,35 @@ export const getPlayerWithOlderMessage = (
   return randomPlayer;
 };
 
+export const forceBotTurns = async (
+  supabase: SupabaseClient,
+  room_id: string,
+  numberOfTurns: number
+) => {
+  while (numberOfTurns--) {
+    const players = await fetchPlayers(supabase, room_id);
+    const messages = await fetchMessages(supabase, room_id);
+    const room = await fetchRoom(supabase, room_id);
+
+    if (!players?.length) throw new Error("No players found");
+    if (!messages) throw new Error("No messages found");
+    if (!room) throw new Error("No room found");
+
+    const livingPlayers = players.filter((player) => !player.is_dead);
+    const nextPlayer = getPlayerWithOlderMessage(livingPlayers, messages);
+
+    console.log("Forcing bot ", nextPlayer.name);
+
+    await generateMessage(supabase, room_id, nextPlayer, messages, false);
+  }
+};
+
 export const nextChatTurn = async (
   supabase: SupabaseClient,
   room_id: string
 ) => {
   let timeout = 10;
-  while (timeout) {
-    timeout--;
+  while (timeout--) {
     const players = await fetchPlayers(supabase, room_id);
     const messages = await fetchMessages(supabase, room_id);
     const room = await fetchRoom(supabase, room_id);
@@ -74,7 +96,7 @@ export const nextChatTurn = async (
       return;
     } else {
       console.log("Next player is bot", nextPlayer.name);
-      await generateMessage(supabase, room_id, nextPlayer, messages);
+      await generateMessage(supabase, room_id, nextPlayer, messages, true);
     }
   }
 };

@@ -13,7 +13,7 @@ export function ChatMessage({
   user: User;
 }) {
   const isMe = message.user_id === user.id;
-  const isSystem = message.author === "System";
+  const isSystem = message.author === "system";
 
   const getBgColor = () => {
     if (isMe) return "primary.main";
@@ -43,8 +43,8 @@ export function ChatMessage({
         m={1}
         maxWidth={isSystem ? "100%" : "80%"}
       >
-        {!isMe && !isSystem && (
-          <Typography variant="caption" color="primary.main">
+        {!isSystem && (
+          <Typography variant="caption" color={isMe ? "lightgrey" : "grey"}>
             {message.author}
           </Typography>
         )}

@@ -1,7 +1,14 @@
 import React, { useContext } from "react";
 import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
-import { Box, Container, Paper, Toolbar, Typography } from "@mui/material";
+import {
+  Box,
+  Container,
+  LinearProgress,
+  Paper,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import {
   PlayersContext,
   RoomContext,
@@ -20,12 +27,12 @@ export const Chat: React.FC = () => {
   const roomProfiles = useContext(RoomProfilesContext);
 
   const player = players?.find((player) => player.user_id === user?.id);
-  const gameOver = room?.data?.status === "over";
-  const canTalk =
-    !player?.is_dead && !gameOver && room?.data?.status === "talking";
   const nextRoomId = room?.data?.next_room_id;
   const isHost = roomProfiles?.[0]?.id === user?.id;
-  const showVotes = room?.data?.status === "voting";
+  const isWarmup = room?.data?.status === "warmup";
+  const isTalking = !player?.is_dead && room?.data?.status === "talking";
+  const isVoting = room?.data?.status === "voting";
+  const isOver = room?.data?.status === "over";
 
   return (
     <Container
@@ -46,9 +53,17 @@ export const Chat: React.FC = () => {
         }}
       />
       <Paper elevation={8} sx={{ borderRadius: 0 }}>
-        {canTalk && <ChatInput />}
-        {showVotes && <ChatVote />}
-        {gameOver && (
+        {isWarmup && (
+          <Box>
+            <LinearProgress color="secondary" />
+            <Typography sx={{ textAlign: "center", p: 1 }}>
+              Warming up...
+            </Typography>
+          </Box>
+        )}
+        {isTalking && <ChatInput />}
+        {isVoting && <ChatVote />}
+        {isOver && (
           <Box
             sx={{
               display: "flex",

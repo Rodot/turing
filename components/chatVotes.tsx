@@ -70,8 +70,8 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   };
 
   const clueText = () => {
-    if (room?.data?.status !== "voting") return null;
-    if (votesRemaining <= 0) return null;
+    if (room?.data?.status !== "voting") return " ";
+    if (votesRemaining <= 0) return " ";
     if (!me?.vote) return <strong>Vote to eliminate a human</strong>;
     return <>Waiting for {votesRemaining} more vote(s)</>;
   };

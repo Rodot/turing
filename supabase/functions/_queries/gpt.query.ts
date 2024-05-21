@@ -15,7 +15,7 @@ export const fetchChatCompletionJson = async (
         model: "gpt-3.5-turbo",
         response_format: { type: "json_object" },
         frequency_penalty: 2.0,
-        temperature: 1.0,
+        temperature: 1.2,
         messages,
       }),
     }
@@ -28,7 +28,9 @@ export const fetchChatCompletionJson = async (
 
   const gptAnswerRaw = ((await gptResponse.json()) as GptResponse).choices[0]
     .message.content;
-  const gptAnswer = JSON.parse(gptAnswerRaw)?.message as string | undefined;
 
-  return gptAnswer;
+  console.log("Generated message", gptAnswerRaw);
+  const gptAnswer = JSON.parse(gptAnswerRaw);
+
+  return gptAnswer?.yourNextMessage as string | undefined;
 };

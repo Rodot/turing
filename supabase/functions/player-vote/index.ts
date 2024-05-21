@@ -93,10 +93,10 @@ Deno.serve(async (req) => {
         message = `${looser?.name} (${looserProfile?.name}) was voted out! 💀`;
       } else {
         // it was a bot
-        message = `${looser?.name} was voted out, but it was an AI! 💀`;
+        message = `${looser?.name} was voted out... but it was an AI! 🤖`;
       }
       await insertMessage(supabase, {
-        author: "System",
+        author: "system",
         content: message,
         room_id: roomId,
       });
@@ -120,7 +120,7 @@ Deno.serve(async (req) => {
           );
           const message = `${winner.name} (${winnerProfile.name}) won! 🏆`;
           await insertMessage(supabase, {
-            author: "System",
+            author: "system",
             content: message,
             room_id: roomId,
           });
