@@ -32,9 +32,9 @@ export const BaseLayout = () => {
 
   const router = () => {
     if (!userProfile?.id) return <SignUp />;
-    if (!room?.data?.id) return <GameCreate />;
-    if (room.data.status === "lobby") return <Lobby />;
-    return <Chat />;
+    else if (!room?.data?.id) return <GameCreate />;
+    else if (room.data.status === "lobby") return <Lobby />;
+    else return <Chat />;
   };
 
   return (
@@ -55,7 +55,6 @@ export const BaseLayout = () => {
           </Button>
         </Toolbar>
       </AppBar>
-      <Toolbar /> {/* empty toolbar to avoid covering page content */}
       <SwipeableDrawer
         anchor="left"
         onClose={handleDrawerClose}

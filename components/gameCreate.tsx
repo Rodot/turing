@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useContext, useState } from "react";
-import { Button, Container, Typography } from "@mui/material";
+import { Button, Container, Toolbar, Typography } from "@mui/material";
 import { RoomContext } from "./contextProvider";
 import { Spinner } from "./spinner";
 
@@ -25,6 +25,7 @@ export const GameCreate: React.FC = () => {
         p: 2,
       }}
     >
+      <Toolbar /> {/* empty toolbar to avoid covering page content */}
       <Typography variant="h4" color="primary" fontWeight={900}>
         The Turing <strong>Trial</strong>
       </Typography>

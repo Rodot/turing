@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useContext, useEffect, useState } from "react";
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  TextField,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import { UserContext } from "./contextProvider";
 import { Spinner } from "./spinner";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -47,12 +54,11 @@ export const SignUp: React.FC = () => {
         p: 2,
       }}
     >
+      <Toolbar /> {/* empty toolbar to avoid covering page content */}
       <Typography variant="h4" color="primary" fontWeight={900}>
         The Turing <strong>Trial</strong>
       </Typography>
-
       <Typography>Can you distinguish AIs from your friends?</Typography>
-
       <form onSubmit={signUp} style={{ width: "100%" }}>
         <Box
           sx={{

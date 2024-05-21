@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useContext, useEffect, useState } from "react";
-import { Box, Button, Chip, Container, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  Container,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import {
   RoomContext,
   RoomProfilesContext,
@@ -41,20 +48,18 @@ export const Lobby: React.FC = () => {
         p: 2,
       }}
     >
+      <Toolbar /> {/* empty toolbar to avoid covering page content */}
       <Typography variant="h4" color="primary" fontWeight={900}>
         Invite <strong>humans</strong>
       </Typography>
       <Typography sx={{ textAlign: "center" }}>
         Ask players to scan the QR or send them the link
       </Typography>
-
       <QRCode size={150} value={url} />
       <ButtonShare url={url} sx={{ mb: 4 }} />
-
       <Typography variant="h4" color="primary" fontWeight={900}>
         {isHost ? "Ready?" : "Get ready..."}
       </Typography>
-
       <Typography>
         {isHost
           ? "Start once all players are here"
@@ -74,7 +79,6 @@ export const Lobby: React.FC = () => {
           />
         ))}
       </Box>
-
       {isHost && (
         <Button
           color="secondary"
@@ -86,7 +90,6 @@ export const Lobby: React.FC = () => {
           {loading && <Spinner />}
         </Button>
       )}
-
       <ButtonLeaveGame sx={{ mt: 4 }} />
     </Container>
   );

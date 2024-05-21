@@ -6,12 +6,18 @@ import {
   Box,
   Button,
   LinearProgress,
+  SxProps,
   TextField,
+  Theme,
   Typography,
 } from "@mui/material";
 import { postMessageFunction } from "@/queries/functions/functions.query";
 
-export const ChatInput: React.FC = () => {
+type Props = {
+  sx?: SxProps<Theme>;
+};
+
+export const ChatInput: React.FC<Props> = ({ sx }) => {
   const [content, setContent] = useState("");
   const user = useContext(UserContext);
   const room = useContext(RoomContext);
@@ -46,13 +52,13 @@ export const ChatInput: React.FC = () => {
   };
 
   return (
-    <>
-      <Typography textAlign="center">
+    <Box sx={{ ...sx, display: "flex", flexDirection: "column" }}>
+      {!canTalk && <LinearProgress />}
+      <Typography textAlign="center" sx={{ mt: 1 }}>
         {canTalk
           ? "Your turn!"
           : `${talkingPLayer?.name} is typing, wait for your turn...`}
       </Typography>
-      {!canTalk && <LinearProgress />}
       <form onSubmit={handleSubmit} style={{ width: "100%" }}>
         <Box
           sx={{
@@ -79,6 +85,6 @@ export const ChatInput: React.FC = () => {
           </Button>
         </Box>
       </form>
-    </>
+    </Box>
   );
 };

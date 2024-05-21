@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
-import { Container } from "@mui/material";
+import { Container, Paper, Toolbar } from "@mui/material";
 import { PlayersContext, RoomContext, UserContext } from "./contextProvider";
 import { ChatVote } from "./chatVotes";
 import { ButtonLeaveGame } from "./buttonLeaveGame";
@@ -24,14 +24,23 @@ export const Chat: React.FC = () => {
         maxWidth: "sm",
         display: "flex",
         flexDirection: "column",
-        gap: 2,
-        p: 2,
+        height: "100vh",
+        p: 0,
       }}
     >
-      <ChatHistory />
-      {canTalk && <ChatInput />}
-      {canVote && <ChatVote />}
-      {gameOver && <ButtonLeaveGame sx={{ mt: 4 }} />}
+      <Toolbar /> {/* empty toolbar to avoid covering page content */}
+      <ChatHistory
+        sx={{
+          flexGrow: 1,
+          overflowY: "auto",
+          overflowX: "hidden",
+        }}
+      />
+      <Paper elevation={3} sx={{ borderRadius: 0 }}>
+        {canTalk && <ChatInput />}
+        {canVote && <ChatVote />}
+        {gameOver && <ButtonLeaveGame />}
+      </Paper>
     </Container>
   );
 };

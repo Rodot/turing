@@ -1,11 +1,22 @@
 import React, { useContext } from "react";
 import { PlayersContext, RoomContext, UserContext } from "./contextProvider";
-import { Box, Chip, LinearProgress, Typography } from "@mui/material";
+import {
+  Box,
+  Chip,
+  LinearProgress,
+  SxProps,
+  Theme,
+  Typography,
+} from "@mui/material";
 import { supabase } from "@/utils/supabase/client";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
 import { playerVoteFunction } from "@/queries/functions/functions.query";
 
-export const ChatVote: React.FC = () => {
+type Props = {
+  sx?: SxProps<Theme>;
+};
+
+export const ChatVote: React.FC<Props> = ({ sx }) => {
   const user = useContext(UserContext);
   const room = useContext(RoomContext);
   const players = useContext(PlayersContext);
@@ -39,33 +50,37 @@ export const ChatVote: React.FC = () => {
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        alignContent: "center",
-        justifyContent: "center",
-        flexDirection: "column",
-        p: 1,
-        gap: 1,
-      }}
-    >
-      <Typography sx={{ textAlign: "center" }}>
-        {me?.vote ? "Waiting for others to vote" : "Vote to eliminate a human"}
-      </Typography>
-      <LinearProgress
-        color="secondary"
-        variant="determinate"
-        value={voteProgress}
-      />
-      {players?.map((player) => (
-        <Chip
-          key={player.id}
-          label={chipLabel(player)}
-          color={me?.vote === player.id ? "secondary" : "default"}
-          onClick={() => vote(player.id)}
-          disabled={!!me?.vote || player.is_dead}
+    <Box sx={sx}>
+      <Box
+        sx={{
+          display: "flex",
+          alignContent: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+          p: 1,
+          gap: 1,
+        }}
+      >
+        <Typography sx={{ textAlign: "center" }}>
+          {me?.vote
+            ? "Waiting for others to vote"
+            : "Vote to eliminate a human"}
+        </Typography>
+        <LinearProgress
+          color="secondary"
+          variant="determinate"
+          value={voteProgress}
         />
-      ))}
+        {players?.map((player) => (
+          <Chip
+            key={player.id}
+            label={chipLabel(player)}
+            color={me?.vote === player.id ? "secondary" : "default"}
+            onClick={() => vote(player.id)}
+            disabled={!!me?.vote || player.is_dead}
+          />
+        ))}
+      </Box>
     </Box>
   );
 };

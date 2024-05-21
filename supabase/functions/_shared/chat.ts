@@ -25,6 +25,11 @@ export const getPlayerWithOlderMessage = (
     }
   }
 
+  console.log(
+    "mostRecentMessageIndexPerPlayer",
+    mostRecentMessageIndexPerPlayer
+  );
+
   const oldestIndex = Math.min(
     ...Object.values(mostRecentMessageIndexPerPlayer)
   );

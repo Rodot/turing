@@ -3,14 +3,22 @@ import { MessageData, PlayerData } from "../_types/Database.type.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
 import { fetchChatCompletionJson } from "../_queries/gpt.query.ts";
 
+const removeEmojis = (text: string) => {
+  return text.replace(
+    /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g,
+    ""
+  );
+};
+
 const messagesToPrompt = (
   speakerName: string,
   messages: Array<MessageData>
 ) => {
   let prompt = "";
   messages.forEach((message) => {
-    const you = message.author === speakerName ? " (you)" : "";
-    prompt += `${message.author}${you}: ${message.content}\n`;
+    const you = message.author === speakerName ? "(you)" : "";
+    const author = removeEmojis(message.author);
+    prompt += `${author}${you}: ${message.content}\n`;
   });
   return prompt;
 };
@@ -41,18 +49,28 @@ export const generateMessage = async (
   player: PlayerData,
   messages: MessageData[]
 ) => {
+  const start = Date.now();
   const prompt = promptForNextMessage(player.name, messages);
-
   const gptAnswer = await fetchChatCompletionJson(prompt);
-  console.log(`Generated message`, gptAnswer);
+  const end = Date.now();
+  const generationDelayMs = end - start;
+  console.log(
+    `Generated message in ${Math.floor(generationDelayMs / 1000)}s`,
+    gptAnswer
+  );
 
   // delay to simulate typing
   const messageLength = gptAnswer.message.length;
   const wordsPerMinute = Math.floor(Math.random() * 40 + 20);
   const charactersPerWord = 5;
   const charactersPerSecond = (wordsPerMinute * charactersPerWord) / 60;
-  const delay = messageLength / charactersPerSecond;
-  await new Promise((resolve) => setTimeout(resolve, delay * 1000));
+  const typingDelayMs = (1000 * messageLength) / charactersPerSecond;
+
+  const delayMs = Math.max(0, typingDelayMs - generationDelayMs);
+  console.log(`Delaying for ${Math.floor(delayMs / 1000)}s`);
+  if (delayMs > 1000) {
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+  }
 
   await insertMessage(supabase, {
     author: player.name,
