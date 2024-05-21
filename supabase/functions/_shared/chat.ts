@@ -2,8 +2,9 @@ import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2
 import { fetchPlayers } from "../_queries/players.query.ts";
 import { fetchMessages } from "../_queries/messages.query.ts";
 import { MessageData, PlayerData } from "../_types/Database.type.ts";
-import { updateRoom } from "../_queries/room.query.ts";
+import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
 import { generateMessage } from "./prompts.ts";
+import { triggerVoteIfNeeded } from "./vote.ts";
 
 export const isHuman = (player: PlayerData) => !!player?.user_id;
 
@@ -55,9 +56,13 @@ export const nextChatTurn = async (
     timeout--;
     const players = await fetchPlayers(supabase, room_id);
     const messages = await fetchMessages(supabase, room_id);
-    if (!players || !messages) {
-      throw new Error("Failed to fetch players or messages");
-    }
+    const room = await fetchRoom(supabase, room_id);
+    if (!players?.length) throw new Error("No players found");
+    if (!messages) throw new Error("No messages found");
+    if (!room) throw new Error("No room found");
+
+    if (await triggerVoteIfNeeded(supabase, room, players, messages)) return;
+
     const livingPlayers = players.filter((player) => !player.is_dead);
     const nextPlayer = getPlayerWithOlderMessage(livingPlayers, messages);
     await updateRoom(supabase, room_id, { next_player_id: nextPlayer.id });

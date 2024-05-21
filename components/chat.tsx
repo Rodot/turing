@@ -14,7 +14,7 @@ export const Chat: React.FC = () => {
   const player = players?.find((player) => player.user_id === user?.id);
   const gameOver = room?.data?.status === "over";
   const canTalk =
-    !player?.is_dead && !gameOver && room?.data?.status === "playing";
+    !player?.is_dead && !gameOver && room?.data?.status === "talking";
   const canVote =
     !player?.is_dead && !gameOver && room?.data?.status === "voting";
 

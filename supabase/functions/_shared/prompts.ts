@@ -49,18 +49,21 @@ export const generateMessage = async (
   player: PlayerData,
   messages: MessageData[]
 ) => {
+  let gptAnswer: string | undefined;
+  let timeout = 3;
   const start = Date.now();
-  const prompt = promptForNextMessage(player.name, messages);
-  const gptAnswer = await fetchChatCompletionJson(prompt);
+  while (!gptAnswer?.length && timeout--) {
+    const prompt = promptForNextMessage(removeEmojis(player.name), messages);
+    gptAnswer = await fetchChatCompletionJson(prompt);
+    console.log(`Generated message`, gptAnswer);
+  }
   const end = Date.now();
   const generationDelayMs = end - start;
-  console.log(
-    `Generated message in ${Math.floor(generationDelayMs / 1000)}s`,
-    gptAnswer
-  );
+
+  if (!gptAnswer) throw new Error("Failed to generate message");
 
   // delay to simulate typing
-  const messageLength = gptAnswer.message.length;
+  const messageLength = gptAnswer.length;
   const wordsPerMinute = Math.floor(Math.random() * 40 + 20);
   const charactersPerWord = 5;
   const charactersPerSecond = (wordsPerMinute * charactersPerWord) / 60;
@@ -68,14 +71,14 @@ export const generateMessage = async (
 
   const delayMs = Math.max(0, typingDelayMs - generationDelayMs);
   console.log(`Delaying for ${Math.floor(delayMs / 1000)}s`);
-  if (delayMs > 1000) {
-    await new Promise((resolve) => setTimeout(resolve, delayMs));
-  }
+  // if (delayMs > 1000) {
+  //   await new Promise((resolve) => setTimeout(resolve, delayMs));
+  // }
 
   await insertMessage(supabase, {
     author: player.name,
     player_id: player.id,
     room_id: roomId,
-    content: gptAnswer.message.toLowerCase(),
+    content: gptAnswer.toLowerCase(),
   });
 };

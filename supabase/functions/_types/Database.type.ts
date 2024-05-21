@@ -20,6 +20,7 @@ export type RoomData = {
   id: string;
   status: string;
   next_player_id: string | null;
+  next_vote: number;
 };
 
 export type PlayerData = {

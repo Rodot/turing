@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
     if (!profiles?.length) throw new Error("Room not found");
 
     const humanNumber = profiles.length;
-    const botNumber = humanNumber;
+    const botNumber = humanNumber * 2;
 
     const players: PlayerDataInsert[] = [];
 
@@ -94,7 +94,8 @@ Deno.serve(async (req) => {
     await insertPlayers(supabase, players);
 
     // start the game
-    const newRoom = { ...room, status: "playing" };
+    const nextVote = players.length * 5;
+    const newRoom = { ...room, status: "talking", next_vote: nextVote };
     await updateRoom(supabase, roomId, newRoom);
 
     await nextChatTurn(supabase, roomId);

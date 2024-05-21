@@ -28,7 +28,7 @@ export const fetchChatCompletionJson = async (
 
   const gptAnswerRaw = ((await gptResponse.json()) as GptResponse).choices[0]
     .message.content;
-  const gptAnswer = JSON.parse(gptAnswerRaw);
+  const gptAnswer = JSON.parse(gptAnswerRaw)?.message as string | undefined;
 
   return gptAnswer;
 };
