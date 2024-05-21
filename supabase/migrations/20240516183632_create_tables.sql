@@ -3,7 +3,8 @@ CREATE TABLE public.rooms(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     status text DEFAULT 'lobby' ::text,
     next_player_id uuid,
-    next_vote integer
+    next_vote integer,
+    next_room_id uuid REFERENCES public.rooms ON DELETE SET NULL
 );
 
 ALTER publication supabase_realtime
@@ -11,13 +12,12 @@ ALTER publication supabase_realtime
 
 -- user profiles
 CREATE TABLE public.profiles(
-    id uuid NOT NULL REFERENCES auth.users ON DELETE CASCADE,
-    created_at timestamp with time zone DEFAULT now(),
-    updated_at timestamp with time zone DEFAULT now(),
+    id uuid PRIMARY KEY NOT NULL REFERENCES auth.users ON DELETE CASCADE,
     room_id uuid REFERENCES public.rooms ON DELETE SET NULL,
-    name text,
-    PRIMARY KEY (id)
+    name text
 );
+
+CREATE INDEX idx_players_profiles_id ON public.profiles(room_id);
 
 ALTER publication supabase_realtime
     ADD TABLE public.profiles;
@@ -25,8 +25,6 @@ ALTER publication supabase_realtime
 -- players
 CREATE TABLE public.players(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    created_at timestamp with time zone DEFAULT now(),
-    updated_at timestamp with time zone DEFAULT now(),
     room_id uuid NOT NULL REFERENCES public.rooms ON DELETE CASCADE,
     user_id uuid REFERENCES auth.users ON DELETE CASCADE,
     vote uuid REFERENCES public.players ON DELETE SET NULL,
@@ -34,19 +32,22 @@ CREATE TABLE public.players(
     name text
 );
 
+CREATE INDEX idx_players_room_id ON public.players(room_id);
+
 ALTER publication supabase_realtime
     ADD TABLE public.players;
 
 -- messages
 CREATE TABLE public.messages(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    created_at timestamp with time zone DEFAULT now(),
     room_id uuid NOT NULL REFERENCES public.rooms ON DELETE CASCADE,
     user_id uuid REFERENCES auth.users ON DELETE SET NULL,
     player_id uuid REFERENCES public.players ON DELETE SET NULL,
     author text,
     content text
 );
+
+CREATE INDEX idx_messages_room_id ON public.messages(room_id);
 
 ALTER publication supabase_realtime
     ADD TABLE public.messages;

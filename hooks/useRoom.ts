@@ -20,51 +20,52 @@ import {
 export type Room = {
   data: RoomData | null;
   createRoom: () => void;
+  joinRoom: (roomId: string) => void;
   leaveRoom: () => void;
   startGame: () => void;
 };
 
-export function useRoom(userProfile: ProfileData | null): Room | null {
+export function useRoom(profile: ProfileData | null): Room | null {
   const [roomData, setRoomData] = useState<RoomData | null>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
 
   // get room id from url and push to server
   useEffect(() => {
-    if (!userProfile?.id) return;
+    if (!profile?.id) return;
     const newRoomId = searchParams.get("room") ?? null;
     if (newRoomId?.length) {
-      if (newRoomId === userProfile?.room_id) {
+      if (newRoomId === profile?.room_id) {
         router.push("/");
       } else {
-        updateProfileRoom(supabase, userProfile?.id, newRoomId);
+        updateProfileRoom(supabase, profile?.id, newRoomId);
       }
     }
-  }, [searchParams, router, userProfile?.id, userProfile?.room_id]);
+  }, [searchParams, router, profile?.id, profile?.room_id]);
 
   // listen for changes to room data
   useEffect(() => {
-    if (!userProfile?.id) return;
-    if (!userProfile?.room_id) {
+    if (!profile?.id) return;
+    if (!profile?.room_id) {
       console.log("Left room");
       setRoomData(null);
       return;
     }
-    console.log("Joined room", userProfile.room_id);
+    console.log("Joined room", profile.room_id);
 
-    fetchRoom(supabase, userProfile?.room_id).then((roomData) =>
+    fetchRoom(supabase, profile?.room_id).then((roomData) =>
       setRoomData(roomData)
     );
 
     const channel = supabase
-      .channel("room" + userProfile.room_id)
+      .channel("room" + profile.room_id)
       .on(
         "postgres_changes",
         {
           event: "UPDATE",
           schema: "public",
           table: "rooms",
-          filter: "id=eq." + userProfile.room_id,
+          filter: "id=eq." + profile.room_id,
         },
         (payload) => {
           setRoomData(payload.new as RoomData);
@@ -75,20 +76,26 @@ export function useRoom(userProfile: ProfileData | null): Room | null {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userProfile?.id, userProfile?.room_id]);
+  }, [profile?.id, profile?.room_id]);
 
   const createRoom = async () => {
     createRoomFunction(supabase);
   };
 
+  const joinRoom = async (roomId: string) => {
+    if (!profile?.id) return;
+    console.log("Joining room", roomId);
+    await updateProfileRoom(supabase, profile.id, roomId);
+  };
+
   const leaveRoom = async () => {
-    console.log("Leaving room", userProfile?.id);
-    if (!userProfile?.id) return;
-    await removeProfileFromRoom(supabase, userProfile?.id);
+    console.log("Leaving room", profile?.id);
+    if (!profile?.id) return;
+    await removeProfileFromRoom(supabase, profile?.id);
   };
 
   const startGame = async () => {
-    const roomId = userProfile?.room_id;
+    const roomId = profile?.room_id;
     if (!roomId) return;
     console.log("Starting game", roomId);
     await startGameFunction(supabase, roomId);
@@ -98,6 +105,7 @@ export function useRoom(userProfile: ProfileData | null): Room | null {
   return {
     data,
     createRoom,
+    joinRoom,
     leaveRoom,
     startGame,
   };

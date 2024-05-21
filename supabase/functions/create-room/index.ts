@@ -5,8 +5,11 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
-import { addProfileToRoom } from "../_queries/profiles.query.ts";
-import { insertRoom } from "../_queries/room.query.ts";
+import {
+  addProfileToRoom,
+  fetchUserProfile,
+} from "../_queries/profiles.query.ts";
+import { insertRoom, updateRoom } from "../_queries/room.query.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { createSupabaseClient } from "../_shared/supabase.ts";
 
@@ -23,7 +26,16 @@ Deno.serve(async (req) => {
     }
     const user = userResponse.data.user;
 
+    // create new room
     const room = await insertRoom(supabase);
+
+    // add redirect to old rom
+    const profile = await fetchUserProfile(supabase, user?.id);
+    if (profile?.room_id) {
+      updateRoom(supabase, profile.room_id, { next_room_id: room.id });
+    }
+
+    // join room
     await addProfileToRoom(supabase, user?.id, room.id);
 
     const data = {};

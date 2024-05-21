@@ -1,18 +1,10 @@
 "use client";
 
-import React, { useContext, useState } from "react";
-import { Button, Container, Toolbar, Typography } from "@mui/material";
-import { RoomContext } from "./contextProvider";
-import { Spinner } from "./spinner";
+import React from "react";
+import { Container, Toolbar, Typography } from "@mui/material";
+import { ButtonCreateGame } from "./buttonCreateGame";
 
 export const GameCreate: React.FC = () => {
-  const [loading, setLoading] = useState(false);
-  const room = useContext(RoomContext);
-  const startNewGame = async () => {
-    setLoading(true);
-    room?.createRoom();
-  };
-
   return (
     <Container
       maxWidth="sm"
@@ -29,15 +21,7 @@ export const GameCreate: React.FC = () => {
       <Typography variant="h4" color="primary" fontWeight={900}>
         The Turing <strong>Trial</strong>
       </Typography>
-      <Button
-        color="secondary"
-        variant="contained"
-        onClick={startNewGame}
-        disabled={loading}
-      >
-        New Game
-        {loading && <Spinner />}
-      </Button>
+      <ButtonCreateGame />
       <Typography sx={{ textAlign: "center" }}>
         ...or ask a friend for their game&apos;s link.
       </Typography>

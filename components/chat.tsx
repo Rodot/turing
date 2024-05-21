@@ -1,21 +1,31 @@
 import React, { useContext } from "react";
 import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
-import { Container, Paper, Toolbar } from "@mui/material";
-import { PlayersContext, RoomContext, UserContext } from "./contextProvider";
+import { Box, Container, Paper, Toolbar, Typography } from "@mui/material";
+import {
+  PlayersContext,
+  RoomContext,
+  RoomProfilesContext,
+  UserContext,
+} from "./contextProvider";
 import { ChatVote } from "./chatVotes";
 import { ButtonLeaveGame } from "./buttonLeaveGame";
+import { ButtonCreateGame } from "./buttonCreateGame";
+import { ButtonJoinGame } from "./buttonJoinGame";
 
 export const Chat: React.FC = () => {
   const user = useContext(UserContext);
   const room = useContext(RoomContext);
   const players = useContext(PlayersContext);
+  const roomProfiles = useContext(RoomProfilesContext);
 
   const player = players?.find((player) => player.user_id === user?.id);
   const gameOver = room?.data?.status === "over";
   const canTalk =
     !player?.is_dead && !gameOver && room?.data?.status === "talking";
-  const showVotes = gameOver || room?.data?.status === "voting";
+  const nextRoomId = room?.data?.next_room_id;
+  const isHost = roomProfiles?.[0]?.id === user?.id;
+  const showVotes = room?.data?.status === "voting";
 
   return (
     <Container
@@ -38,7 +48,24 @@ export const Chat: React.FC = () => {
       <Paper elevation={8} sx={{ borderRadius: 0 }}>
         {canTalk && <ChatInput />}
         {showVotes && <ChatVote />}
-        {gameOver && <ButtonLeaveGame />}
+        {gameOver && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 1,
+              my: 2,
+            }}
+          >
+            {isHost && !nextRoomId && <ButtonCreateGame />}
+            {!isHost && !nextRoomId && (
+              <Typography>Waiting for host to start next game...</Typography>
+            )}
+            {(!isHost || nextRoomId) && <ButtonJoinGame roomId={nextRoomId} />}
+            {<ButtonLeaveGame />}
+          </Box>
+        )}
       </Paper>
     </Container>
   );

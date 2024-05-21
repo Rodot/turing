@@ -8,9 +8,6 @@ export const triggerVoteIfNeeded = async (
   players: PlayerData[],
   messages: MessageData[]
 ) => {
-  console.log("num messages:", messages.length);
-  console.log("next vote:", room.next_vote);
-
   // not voting yet
   if (messages.length < room.next_vote) return false;
 
