@@ -27,6 +27,7 @@ export const Lobby: React.FC = () => {
   const [url, setUrl] = useState("");
   const isHost = roomProfiles?.[0]?.id === user?.id;
   const me = roomProfiles?.find((profile) => profile.id === user?.id);
+  const notEnoughPlayers = roomProfiles?.length < 2;
 
   const startGame = async () => {
     setLoading(true);
@@ -63,7 +64,7 @@ export const Lobby: React.FC = () => {
       <Typography>
         {isHost
           ? "Start once all players are here"
-          : `Wait for ${roomProfiles?.[0]?.name} to start the game`}
+          : `Waiting for ${roomProfiles?.[0]?.name} to start the game`}
       </Typography>
       <Box
         sx={{
@@ -79,12 +80,15 @@ export const Lobby: React.FC = () => {
           />
         ))}
       </Box>
+      {notEnoughPlayers && (
+        <Typography color="error">Need at least 2 players to start</Typography>
+      )}
       {isHost && (
         <Button
           color="secondary"
           variant="contained"
           onClick={startGame}
-          disabled={loading}
+          disabled={loading || notEnoughPlayers}
         >
           Start Game
           {loading && <Spinner />}

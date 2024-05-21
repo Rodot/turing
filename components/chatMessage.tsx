@@ -39,7 +39,7 @@ export function ChatMessage({
         bgcolor={getBgColor()}
         color={getColor()}
         borderRadius={4}
-        p={1}
+        p={isSystem ? 4 : 1}
         m={1}
         maxWidth={isSystem ? "100%" : "80%"}
       >
