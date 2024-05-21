@@ -1,10 +1,8 @@
 import React, { useContext } from "react";
 import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
-import { Button, Container } from "@mui/material";
+import { Container } from "@mui/material";
 import { PlayersContext, RoomContext, UserContext } from "./contextProvider";
-import { supabase } from "@/utils/supabase/client";
-import { generateMessageFunction } from "@/queries/functions/functions.query";
 import { ChatVote } from "./chatVotes";
 import { ButtonLeaveGame } from "./buttonLeaveGame";
 
@@ -20,11 +18,6 @@ export const Chat: React.FC = () => {
   const canVote =
     !player?.is_dead && !gameOver && room?.data?.status === "voting";
 
-  const callEdgeFunction = async () => {
-    if (!room?.data?.id) return;
-    generateMessageFunction(supabase, room.data.id);
-  };
-
   return (
     <Container
       sx={{
@@ -39,9 +32,6 @@ export const Chat: React.FC = () => {
       {canTalk && <ChatInput />}
       {canVote && <ChatVote />}
       {gameOver && <ButtonLeaveGame sx={{ mt: 4 }} />}
-      <Button sx={{ mt: 8 }} variant="contained" onClick={callEdgeFunction}>
-        +
-      </Button>
     </Container>
   );
 };

@@ -2,7 +2,13 @@ import React, { useContext, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { PlayersContext, RoomContext, UserContext } from "./contextProvider";
 import { playerName } from "@/utils/user";
-import { Box, Button, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  LinearProgress,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { postMessageFunction } from "@/queries/functions/functions.query";
 
 export const ChatInput: React.FC = () => {
@@ -12,7 +18,10 @@ export const ChatInput: React.FC = () => {
   const players = useContext(PlayersContext);
 
   const player = players.find((player) => player.user_id === user?.id);
-  const myTurnToTalk = room?.data?.next_player_id === player?.id;
+  const talkingPLayer = players.find(
+    (player) => player.id === room?.data?.next_player_id
+  );
+  const canTalk = room?.data?.next_player_id === player?.id;
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setContent(event.target.value);
@@ -37,31 +46,39 @@ export const ChatInput: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-      <Box
-        sx={{
-          display: "flex",
-          alignContent: "center",
-          justifyContent: "center",
-          p: 1,
-        }}
-      >
-        <TextField
-          type="text"
-          value={content}
-          onChange={handleInputChange}
-          sx={{ flexGrow: 1, mr: 1 }}
-          label={"Talk as " + playerName(user?.id, players)}
-        />
-        <Button
-          type="submit"
-          variant="contained"
-          color="secondary"
-          disabled={!myTurnToTalk}
+    <>
+      <Typography textAlign="center">
+        {canTalk
+          ? "Your turn!"
+          : `${talkingPLayer?.name} is typing, wait for your turn...`}
+      </Typography>
+      {!canTalk && <LinearProgress />}
+      <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignContent: "center",
+            justifyContent: "center",
+            p: 1,
+          }}
         >
-          Send
-        </Button>
-      </Box>
-    </form>
+          <TextField
+            type="text"
+            value={content}
+            onChange={handleInputChange}
+            sx={{ flexGrow: 1, mr: 1 }}
+            label={"Talk as " + playerName(user?.id, players)}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="secondary"
+            disabled={!canTalk}
+          >
+            Send
+          </Button>
+        </Box>
+      </form>
+    </>
   );
 };
