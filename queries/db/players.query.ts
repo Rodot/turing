@@ -1,7 +1,4 @@
-import {
-  PlayerData,
-  PlayerDataInsert,
-} from "@/supabase/functions/_types/Database.type";
+import { PlayerData } from "@/supabase/functions/_types/Database.type";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export const fetchPlayers = async (
@@ -23,7 +20,7 @@ export const fetchPlayers = async (
 
 export const insertPlayers = async (
   supabase: SupabaseClient,
-  players: PlayerDataInsert[]
+  players: Partial<PlayerData>[]
 ) => {
   const insertPlayerResponse = await supabase.from("players").insert(players);
   if (insertPlayerResponse.error) {
