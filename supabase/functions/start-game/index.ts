@@ -8,10 +8,10 @@
 import { insertPlayers } from "../_queries/players.query.ts";
 import { fetchRoomProfiles } from "../_queries/profiles.query.ts";
 import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
-import { forceBotTurns, nextChatTurn } from "../_shared/chat.ts";
-import { nextVoteLength } from "../_shared/vote.ts";
-import { corsHeaders } from "../_shared/cors.ts";
-import { createSupabaseClient } from "../_shared/supabase.ts";
+import { forceBotTurns, nextChatTurn } from "../_utils/chat.ts";
+import { nextVoteLength } from "../_utils/vote.ts";
+import { corsHeaders } from "../_utils/cors.ts";
+import { createSupabaseClient } from "../_utils/supabase.ts";
 import { PlayerData } from "../_types/Database.type.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
 
@@ -96,10 +96,14 @@ Deno.serve(async (req) => {
     await insertPlayers(supabase, players);
 
     // warmup room with bots
-    const warmupLength = nextVoteLength(players.length);
+    const warmupLength = 10;
     const nextVote = warmupLength + nextVoteLength(players.length);
 
-    await updateRoom(supabase, roomId, { status: "warmup" });
+    await updateRoom(supabase, roomId, {
+      status: "warmup",
+      last_vote: warmupLength,
+      next_vote: nextVote,
+    });
     await forceBotTurns(supabase, roomId, warmupLength);
 
     await insertMessage(supabase, {
@@ -109,7 +113,7 @@ Deno.serve(async (req) => {
     });
 
     // start the game
-    const newRoom = { status: "talking", next_vote: nextVote };
+    const newRoom = { status: "talking" };
     await updateRoom(supabase, roomId, newRoom);
     await nextChatTurn(supabase, roomId);
 

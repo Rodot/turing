@@ -1,6 +1,11 @@
 import React, { useContext, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
-import { PlayersContext, RoomContext, UserContext } from "./contextProvider";
+import {
+  MessagesContext,
+  PlayersContext,
+  RoomContext,
+  UserContext,
+} from "./contextProvider";
 import { playerName } from "@/utils/user";
 import {
   Box,
@@ -12,6 +17,7 @@ import {
 } from "@mui/material";
 import { postMessageFunction } from "@/queries/functions/functions.query";
 import { VoteCountdown } from "./voteCountdown";
+import { getPlayersWithLeastMessages } from "@/supabase/functions/_shared/chat";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -22,12 +28,12 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   const user = useContext(UserContext);
   const room = useContext(RoomContext);
   const players = useContext(PlayersContext);
+  const messages = useContext(MessagesContext);
 
-  const player = players.find((player) => player.user_id === user?.id);
-  const talkingPLayer = players.find(
-    (player) => player.id === room?.data?.next_player_id
-  );
-  const canTalk = room?.data?.next_player_id === player?.id;
+  const me = players.find((player) => player.user_id === user?.id);
+
+  const talkingPlayers = getPlayersWithLeastMessages(players, messages);
+  const canTalk = talkingPlayers?.some((p) => p.id === me?.id);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setContent(event.target.value);
@@ -38,8 +44,8 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
       postMessageFunction(supabase, {
         room_id: room?.data?.id,
         user_id: user?.id,
-        player_id: player?.id,
-        author: player?.name,
+        player_id: me?.id,
+        author: me?.name,
         content: content.toLowerCase(),
       });
       setContent("");
@@ -56,8 +62,8 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
       <VoteCountdown />
       <Typography textAlign="center" sx={{ mt: 1 }}>
         {canTalk && <strong>Your turn to talk</strong>}
-        {!canTalk && talkingPLayer?.name && (
-          <>{talkingPLayer?.name} is typing, wait for your turn...</>
+        {!canTalk && talkingPlayers?.length && (
+          <>Wait for {talkingPlayers.map((p) => p.name).join(", ")}...</>
         )}
       </Typography>
       <form onSubmit={handleSubmit} style={{ width: "100%" }}>

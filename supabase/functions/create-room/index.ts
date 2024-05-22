@@ -10,8 +10,8 @@ import {
   fetchUserProfile,
 } from "../_queries/profiles.query.ts";
 import { insertRoom, updateRoom } from "../_queries/room.query.ts";
-import { corsHeaders } from "../_shared/cors.ts";
-import { createSupabaseClient } from "../_shared/supabase.ts";
+import { corsHeaders } from "../_utils/cors.ts";
+import { createSupabaseClient } from "../_utils/supabase.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {

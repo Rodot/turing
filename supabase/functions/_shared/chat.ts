@@ -1,102 +1,34 @@
-import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2/dist/module/index.js";
-import { fetchPlayers } from "../_queries/players.query.ts";
-import { fetchMessages } from "../_queries/messages.query.ts";
 import { MessageData, PlayerData } from "../_types/Database.type.ts";
-import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
-import { generateMessage } from "./prompts.ts";
-import { triggerVoteIfNeeded } from "./vote.ts";
 
-export const isHuman = (player: PlayerData) => !!player?.user_id;
-
-export const getPlayerWithOlderMessage = (
+export const getPlayersWithLeastMessages = (
   players: PlayerData[],
   messages: MessageData[]
 ) => {
-  const mostRecentMessageIndexPerPlayer: Record<string, number> = {};
-  players.forEach((player) => {
-    mostRecentMessageIndexPerPlayer[player.id] = -1;
-  });
-
-  for (let idx = messages.length - 1; idx >= 0; idx--) {
-    const message = messages[idx];
-    // if the player's index wasn't already set
-    if (mostRecentMessageIndexPerPlayer[message.player_id] === -1) {
-      // set it
-      mostRecentMessageIndexPerPlayer[message.player_id] = idx;
-    }
-  }
-
-  console.log(
-    "mostRecentMessageIndexPerPlayer",
-    mostRecentMessageIndexPerPlayer
+  const alivePlayers = players.filter((player) => !player.is_dead);
+  const filteredMessages = messages.filter((message) =>
+    alivePlayers.some((player) => player.id === message.player_id)
   );
 
-  const oldestIndex = Math.min(
-    ...Object.values(mostRecentMessageIndexPerPlayer)
+  const acc = filteredMessages.reduce(
+    (acc: Record<string, number>, message) => {
+      if (!message.player_id) return acc;
+      if (!acc[message.player_id]) {
+        acc[message.player_id] = 0;
+      }
+      acc[message.player_id]++;
+      return acc;
+    },
+    {}
   );
 
-  const oldestPlayersIds = Object.entries(mostRecentMessageIndexPerPlayer)
-    .filter(([_, index]) => index === oldestIndex)
-    .map(([player, _]) => player);
-
-  const randomPlayerId =
-    oldestPlayersIds[Math.floor(Math.random() * oldestPlayersIds.length)];
-  const randomPlayer = players.find((player) => player.id === randomPlayerId);
-  if (!randomPlayer) return players[0];
-
-  return randomPlayer;
-};
-
-export const forceBotTurns = async (
-  supabase: SupabaseClient,
-  room_id: string,
-  numberOfTurns: number
-) => {
-  while (numberOfTurns--) {
-    const players = await fetchPlayers(supabase, room_id);
-    const messages = await fetchMessages(supabase, room_id);
-    const room = await fetchRoom(supabase, room_id);
-
-    if (!players?.length) throw new Error("No players found");
-    if (!messages) throw new Error("No messages found");
-    if (!room) throw new Error("No room found");
-
-    const livingPlayers = players.filter((player) => !player.is_dead);
-    const nextPlayer = getPlayerWithOlderMessage(livingPlayers, messages);
-
-    console.log("Forcing bot ", nextPlayer.name);
-
-    await generateMessage(supabase, room_id, nextPlayer, messages, false);
-  }
-};
-
-export const nextChatTurn = async (
-  supabase: SupabaseClient,
-  room_id: string
-) => {
-  let timeout = 10;
-  while (timeout--) {
-    const players = await fetchPlayers(supabase, room_id);
-    const messages = await fetchMessages(supabase, room_id);
-    const room = await fetchRoom(supabase, room_id);
-    if (!players?.length) throw new Error("No players found");
-    if (!messages) throw new Error("No messages found");
-    if (!room) throw new Error("No room found");
-
-    if (await triggerVoteIfNeeded(supabase, room, players, messages)) return;
-
-    const livingPlayers = players.filter((player) => !player.is_dead);
-    const nextPlayer = getPlayerWithOlderMessage(livingPlayers, messages);
-    await updateRoom(supabase, room_id, {
-      next_player_id: nextPlayer.id,
-      status: "talking",
-    });
-    if (isHuman(nextPlayer)) {
-      console.log("Next player is human", nextPlayer.name);
-      return;
-    } else {
-      console.log("Next player is bot", nextPlayer.name);
-      await generateMessage(supabase, room_id, nextPlayer, messages, true);
-    }
-  }
+  const list = Object.entries(acc);
+  const minMessages = Math.min(...list.map(([, count]) => count));
+  //   const maxMessages = Math.max(...list.map(([, count]) => count));
+  const playersIdsWithLeastMessages = list
+    .filter(([, count]) => count === minMessages)
+    .map(([id]) => id);
+  const playersWithLeastMesssages = players.filter((player) =>
+    playersIdsWithLeastMessages.includes(player.id)
+  );
+  return playersWithLeastMesssages;
 };

@@ -81,7 +81,9 @@ export const Lobby: React.FC = () => {
         ))}
       </Box>
       {notEnoughPlayers && (
-        <Typography color="error">Need at least 2 players to start</Typography>
+        <Typography color="error">
+          Invite at least one more player to start
+        </Typography>
       )}
       {isHost && (
         <Button

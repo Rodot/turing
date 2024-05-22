@@ -3,7 +3,8 @@ CREATE TABLE public.rooms(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     status text DEFAULT 'lobby' ::text,
     next_player_id uuid,
-    next_vote integer,
+    last_vote integer DEFAULT 0,
+    next_vote integer DEFAULT 0,
     next_room_id uuid REFERENCES public.rooms ON DELETE SET NULL
 );
 
@@ -29,6 +30,7 @@ CREATE TABLE public.players(
     user_id uuid REFERENCES auth.users ON DELETE CASCADE,
     vote uuid REFERENCES public.players ON DELETE SET NULL,
     is_dead boolean DEFAULT FALSE,
+    is_talking boolean DEFAULT FALSE,
     name text
 );
 

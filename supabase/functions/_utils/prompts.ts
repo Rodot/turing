@@ -1,7 +1,13 @@
 import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2/dist/module/index.js";
-import { MessageData, PlayerData } from "../_types/Database.type.ts";
+import { MessageData, PlayerData, RoomData } from "../_types/Database.type.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
 import { fetchChatCompletionJson } from "../_queries/gpt.query.ts";
+import { fetchRoom } from "../_queries/room.query.ts";
+import {
+  fetchPlayer,
+  fetchPlayers,
+  updatePlayer,
+} from "../_queries/players.query.ts";
 
 const removeEmojis = (text: string) => {
   return text.replace(
@@ -67,43 +73,63 @@ export const promptForNextMessage = (
 
 export const generateMessage = async (
   supabase: SupabaseClient,
-  roomId: string,
+  room: RoomData,
   player: PlayerData,
   messages: MessageData[],
-  delayedResponse: boolean
+  wordsPerMinute: number
 ) => {
-  const prompt = promptForNextMessage(removeEmojis(player.name), messages);
-  let gptAnswer: string | undefined;
+  const updatedPlayer = await fetchPlayer(supabase, player.id);
+  if (!updatedPlayer) return;
+  if (updatedPlayer.is_talking) return;
 
-  const start = Date.now();
-  let timeout = 3;
-  while (!gptAnswer?.length && timeout--) {
-    gptAnswer = await fetchChatCompletionJson(prompt);
-    gptAnswer = cleanAnswer(gptAnswer ?? "");
+  try {
+    updatePlayer(supabase, {
+      id: player.id,
+      is_talking: true,
+    });
+
+    const prompt = promptForNextMessage(removeEmojis(player.name), messages);
+    let gptAnswer: string | undefined;
+
+    const start = Date.now();
+    let timeout = 3;
+    while (!gptAnswer?.length && timeout--) {
+      gptAnswer = await fetchChatCompletionJson(prompt);
+      gptAnswer = cleanAnswer(gptAnswer ?? "");
+    }
+    const end = Date.now();
+    const generationDelayMs = end - start;
+
+    if (!gptAnswer?.length) gptAnswer = "...";
+
+    // delay to simulate typing
+    const messageLength = gptAnswer.length;
+    // const wordsPerMinute = Math.floor(Math.random() * 30 + 30);
+    const charactersPerWord = 5;
+    const charactersPerSecond = (wordsPerMinute * charactersPerWord) / 60;
+    const typingDelayMs = (1000 * messageLength) / charactersPerSecond;
+
+    const delayMs = Math.max(0, typingDelayMs - generationDelayMs);
+    console.log(`Delaying for ${Math.floor(delayMs / 1000)}s`);
+    if (delayMs > 1000) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+    const newRoom = await fetchRoom(supabase, room.id);
+    if (!newRoom) throw new Error("No room found");
+    if (newRoom.status !== "talking" && newRoom.status !== "warmup")
+      throw new Error("Room is not talking");
+
+    await insertMessage(supabase, {
+      author: player.name,
+      user_id: player.user_id ?? undefined,
+      player_id: player.id,
+      room_id: room.id,
+      content: gptAnswer,
+    });
+  } finally {
+    updatePlayer(supabase, {
+      id: player.id,
+      is_talking: false,
+    });
   }
-  const end = Date.now();
-  const generationDelayMs = end - start;
-
-  if (!gptAnswer?.length) gptAnswer = "...";
-
-  // delay to simulate typing
-  const messageLength = gptAnswer.length;
-  const wordsPerMinute = Math.floor(Math.random() * 30 + 30);
-  const charactersPerWord = 5;
-  const charactersPerSecond = (wordsPerMinute * charactersPerWord) / 60;
-  const typingDelayMs = (1000 * messageLength) / charactersPerSecond;
-
-  const delayMs = Math.max(0, typingDelayMs - generationDelayMs);
-  console.log(`Delaying for ${Math.floor(delayMs / 1000)}s`);
-  if (delayedResponse && delayMs > 1000) {
-    await new Promise((resolve) => setTimeout(resolve, delayMs));
-  }
-
-  await insertMessage(supabase, {
-    author: player.name,
-    user_id: player.user_id ?? undefined,
-    player_id: player.id,
-    room_id: roomId,
-    content: gptAnswer,
-  });
 };

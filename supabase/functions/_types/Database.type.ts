@@ -17,6 +17,7 @@ export type RoomData = {
   id: string;
   status: string;
   next_player_id: string | null;
+  last_vote: number;
   next_vote: number;
   next_room_id: string | null;
 };
@@ -28,4 +29,5 @@ export type PlayerData = {
   user_id: string | null;
   vote: string | null;
   is_dead: boolean;
+  is_talking: boolean;
 };

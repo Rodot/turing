@@ -7,9 +7,9 @@
 
 import { insertMessage } from "../_queries/messages.query.ts";
 import { updateRoom } from "../_queries/room.query.ts";
-import { nextChatTurn } from "../_shared/chat.ts";
-import { corsHeaders } from "../_shared/cors.ts";
-import { createSupabaseClient } from "../_shared/supabase.ts";
+import { nextChatTurn } from "../_utils/chat.ts";
+import { corsHeaders } from "../_utils/cors.ts";
+import { createSupabaseClient } from "../_utils/supabase.ts";
 import { MessageData } from "../_types/Database.type.ts";
 
 Deno.serve(async (req) => {

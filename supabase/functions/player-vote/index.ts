@@ -5,20 +5,21 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
-import { insertMessage } from "../_queries/messages.query.ts";
+import { fetchMessages, insertMessage } from "../_queries/messages.query.ts";
 import {
   fetchPlayers,
   updatePlayer,
   updateRoomPlayers,
 } from "../_queries/players.query.ts";
-import { updateRoom } from "../_queries/room.query.ts";
+import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
 import {
   fetchRoomProfiles,
   fetchUserProfile,
 } from "../_queries/profiles.query.ts";
-import { corsHeaders } from "../_shared/cors.ts";
-import { nextChatTurn } from "../_shared/chat.ts";
-import { createSupabaseClient } from "../_shared/supabase.ts";
+import { corsHeaders } from "../_utils/cors.ts";
+import { nextChatTurn } from "../_utils/chat.ts";
+import { createSupabaseClient } from "../_utils/supabase.ts";
+import { nextVoteLength } from "../_utils/vote.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -41,6 +42,7 @@ Deno.serve(async (req) => {
     await updatePlayer(supabase, { id: playerId, room_id: roomId, vote });
     const profiles = await fetchRoomProfiles(supabase, roomId);
     const players = await fetchPlayers(supabase, roomId);
+    const messages = await fetchMessages(supabase, roomId);
     const numVotes = players.filter((player) => player.vote).length;
     const numLivingHumans = players
       .filter((player) => player.user_id)
@@ -129,6 +131,19 @@ Deno.serve(async (req) => {
         await updateRoom(supabase, roomId, { status: "over" });
       } else {
         // Start next chat turn
+
+        // set next vote
+        const room = await fetchRoom(supabase, roomId);
+        const numLivingPlayers = players.filter(
+          (player) => !player.is_dead
+        ).length;
+        const nextVote = messages.length + nextVoteLength(numLivingPlayers);
+        await updateRoom(supabase, roomId, {
+          status: "talking",
+          next_player_id: null,
+          last_vote: room?.next_vote,
+          next_vote: nextVote,
+        });
         await nextChatTurn(supabase, roomId);
       }
     }

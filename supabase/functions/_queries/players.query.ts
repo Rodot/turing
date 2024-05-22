@@ -10,12 +10,21 @@ export const fetchPlayers = async (
     .select("*")
     .eq("room_id", roomId);
 
-  if (error) {
-    console.error("Error fetching players:", error);
-    return [];
-  } else {
-    return data as PlayerData[];
-  }
+  if (error) throw new Error("Error fetching players:" + error.message);
+  return data as PlayerData[];
+};
+
+export const fetchPlayer = async (
+  supabase: SupabaseClient,
+  playerId: string
+) => {
+  const { data, error } = await supabase
+    .from("players")
+    .select("*")
+    .eq("id", playerId)
+    .single();
+  if (error) throw new Error("Error fetching player:" + error.message);
+  return data as PlayerData;
 };
 
 export const insertPlayers = async (
