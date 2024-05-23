@@ -50,6 +50,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
 
   const talkingPlayers = getPlayersWithLeastMessages(players, messages);
   const canTalk = talkingPlayers?.some((p) => p.id === me.id);
+  const isLate = canTalk && talkingPlayers.length <= 2;
 
   const generateAnswers = async () => {
     try {
@@ -115,6 +116,11 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   return (
     <Box sx={{ ...sx, display: "flex", flexDirection: "column" }}>
       <VoteCountdown />
+      {isLate && (
+        <Typography textAlign="center" sx={{ my: 1 }}>
+          <strong>⏰ Hurry up!</strong>
+        </Typography>
+      )}
       <Typography textAlign="center" sx={{ my: 1 }}>
         {canTalk && (
           <>
