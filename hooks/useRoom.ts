@@ -79,7 +79,7 @@ export function useRoom(profile: ProfileData | null): Room | null {
   }, [profile?.id, profile?.room_id]);
 
   const createRoom = async () => {
-    createRoomFunction(supabase);
+    await createRoomFunction(supabase);
   };
 
   const joinRoom = async (roomId: string) => {

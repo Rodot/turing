@@ -62,14 +62,19 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
       .map(() => "❌")
       .join("");
 
-    return `${scoreString} ${numVotes}`;
+    return ` ${scoreString} ${numVotes}`;
   };
 
   const clueText = () => {
     if (room?.data?.status !== "voting") return " ";
     if (votesRemaining <= 0) return " ";
-    if (me?.is_bot) return "You can't vote as you were 🤖 possessed";
-    if (!me?.vote) return <strong>Vote to eliminate a human</strong>;
+    if (me?.is_bot) return "You can't vote as you were 🤖 Possessed";
+    if (!me?.vote)
+      return (
+        <>
+          Vote to exorcise the <strong>🤖 Possessed</strong>
+        </>
+      );
     return <>Waiting for {playersDidntVoteString} to vote</>;
   };
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   List,
   ListItem,
@@ -7,6 +7,7 @@ import {
   ListItemButton,
 } from "@mui/material";
 import { ChevronLeft as ChevronLeftIcon } from "@mui/icons-material";
+import { PlayersContext } from "./contextProvider";
 
 interface DrawerContentProps {
   onCloseButtonClick: () => void;
@@ -15,6 +16,7 @@ interface DrawerContentProps {
 export const DrawerContent: React.FC<DrawerContentProps> = ({
   onCloseButtonClick,
 }) => {
+  const players = useContext(PlayersContext);
   return (
     <List>
       <ListItem>
@@ -25,6 +27,13 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
           </IconButton>
         </ListItemButton>
       </ListItem>
+      {players.map((player) => (
+        <ListItem key={player.id}>
+          <ListItemText>
+            {player.name + " 🧠".repeat(player.score)}
+          </ListItemText>
+        </ListItem>
+      ))}
     </List>
   );
 };

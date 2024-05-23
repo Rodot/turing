@@ -109,7 +109,7 @@ Deno.serve(async (req) => {
         message = `${looser?.name} was 🤖 possessed and ⚡ exorcised, well done!`;
       } else {
         // it was a human
-        message = `${looser?.name} was ⚡ exorcised... but it was 🧑 human!`;
+        message = `${looser?.name} was ⚡ exorcised... but it was 🧑 human! ${botPlayer?.name} was 🤖 possessed and went under the radar.`;
       }
       await insertMessage(supabase, {
         author: "system",

@@ -6,7 +6,7 @@ export const generateMessageFunction = async (
   roomId: string
 ) => {
   if (!roomId) return;
-  supabase.functions.invoke("generate-message", {
+  await supabase.functions.invoke("generate-message", {
     body: { roomId },
   });
 };
@@ -16,13 +16,13 @@ export const startGameFunction = async (
   roomId: string
 ) => {
   if (!roomId) return;
-  supabase.functions.invoke("start-game", {
+  await supabase.functions.invoke("start-game", {
     body: { roomId },
   });
 };
 
 export const createRoomFunction = async (supabase: SupabaseClient) => {
-  supabase.functions.invoke("create-room");
+  await supabase.functions.invoke("create-room");
 };
 
 export const playerVoteFunction = async (
@@ -40,5 +40,5 @@ export const postMessageFunction = async (
   supabase: SupabaseClient,
   message: Partial<MessageData>
 ) => {
-  supabase.functions.invoke("post-message", { body: message });
+  await supabase.functions.invoke("post-message", { body: message });
 };
