@@ -125,7 +125,7 @@ Deno.serve(async (req) => {
 
       const maxScore = Math.max(...playersAfter.map((p) => p.score));
 
-      if (maxScore >= 3) {
+      if (maxScore >= 5) {
         // Game over
         // Announce winner
         const winners = playersAfter.filter((p) => p.score === maxScore);
