@@ -59,7 +59,29 @@ export const SignUp: React.FC = () => {
       <Typography variant="h4" color="primary" fontWeight={900}>
         The Turing <strong>Trial</strong>
       </Typography>
-      <Typography>Can you distinguish AIs from your friends?</Typography>
+      <Typography>Can you distinguish your friends from the AIs?</Typography>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 2 }}>
+        <Typography variant="h6" color="primary" fontWeight={900}>
+          Rules
+        </Typography>
+        <Typography>
+          <strong>1.</strong> Everybody talk in a group chat. A random 🧑 human
+          player is 🤖 possessed by the AI, which will send messages in her
+          name.
+        </Typography>
+        <Typography>
+          <strong>2.</strong> At the end of the round, the 🧑 humans have to
+          guess who was 🤖 possessed and vote to ⚡ exorcise her.
+        </Typography>
+        <Typography>
+          <strong>3.</strong> If you were 🧑 human and correctly voted against
+          the 🤖 possessed, you get +1 🧠. If you were 🤖 possessed and avoided
+          getting ⚡ exorcised, you get +1 🧠
+        </Typography>
+        <Typography>
+          <strong>4.</strong> First one to get 5 🧠 wins.
+        </Typography>
+      </Box>
       {user?.id ? (
         <>
           <ButtonCreateGame />
