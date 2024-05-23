@@ -185,6 +185,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
           >
             <TextField
               type="text"
+              autoComplete="off"
               value={content}
               onChange={handleInputChange}
               sx={{ flexGrow: 1, mr: 1 }}
