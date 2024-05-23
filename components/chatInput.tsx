@@ -10,15 +10,23 @@ import { playerName } from "@/utils/user";
 import {
   Box,
   Button,
+  Chip,
   SxProps,
   TextField,
   Theme,
   Typography,
 } from "@mui/material";
-import { postMessageFunction } from "@/queries/functions/functions.query";
+import {
+  generateAnswersFunction,
+  postMessageFunction,
+} from "@/queries/functions/functions.query";
 import { VoteCountdown } from "./voteCountdown";
-import { getPlayersWithLeastMessages } from "@/supabase/functions/_shared/chat";
+import {
+  cleanAnswer,
+  getPlayersWithLeastMessages,
+} from "@/supabase/functions/_shared/chat";
 import { Spinner } from "./spinner";
+import { Send } from "@mui/icons-material";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -34,15 +42,31 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   const players = useContext(PlayersContext);
   const messages = useContext(MessagesContext);
 
+  if (!user) return null;
+  const roomId = room?.data?.id;
+  if (!roomId) return null;
   const me = players.find((player) => player.user_id === user?.id);
+  if (!me) return null;
 
   const talkingPlayers = getPlayersWithLeastMessages(players, messages);
-  const canTalk = talkingPlayers?.some((p) => p.id === me?.id);
+  const canTalk = talkingPlayers?.some((p) => p.id === me.id);
 
   const generateAnswers = async () => {
     try {
       setGenerationLoading(true);
-      setBotAnswers(["Beep", "Boop"]);
+      let receivedAnswers: string[] = [];
+      let timeout = 3;
+      while (!receivedAnswers?.length) {
+        if (!timeout--) throw new Error("Answer generation timed out");
+        const req: any = await generateAnswersFunction(
+          supabase,
+          roomId,
+          me.name
+        );
+        console.log(req);
+        receivedAnswers = (req?.possibleNextMessages ?? []).map(cleanAnswer);
+      }
+      setBotAnswers(receivedAnswers);
     } catch (error) {
       console.error(error);
     } finally {
@@ -58,11 +82,11 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
     try {
       setLoadingSend(true);
       await postMessageFunction(supabase, {
-        room_id: room?.data?.id,
-        user_id: user?.id,
-        player_id: me?.id,
-        author: me?.name,
-        content: text.toLowerCase(),
+        room_id: roomId,
+        user_id: user.id,
+        player_id: me.id,
+        author: me.name,
+        content: cleanAnswer(text),
       });
     } catch (error) {
       console.error(error);
@@ -89,13 +113,13 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   };
 
   return (
-    <Box sx={{ ...sx, display: "flex", flexDirection: "column", gap: 1 }}>
+    <Box sx={{ ...sx, display: "flex", flexDirection: "column" }}>
       <VoteCountdown />
       <Typography textAlign="center" sx={{ my: 1 }}>
         {canTalk && (
           <>
             Your turn to talk as{" "}
-            <strong>{me?.is_bot ? "🤖 Possesed" : "🧑 Human"}</strong>
+            <strong>{me.is_bot ? "🤖 Possesed" : "🧑 Human"}</strong>
           </>
         )}{" "}
         {!canTalk && talkingPlayers?.length && (
@@ -109,37 +133,47 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
         )}
       </Typography>
       {/* bot input */}
-      {canTalk && me?.is_bot && !botAnswers && (
-        <Button
-          variant="contained"
-          color="secondary"
-          sx={{ flexShrink: 1, flexGrow: 0 }}
-          onClick={generateAnswers}
-          disabled={loadingGeneration}
-        >
-          Generate answers
-          {loadingGeneration && <Spinner />}
-        </Button>
+      {canTalk && me.is_bot && !botAnswers && (
+        <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{ flexShrink: 1, flexGrow: 0 }}
+            onClick={generateAnswers}
+            disabled={loadingGeneration}
+          >
+            Generate answers
+            {loadingGeneration && <Spinner />}
+          </Button>
+        </Box>
       )}
-      {canTalk && me?.is_bot && botAnswers && (
+      {canTalk && me.is_bot && botAnswers && (
         <>
           {botAnswers.map((answer) => (
-            <Button
-              variant="contained"
-              color="secondary"
-              key="answer"
-              onClick={() => sendMessageFromBot(answer)}
-              disabled={loadingSend}
+            <Box
+              key={answer}
+              sx={{ display: "flex", flexDirection: "row", m: 1 }}
             >
-              &quot;{answer}&quot;
-              {loadingSend && <Spinner />}
-            </Button>
+              <Typography sx={{ p: 1, textAlign: "center", flexGrow: 1 }}>
+                {answer.toLowerCase()}
+              </Typography>
+              <Button
+                variant="contained"
+                color="secondary"
+                key="answer"
+                onClick={() => sendMessageFromBot(answer)}
+                disabled={loadingSend}
+              >
+                <Send />
+                {loadingSend && <Spinner />}
+              </Button>
+            </Box>
           ))}
         </>
       )}
 
       {/* human input */}
-      {!me?.is_bot && (
+      {!me.is_bot && (
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
           <Box
             sx={{
@@ -162,7 +196,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
               color="secondary"
               disabled={!canTalk || loadingSend}
             >
-              Send
+              <Send />
               {loadingSend && <Spinner />}
             </Button>
           </Box>

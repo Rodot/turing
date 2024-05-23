@@ -102,7 +102,7 @@ export const nextChatTurn = async (
     if (!messages) throw new Error("No messages found");
     if (!room) throw new Error("No room found");
 
-    if (await triggerVoteIfNeeded(supabase, room, players, messages)) return;
+    if (await triggerVoteIfNeeded(supabase, room, messages)) return;
 
     const nextPlayers = getPlayersWithLeastMessages(players, messages);
 

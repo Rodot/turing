@@ -1,5 +1,38 @@
 import { MessageData, PlayerData } from "../_types/Database.type.ts";
 
+export const isSystem = (message: MessageData) => {
+  if (message.author === "system") return true;
+  if (message.author === "intro") return true;
+  return false;
+};
+export const isNotSystem = (message: MessageData) => {
+  return !isSystem(message);
+};
+
+export const cleanAnswer = (str: string) => {
+  str = str.trim();
+  str = str.toLowerCase();
+  if (str.startsWith("'") && str.endsWith("'")) {
+    return str.slice(1, -1);
+  }
+  if (str.startsWith('"') && str.endsWith('"')) {
+    return str.slice(1, -1);
+  }
+  if (str.startsWith("`") && str.endsWith("`")) {
+    return str.slice(1, -1);
+  }
+  if (str.startsWith("...")) {
+    return str.slice(3);
+  }
+  if (str.endsWith("...")) {
+    return str.slice(0, -3);
+  }
+  if (str.endsWith(".")) {
+    return str.slice(0, -1);
+  }
+  return str;
+};
+
 export const getPlayersWithLeastMessages = (
   players: PlayerData[],
   messages: MessageData[]

@@ -4,6 +4,7 @@ import React from "react";
 import { User } from "@supabase/supabase-js";
 import { Box, Typography } from "@mui/material";
 import { MessageData } from "@/supabase/functions/_types/Database.type";
+import { isSystem } from "@/supabase/functions/_shared/chat";
 
 export function ChatMessage({
   message,
@@ -13,29 +14,29 @@ export function ChatMessage({
   user: User;
 }) {
   const isMe = message.user_id === user.id;
-  const isSystem = message.author === "system";
+  const fromSystem = isSystem(message);
 
   const getBgColor = () => {
     if (isMe) return "primary.main";
-    if (isSystem) return "white";
+    if (fromSystem) return "white";
     return "background.default";
   };
 
   const getColor = () => {
     if (isMe) return "primary.contrastText";
-    if (isSystem) return "primary.main";
+    if (fromSystem) return "primary.main";
     return "text.primary";
   };
 
   const getJustify = () => {
     if (isMe) return "end";
-    if (isSystem) return "center";
+    if (fromSystem) return "center";
     return "start";
   };
 
   const getTextAlign = () => {
     if (isMe) return "right";
-    if (isSystem) return "center";
+    if (fromSystem) return "center";
     return "left";
   };
 
@@ -45,11 +46,11 @@ export function ChatMessage({
         bgcolor={getBgColor()}
         color={getColor()}
         borderRadius={4}
-        p={isSystem ? 4 : 1}
+        p={fromSystem ? 4 : 1}
         m={1}
-        maxWidth={isSystem ? "100%" : "80%"}
+        maxWidth={fromSystem ? "100%" : "80%"}
       >
-        {!isSystem && (
+        {!fromSystem && (
           <Typography variant="caption" color={isMe ? "lightgrey" : "grey"}>
             {message.author}
           </Typography>

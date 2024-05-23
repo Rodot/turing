@@ -12,27 +12,6 @@ const removeEmojis = (text: string) => {
   );
 };
 
-const cleanAnswer = (str: string) => {
-  str = str.trim();
-  str = str.toLowerCase();
-  if (str.startsWith("'") && str.endsWith("'")) {
-    return str.slice(1, -1);
-  }
-  if (str.startsWith('"') && str.endsWith('"')) {
-    return str.slice(1, -1);
-  }
-  if (str.startsWith("`") && str.endsWith("`")) {
-    return str.slice(1, -1);
-  }
-  if (str.startsWith("...")) {
-    return str.slice(3);
-  }
-  if (str.endsWith("...")) {
-    return str.slice(0, -3);
-  }
-  return str;
-};
-
 const messagesToPrompt = (
   speakerName: string,
   messages: Array<MessageData>
@@ -47,11 +26,32 @@ const messagesToPrompt = (
   return prompt;
 };
 
-export const promptForNextMessage = (
+export const promptForNextMessageTeenager = (
   speakerName: string,
   messagesData: MessageData[]
 ) => {
   const systemPrompt = `You are not an AI. You are ${speakerName}, a 14 years old teenager. You will be provided an informal group conversation on whatsapp. You usually speak in short answers, a single sentence at a time, use slangs, and do a least one grammar mistake in your message. You don't use emojis. You don't use ponctuation. You have a lot of imagination and like to discuss random thoughts. You like to change topics every few messages. If you are bored or uneasy, you'll talk about a random, unrelated thought.  You will restate your name, then your next message (a single sentence). ${speakerName}, answer as a JSON object using the following keys: {myName:"...", yourNextMessage:"..."}`;
+
+  const messages = [
+    {
+      role: "system",
+      content: systemPrompt,
+    },
+    {
+      role: "user",
+      content: messagesToPrompt(speakerName, messagesData),
+    },
+  ];
+
+  return messages;
+};
+
+export const promptForNextMessageSuggestions = (
+  speakerName: string,
+  messagesData: MessageData[]
+) => {
+  const systemPrompt = `Vous jouez le rôle de ${speakerName} dans ce jeu de rôle. ${speakerName} participe à une conversation de groupe sur WhatsApp. ${speakerName} parle une courte phrase à la fois. Utilisez votre connaissance de la conversation jusqu'à présent pour dire quelque chose que ${speakerName} dirait. Pour cela, assurez-vous d'imiter la façon dont ${speakerName} a parlé jusqu'à présent, y compris la langue, la longueur du message, l'humeur, les intérêts, le dialecte, les erreurs de grammaire et les fautes de frappe. ${speakerName} réagit soit à ce que les autres viennent de dire, soit change de sujet. Donnez 3 choses différentes possibles que ${speakerName} dirait, sous cette forme d'objet JSON : {possibleNextMessages:["...","...","..."]}`;
+  // const systemPrompt = `You play as ${speakerName} in this roleplay. ${speakerName} is chatting in a group conversation on whatsapp. ${speakerName} speakes one short sentence at a time. Use your knowledge of the conversation so far to say something ${speakerName} would say. For that, make sure you mimic the way ${speakerName} has been speaking so far, including language, message length, mood, interests, dialect, grammar mistakes and typos. ${speakerName} either react to what others just said, or changes topic. Give 3 different possibles things ${speakerName} would say, as a JSON object of this shape: {possibleNextMessages:["...","...","..."]}`;
 
   const messages = [
     {
@@ -82,14 +82,16 @@ export const generateMessage = async (
       id: player.id,
     });
 
-    const prompt = promptForNextMessage(removeEmojis(player.name), messages);
+    const prompt = promptForNextMessageTeenager(
+      removeEmojis(player.name),
+      messages
+    );
     let gptAnswer: string | undefined;
 
     const start = Date.now();
     let timeout = 3;
     while (!gptAnswer?.length && timeout--) {
       gptAnswer = await fetchChatCompletionJson(prompt);
-      gptAnswer = cleanAnswer(gptAnswer ?? "");
     }
     const end = Date.now();
     const generationDelayMs = end - start;

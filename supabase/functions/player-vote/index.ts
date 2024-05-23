@@ -15,6 +15,7 @@ import {
 } from "../_utils/chat.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { nextVoteLength } from "../_utils/vote.ts";
+import { isNotSystem } from "../_shared/chat.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -144,8 +145,7 @@ Deno.serve(async (req) => {
         // set next vote
         const room = await fetchRoom(supabase, roomId);
         const nextVote =
-          messages.filter((m) => m.author !== "system").length +
-          nextVoteLength(players.length);
+          messages.filter(isNotSystem).length + nextVoteLength(players.length);
         await updateRoom(supabase, roomId, {
           status: "talking",
           next_player_id: null,

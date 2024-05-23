@@ -5,11 +5,11 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
-import { insertMessage } from "../_queries/messages.query.ts";
-import { nextChatTurn } from "../_utils/chat.ts";
+import { fetchMessages } from "../_queries/messages.query.ts";
 import { corsHeaders } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
-import { MessageData } from "../_types/Database.type.ts";
+import { fetchChatCompletionJson } from "../_queries/gpt.query.ts";
+import { promptForNextMessageSuggestions } from "../_utils/prompts.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -17,20 +17,19 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const message = (await req.json()) as Partial<MessageData>;
-    if (!message?.room_id) throw new Error("Room ID is required");
-    if (!message?.player_id) throw new Error("Player ID is required");
-    if (!message?.user_id) throw new Error("User ID is required");
-    if (!message?.content) throw new Error("Content is required");
-    if (!message?.author) throw new Error("Author is required");
+    const { roomId, playerName } = await req.json();
+    if (!roomId) throw new Error("Missing roomId");
+    if (!playerName) throw new Error("Missing playerName");
 
     const supabase = createSupabaseClient(req);
 
-    await insertMessage(supabase, message);
+    const messagesData = await fetchMessages(supabase, roomId);
 
-    await nextChatTurn(supabase, message.room_id);
+    const messages = promptForNextMessageSuggestions(playerName, messagesData);
 
-    const data = {};
+    const gptAnswer = await fetchChatCompletionJson(messages);
+
+    const data = gptAnswer;
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

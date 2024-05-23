@@ -1,18 +1,17 @@
 import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2/dist/module/index.js";
-import { MessageData, PlayerData, RoomData } from "../_types/Database.type.ts";
+import { MessageData, RoomData } from "../_types/Database.type.ts";
 import { updateRoom } from "../_queries/room.query.ts";
+import { isNotSystem } from "../_shared/chat.ts";
 
-export const nextVoteLength = (numLivingPlayers: number) => 3;
+export const nextVoteLength = (numPlayers: number) => 3 * numPlayers;
 
 export const triggerVoteIfNeeded = async (
   supabase: SupabaseClient,
   room: RoomData,
-  players: PlayerData[],
   messages: MessageData[]
 ) => {
   // not voting yet
-  if (messages.filter((m) => m.author !== "system").length < room.next_vote)
-    return false;
+  if (messages.filter(isNotSystem).length < room.next_vote) return false;
 
   console.log("Voting time!");
 
