@@ -16,7 +16,7 @@ export const fetchChatCompletionJson = async (
         model: "gpt-4o",
         response_format: { type: "json_object" },
         frequency_penalty: 2.0,
-        temperature: 1.2,
+        temperature: 1.0,
         messages,
       }),
     }
