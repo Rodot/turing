@@ -33,6 +33,12 @@ export function ChatMessage({
     return "start";
   };
 
+  const getTextAlign = () => {
+    if (isMe) return "right";
+    if (isSystem) return "center";
+    return "left";
+  };
+
   return (
     <Box display="flex" justifyContent={getJustify()}>
       <Box
@@ -48,7 +54,9 @@ export function ChatMessage({
             {message.author}
           </Typography>
         )}
-        <Typography>{message.content}</Typography>
+        <Typography sx={{ textAlign: getTextAlign() }}>
+          {message.content}
+        </Typography>
       </Box>
     </Box>
   );

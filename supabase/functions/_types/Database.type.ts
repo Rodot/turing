@@ -28,6 +28,6 @@ export type PlayerData = {
   room_id: string;
   user_id: string | null;
   vote: string | null;
-  is_dead: boolean;
-  is_talking: boolean;
+  is_bot: boolean;
+  score: number;
 };

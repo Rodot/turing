@@ -3,11 +3,7 @@ import { MessageData, PlayerData, RoomData } from "../_types/Database.type.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
 import { fetchChatCompletionJson } from "../_queries/gpt.query.ts";
 import { fetchRoom } from "../_queries/room.query.ts";
-import {
-  fetchPlayer,
-  fetchPlayers,
-  updatePlayer,
-} from "../_queries/players.query.ts";
+import { fetchPlayer, updatePlayer } from "../_queries/players.query.ts";
 
 const removeEmojis = (text: string) => {
   return text.replace(
@@ -80,12 +76,10 @@ export const generateMessage = async (
 ) => {
   const updatedPlayer = await fetchPlayer(supabase, player.id);
   if (!updatedPlayer) return;
-  if (updatedPlayer.is_talking) return;
 
   try {
     updatePlayer(supabase, {
       id: player.id,
-      is_talking: true,
     });
 
     const prompt = promptForNextMessage(removeEmojis(player.name), messages);
@@ -129,7 +123,6 @@ export const generateMessage = async (
   } finally {
     updatePlayer(supabase, {
       id: player.id,
-      is_talking: false,
     });
   }
 };

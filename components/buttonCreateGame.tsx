@@ -13,8 +13,14 @@ export const ButtonCreateGame: React.FC<Props> = ({ sx }) => {
   const [loading, setLoading] = useState(false);
 
   const startNewGame = async () => {
-    setLoading(true);
-    room?.createRoom();
+    try {
+      setLoading(true);
+      await room?.createRoom();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

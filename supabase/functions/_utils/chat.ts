@@ -1,8 +1,12 @@
 import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2/dist/module/index.js";
-import { fetchPlayers } from "../_queries/players.query.ts";
+import {
+  fetchPlayers,
+  updatePlayer,
+  updateRoomPlayers,
+} from "../_queries/players.query.ts";
 import { fetchMessages } from "../_queries/messages.query.ts";
 import { MessageData, PlayerData } from "../_types/Database.type.ts";
-import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
+import { fetchRoom } from "../_queries/room.query.ts";
 import { generateMessage } from "./prompts.ts";
 import { triggerVoteIfNeeded } from "./vote.ts";
 import { getPlayersWithLeastMessages } from "../_shared/chat.ts";
@@ -27,11 +31,6 @@ export const getPlayerWithOlderMessage = (
     }
   }
 
-  console.log(
-    "mostRecentMessageIndexPerPlayer",
-    mostRecentMessageIndexPerPlayer
-  );
-
   const oldestIndex = Math.min(
     ...Object.values(mostRecentMessageIndexPerPlayer)
   );
@@ -48,6 +47,25 @@ export const getPlayerWithOlderMessage = (
   return randomPlayer;
 };
 
+export const setRandomPlayerAsBotAndResetVotes = async (
+  supabase: SupabaseClient,
+  players: PlayerData[]
+) => {
+  if (!players?.length) throw new Error("No players to pick from");
+  const randomPlayer = players[Math.floor(Math.random() * players.length)];
+  // reset bots and votes
+  await updateRoomPlayers(supabase, {
+    room_id: players[0].room_id,
+    vote: null,
+    is_bot: false,
+  });
+  // set bot
+  await updatePlayer(supabase, {
+    id: randomPlayer.id,
+    is_bot: true,
+  });
+};
+
 export const forceBotTurns = async (
   supabase: SupabaseClient,
   room_id: string,
@@ -62,8 +80,7 @@ export const forceBotTurns = async (
     if (!messages) throw new Error("No messages found");
     if (!room) throw new Error("No room found");
 
-    const livingPlayers = players.filter((player) => !player.is_dead);
-    const player = getPlayerWithOlderMessage(livingPlayers, messages);
+    const player = getPlayerWithOlderMessage(players, messages);
 
     console.log("Forcing bot ", player.name);
 

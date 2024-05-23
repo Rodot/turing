@@ -29,8 +29,8 @@ CREATE TABLE public.players(
     room_id uuid NOT NULL REFERENCES public.rooms ON DELETE CASCADE,
     user_id uuid REFERENCES auth.users ON DELETE CASCADE,
     vote uuid REFERENCES public.players ON DELETE SET NULL,
-    is_dead boolean DEFAULT FALSE,
-    is_talking boolean DEFAULT FALSE,
+    is_bot boolean DEFAULT FALSE,
+    score integer DEFAULT 0,
     name text
 );
 

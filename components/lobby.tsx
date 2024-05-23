@@ -27,11 +27,18 @@ export const Lobby: React.FC = () => {
   const [url, setUrl] = useState("");
   const isHost = roomProfiles?.[0]?.id === user?.id;
   const me = roomProfiles?.find((profile) => profile.id === user?.id);
-  const notEnoughPlayers = roomProfiles?.length < 2;
+  // const notEnoughPlayers = roomProfiles?.length < 2;
+  const notEnoughPlayers = false;
 
   const startGame = async () => {
-    setLoading(true);
-    room?.startGame();
+    try {
+      setLoading(true);
+      room?.startGame();
+    } catch (error) {
+      console.error("Failed to start game", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

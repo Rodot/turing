@@ -61,9 +61,15 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
     <Box sx={{ ...sx, display: "flex", flexDirection: "column" }}>
       <VoteCountdown />
       <Typography textAlign="center" sx={{ mt: 1 }}>
-        {canTalk && <strong>Your turn to talk</strong>}
+        {canTalk && <strong>Your turn to talk</strong>}{" "}
         {!canTalk && talkingPlayers?.length && (
-          <>Wait for {talkingPlayers.map((p) => p.name).join(", ")}...</>
+          <>
+            Waiting for{" "}
+            {talkingPlayers.length > 2
+              ? "others"
+              : talkingPlayers.map((p) => p.name).join(", ")}
+            ...
+          </>
         )}
       </Typography>
       <form onSubmit={handleSubmit} style={{ width: "100%" }}>

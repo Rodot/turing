@@ -6,18 +6,13 @@
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
 import { fetchMessages, insertMessage } from "../_queries/messages.query.ts";
-import {
-  fetchPlayers,
-  updatePlayer,
-  updateRoomPlayers,
-} from "../_queries/players.query.ts";
+import { fetchPlayers, updatePlayer } from "../_queries/players.query.ts";
 import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
-import {
-  fetchRoomProfiles,
-  fetchUserProfile,
-} from "../_queries/profiles.query.ts";
 import { corsHeaders } from "../_utils/cors.ts";
-import { nextChatTurn } from "../_utils/chat.ts";
+import {
+  nextChatTurn,
+  setRandomPlayerAsBotAndResetVotes,
+} from "../_utils/chat.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { nextVoteLength } from "../_utils/vote.ts";
 
@@ -40,16 +35,16 @@ Deno.serve(async (req) => {
 
     // Apply player vote
     await updatePlayer(supabase, { id: playerId, room_id: roomId, vote });
-    const profiles = await fetchRoomProfiles(supabase, roomId);
     const players = await fetchPlayers(supabase, roomId);
     const messages = await fetchMessages(supabase, roomId);
     const numVotes = players.filter((player) => player.vote).length;
-    const numLivingHumans = players
-      .filter((player) => player.user_id)
-      .filter((player) => !player.is_dead).length;
+    const numHumans = players.filter((player) => !player.is_bot).length;
+    const botPlayer = players.find((player) => player.is_bot);
+
+    if (!botPlayer) throw new Error("No bot player");
 
     // All players have voted
-    if (numVotes >= numLivingHumans) {
+    if (numVotes >= numHumans) {
       // Find the most voted player
       const votes = players.reduce((acc, player) => {
         if (!player.vote) return acc;
@@ -59,43 +54,62 @@ Deno.serve(async (req) => {
       }, {} as Record<string, number>);
 
       const maxVotes = Math.max(...Object.values(votes));
-      const mostVotedPlayerIds = Object.keys(votes).filter(
-        (playerId) => votes[playerId] === maxVotes
-      );
+      const votedPlayers = Object.keys(votes)
+        .filter((playerId) => votes[playerId] === maxVotes)
+        .map((playerId) => players.find((player) => player.id === playerId));
+
+      if (!votedPlayers?.length)
+        throw new Error("Failed to find voted players");
+
+      if (votedPlayers.length > 1) {
+        await insertMessage(supabase, {
+          author: "system",
+          content: `It's a tie between ${votedPlayers
+            .map((p) => p?.name)
+            .join(" and ")}, let's roll a dice... 🎲`,
+          room_id: roomId,
+        });
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+      }
 
       // Randomly select among the most voted players
-      const randomMostVotedPlayerId =
-        mostVotedPlayerIds[
-          Math.floor(Math.random() * mostVotedPlayerIds.length)
-        ];
+      const looser =
+        votedPlayers[Math.floor(Math.random() * votedPlayers.length)];
 
-      if (!randomMostVotedPlayerId)
-        throw new Error("Failed to find the most voted player");
+      if (!looser) throw new Error("Failed to find the most voted player");
 
-      // Mark the most voted player as dead
-      await updatePlayer(supabase, {
-        id: randomMostVotedPlayerId,
-        room_id: roomId,
-        is_dead: true,
-      });
+      // +1 point for the bot if a human was voted
+      if (!looser.is_bot) {
+        await updatePlayer(supabase, {
+          id: botPlayer.id,
+          room_id: roomId,
+          score: botPlayer.score + 1,
+        });
+      }
+
+      // +1 point for those who voted for the bot
+      const roundWinners = players.filter((p) => p.vote === botPlayer.id);
+      await Promise.all(
+        roundWinners.map((winner) =>
+          updatePlayer(supabase, {
+            id: winner.id,
+            room_id: roomId,
+            score: winner.score + 1,
+          })
+        )
+      );
 
       // wait before closing vote results
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
       // Post message in chat
       let message = "";
-      const looser = players.find(
-        (player) => player.id === randomMostVotedPlayerId
-      );
-      if (looser?.user_id) {
-        // it was a human
-        const looserProfile = profiles.find(
-          (profile) => profile.id === looser?.user_id
-        );
-        message = `${looser?.name} (${looserProfile?.name}) was voted out! 💀`;
-      } else {
+      if (looser.is_bot) {
         // it was a bot
-        message = `${looser?.name} was voted out... but it was an AI! 🤖`;
+        message = `${looser?.name} was 🤖 possessed and ⚡ exorcised, well done!`;
+      } else {
+        // it was a human
+        message = `${looser?.name} was ⚡ exorcised... but it was 🧑 human!`;
       }
       await insertMessage(supabase, {
         author: "system",
@@ -103,24 +117,19 @@ Deno.serve(async (req) => {
         room_id: roomId,
       });
 
-      // Reset votes
-      await updateRoomPlayers(supabase, { room_id: roomId, vote: null });
+      // Reset votes and set random player as bot
+      await setRandomPlayerAsBotAndResetVotes(supabase, players);
 
       const playersAfter = await fetchPlayers(supabase, roomId);
-      const livingHumansAfter = playersAfter
-        .filter((player) => player.user_id)
-        .filter((player) => !player.is_dead);
 
-      if (livingHumansAfter.length <= 1) {
+      const maxScore = Math.max(...playersAfter.map((p) => p.score));
+
+      if (maxScore >= 3) {
         // Game over
         // Announce winner
-        const winner = livingHumansAfter?.[0];
-        if (winner?.user_id) {
-          const winnerProfile = await fetchUserProfile(
-            supabase,
-            winner.user_id
-          );
-          const message = `${winner.name} (${winnerProfile.name}) won! 🏆`;
+        const winners = playersAfter.filter((p) => p.score === maxScore);
+        if (winners.length) {
+          const message = `${winners.map((w) => w.name).join(" and ")} won! 🏆`;
           await insertMessage(supabase, {
             author: "system",
             content: message,
@@ -134,10 +143,9 @@ Deno.serve(async (req) => {
 
         // set next vote
         const room = await fetchRoom(supabase, roomId);
-        const numLivingPlayers = players.filter(
-          (player) => !player.is_dead
-        ).length;
-        const nextVote = messages.length + nextVoteLength(numLivingPlayers);
+        const nextVote =
+          messages.filter((m) => m.author !== "system").length +
+          nextVoteLength(players.length);
         await updateRoom(supabase, roomId, {
           status: "talking",
           next_player_id: null,

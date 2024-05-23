@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
 import {
@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import {
   MessagesContext,
-  PlayersContext,
   RoomContext,
   RoomProfilesContext,
   UserContext,
@@ -19,22 +18,26 @@ import {
 import { ChatVote } from "./chatVotes";
 import { ButtonLeaveGame } from "./buttonLeaveGame";
 import { ButtonCreateGame } from "./buttonCreateGame";
-import { ButtonJoinGame } from "./buttonJoinGame";
 
 export const Chat: React.FC = () => {
   const user = useContext(UserContext);
   const room = useContext(RoomContext);
-  const players = useContext(PlayersContext);
   const messages = useContext(MessagesContext);
   const roomProfiles = useContext(RoomProfilesContext);
 
-  const player = players?.find((player) => player.user_id === user?.id);
   const nextRoomId = room?.data?.next_room_id;
+  const host = roomProfiles?.[0];
   const isHost = roomProfiles?.[0]?.id === user?.id;
   const isWarmup = room?.data?.status === "warmup";
-  const isTalking = !player?.is_dead && room?.data?.status === "talking";
+  const isTalking = room?.data?.status === "talking";
   const isVoting = room?.data?.status === "voting";
   const isOver = room?.data?.status === "over";
+
+  useEffect(() => {
+    if (nextRoomId) {
+      room.joinRoom(nextRoomId);
+    }
+  }, [room, nextRoomId]);
 
   return (
     <Container
@@ -79,11 +82,12 @@ export const Chat: React.FC = () => {
               my: 2,
             }}
           >
-            {isHost && !nextRoomId && <ButtonCreateGame />}
-            {!isHost && !nextRoomId && (
-              <Typography>Waiting for host to start next game...</Typography>
+            {isHost && <ButtonCreateGame />}
+            {!isHost && (
+              <Typography>
+                Waiting for {host?.name} to start next game...
+              </Typography>
             )}
-            {(!isHost || nextRoomId) && <ButtonJoinGame roomId={nextRoomId} />}
             {<ButtonLeaveGame />}
           </Box>
         )}
