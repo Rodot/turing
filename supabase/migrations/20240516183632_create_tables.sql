@@ -2,7 +2,6 @@
 CREATE TABLE public.rooms(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     status text DEFAULT 'lobby' ::text,
-    next_player_id uuid,
     last_vote integer DEFAULT 0,
     next_vote integer DEFAULT 0,
     next_room_id uuid REFERENCES public.rooms ON DELETE SET NULL

@@ -97,17 +97,7 @@ Deno.serve(async (req) => {
       // Post message in chat
       let message = "";
 
-      if (!botPlayer) {
-        if (!blankVoters.length) {
-          // people guessed there was no bot
-          message = `+1 🧠 for ${blankVoters
-            .map((p) => p.name)
-            .join(" and ")} who realized 🚫 nobody was 🤖 possessed`;
-        } else {
-          // nobody guessed there was no bot
-          message = `Nobody guessed 🚫 nobody was 🤖 possessed`;
-        }
-      } else {
+      if (botPlayer) {
         if (botVoters.length) {
           // bot was fount
           message = `+1 🧠 for ${botVoters
@@ -119,15 +109,22 @@ Deno.serve(async (req) => {
           // bot escaped
           message = `+1 🧠 for ${botPlayer?.name} the 🤖 possessed who escaped`;
         }
+      } else {
+        if (blankVoters.length) {
+          // people guessed there was no bot
+          message = `+1 🧠 for ${blankVoters
+            .map((p) => p.name)
+            .join(" and ")} who realized that nobody was 🤖 possessed`;
+        } else {
+          // nobody guessed there was no bot
+          message = `Nobody guessed that nobody was 🤖 possessed`;
+        }
       }
       await insertMessage(supabase, {
         author: "system",
         content: message,
         room_id: roomId,
       });
-
-      // Reset votes and set random player as bot
-      await setRandomPlayerAsBotAndResetVotes(supabase, players);
 
       const playersAfter = await fetchPlayers(supabase, roomId);
 
@@ -150,22 +147,25 @@ Deno.serve(async (req) => {
       } else {
         // Start next chat turn
 
+        // Reset votes and set random player as bot
+        await setRandomPlayerAsBotAndResetVotes(supabase, players);
+
         // set next vote
         const room = await fetchRoom(supabase, roomId);
         const nextVote =
           messages.filter(isNotSystem).length + nextVoteLength(players.length);
+
         await updateRoom(supabase, roomId, {
           status: "talking",
-          next_player_id: null,
           last_vote: room?.next_vote,
           next_vote: nextVote,
         });
 
-        await insertMessage(supabase, {
-          room_id: roomId,
-          author: "intro",
-          content: pickRandom(iceBreakersFr),
-        });
+        // await insertMessage(supabase, {
+        //   room_id: roomId,
+        //   author: "intro",
+        //   content: pickRandom(iceBreakersFr),
+        // });
       }
     }
 

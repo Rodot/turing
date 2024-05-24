@@ -102,7 +102,7 @@ export const Lobby: React.FC = () => {
           {loading && <Spinner />}
         </Button>
       )}
-      <ButtonLeaveGame sx={{ mt: 4 }} />
+      <ButtonLeaveGame sx={{ mt: 4 }} label={"Leave Game"} />
     </Container>
   );
 };

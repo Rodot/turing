@@ -52,7 +52,6 @@ export const setRandomPlayerAsBotAndResetVotes = async (
   players: PlayerData[]
 ) => {
   if (!players?.length) throw new Error("No players to pick from");
-  const randomPlayer = players[Math.floor(Math.random() * players.length)];
   // reset bots and votes
   await updateRoomPlayers(supabase, {
     room_id: players[0].room_id,
@@ -63,6 +62,7 @@ export const setRandomPlayerAsBotAndResetVotes = async (
 
   // set bot (70% chance)
   if (Math.random() <= 0.7) {
+    const randomPlayer = players[Math.floor(Math.random() * players.length)];
     await updatePlayer(supabase, {
       id: randomPlayer.id,
       is_bot: true,

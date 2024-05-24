@@ -2,19 +2,25 @@ import React from "react";
 import { Logout } from "@mui/icons-material";
 import { Button, SxProps, Theme } from "@mui/material";
 import { useContext, useState } from "react";
-import { RoomContext } from "./contextProvider";
+import { PlayersContext, RoomContext } from "./contextProvider";
+import { deletePlayer } from "@/queries/db/players.query";
+import { supabase } from "@/utils/supabase/client";
 
 interface Props {
+  label?: string;
   sx?: SxProps<Theme>;
 }
 
-export const ButtonLeaveGame: React.FC<Props> = ({ sx }) => {
+export const ButtonLeaveGame: React.FC<Props> = ({ sx, label }) => {
   const room = useContext(RoomContext);
+  const players = useContext(PlayersContext);
+  const me = players?.find((p) => p.id === p?.id);
   const [loading, setLoading] = useState(false);
 
   const leaveGame = async () => {
     try {
       setLoading(true);
+      if (me?.id) await deletePlayer(supabase, me.id);
       await room?.leaveRoom();
     } finally {
       setLoading(false);
@@ -28,8 +34,8 @@ export const ButtonLeaveGame: React.FC<Props> = ({ sx }) => {
       onClick={leaveGame}
       disabled={loading || !room?.data?.id}
     >
-      <Logout sx={{ mr: 1 }} />
-      Leave Game
+      <Logout sx={{ mr: label?.length ? 1 : 0 }} />
+      {label}
     </Button>
   );
 };

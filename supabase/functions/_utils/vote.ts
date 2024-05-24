@@ -11,12 +11,9 @@ export const triggerVoteIfNeeded = async (
   // not voting yet
   if (messages.filter(isNotSystem).length < room.next_vote) return false;
 
-  console.log("Voting time!");
-
   // start voting
   await updateRoom(supabase, room.id, {
     status: "voting",
-    next_player_id: null,
   });
 
   return true;

@@ -27,6 +27,19 @@ export const fetchPlayer = async (
   return data as PlayerData;
 };
 
+export const deletePlayer = async (
+  supabase: SupabaseClient,
+  playerId: string
+) => {
+  const deleteResponse = await supabase
+    .from("players")
+    .delete()
+    .eq("id", playerId);
+  if (deleteResponse.error) {
+    throw new Error("Error deleting player: " + deleteResponse.error.message);
+  }
+};
+
 export const insertPlayers = async (
   supabase: SupabaseClient,
   players: Partial<PlayerData>[]

@@ -6,7 +6,6 @@
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
 import { fetchMessages, insertMessage } from "../_queries/messages.query.ts";
-import { nextChatTurn } from "../_utils/chat.ts";
 import { corsHeaders } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { MessageData } from "../_types/Database.type.ts";
@@ -21,6 +20,7 @@ Deno.serve(async (req) => {
 
   try {
     const message = (await req.json()) as Partial<MessageData>;
+
     if (!message?.room_id) throw new Error("Room ID is required");
     if (!message?.player_id) throw new Error("Player ID is required");
     if (!message?.user_id) throw new Error("User ID is required");
@@ -29,6 +29,8 @@ Deno.serve(async (req) => {
 
     const supabase = createSupabaseClient(req);
 
+    await insertMessage(supabase, message);
+
     const players = await fetchPlayers(supabase, message?.room_id);
     const messages = await fetchMessages(supabase, message?.room_id);
     const room = await fetchRoom(supabase, message?.room_id);
@@ -36,9 +38,7 @@ Deno.serve(async (req) => {
     if (!messages) throw new Error("No messages found");
     if (!room) throw new Error("No room found");
 
-    await insertMessage(supabase, message);
-
-    if (await triggerVoteIfNeeded(supabase, room, messages)) return;
+    await triggerVoteIfNeeded(supabase, room, messages);
 
     const data = {};
 

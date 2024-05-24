@@ -39,7 +39,6 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   const room = useContext(RoomContext);
   const players = useContext(PlayersContext);
   const messages = useContext(MessagesContext);
-
   if (!user) return null;
   const roomId = room?.data?.id;
   if (!roomId) return null;
@@ -150,7 +149,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
           <>
             {botAnswers.map((answer) => (
               <Box key={answer} sx={{ display: "flex", flexDirection: "row" }}>
-                <Typography sx={{ textAlign: "center", flexGrow: 1 }}>
+                <Typography sx={{ textAlign: "center", flexGrow: 1, mr: 1 }}>
                   {answer.toLowerCase()}
                 </Typography>
                 <Button

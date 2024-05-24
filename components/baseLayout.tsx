@@ -1,10 +1,11 @@
 "use client";
 import React, { useContext } from "react";
-import { AppBar, Toolbar, Typography, Button } from "@mui/material";
+import { AppBar, Toolbar, Typography, Link } from "@mui/material";
 import { RoomContext } from "./contextProvider";
 import { Chat } from "./chat";
 import { Lobby } from "./lobby";
 import { SignUp } from "./signUp";
+import { ButtonLeaveGame } from "./buttonLeaveGame";
 
 export const BaseLayout = () => {
   const room = useContext(RoomContext);
@@ -19,10 +20,19 @@ export const BaseLayout = () => {
     <>
       <AppBar>
         <Toolbar>
-          <Typography sx={{ flexGrow: "1" }}>The Turing Trial</Typography>
-          <Button color="secondary" href="https://betaLab.fr" target="_blank">
-            By BetaLab.fr
-          </Button>
+          <Typography sx={{ flexGrow: "1" }}>
+            The Turing Trial{" "}
+            <Link
+              href="https://betaLab.fr"
+              target="_blank"
+              color="secondary.main"
+              underline="hover"
+            >
+              by BetaLab.fr
+            </Link>
+          </Typography>
+
+          <ButtonLeaveGame label={"leave"} />
         </Toolbar>
       </AppBar>
       {router()}
