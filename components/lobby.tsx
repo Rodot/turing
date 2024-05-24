@@ -27,8 +27,7 @@ export const Lobby: React.FC = () => {
   const [url, setUrl] = useState("");
   const isHost = roomProfiles?.[0]?.id === user?.id;
   const me = roomProfiles?.find((profile) => profile.id === user?.id);
-  // const notEnoughPlayers = roomProfiles?.length < 2;
-  const notEnoughPlayers = false;
+  const notEnoughPlayers = roomProfiles?.length < 3;
 
   const startGame = async () => {
     try {
@@ -89,7 +88,7 @@ export const Lobby: React.FC = () => {
       </Box>
       {notEnoughPlayers && (
         <Typography color="error">
-          Invite at least one more player to start
+          At least 3 players required to play, invite somebody!
         </Typography>
       )}
       {isHost && (
