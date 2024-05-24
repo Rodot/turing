@@ -67,11 +67,6 @@ export const Lobby: React.FC = () => {
       <Typography variant="h4" color="primary" fontWeight={900}>
         {isHost ? "Ready?" : "Get ready..."}
       </Typography>
-      <Typography>
-        {isHost
-          ? "Start once all players are here"
-          : `Waiting for ${roomProfiles?.[0]?.name} to start the game`}
-      </Typography>
       <Box
         sx={{
           display: "flex",
@@ -88,9 +83,12 @@ export const Lobby: React.FC = () => {
       </Box>
       {notEnoughPlayers && (
         <Typography color="error">
-          At least 3 players required to play, invite somebody!
+          3 or more players required to play
         </Typography>
       )}
+      <Typography>
+        {!isHost && `Waiting for ${roomProfiles?.[0]?.name} to start the game`}
+      </Typography>
       {isHost && (
         <Button
           color="secondary"
