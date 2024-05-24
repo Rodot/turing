@@ -66,15 +66,15 @@ export const SignUp: React.FC = () => {
           Rules
         </Typography>
         <Typography>
-          <strong>1.</strong> You are in a group chat. A player is 🤖 possessed
-          by the AI, which will send messages in her name.
+          <strong>1.</strong> You are in a group chat... but one of the players
+          is be possessed by an AI, which will pretend to be the player.
         </Typography>
         <Typography>
-          <strong>2.</strong> At the end of a round, guess who was 🤖 possessed
-          to get +1 🧠. The 🤖 possessed gets +1 🧠 by remaining undetected.
+          <strong>2.</strong> At the end of a round, guess who was possessed to
+          get 1 🧠. The possessed player gets 1 🧠 by remaining undetected.
         </Typography>
         <Typography>
-          <strong>3.</strong> Get 5 x 🧠 to win.
+          <strong>3.</strong> Get 5 🧠 to win.
         </Typography>
       </Box>
       {user?.id ? (
