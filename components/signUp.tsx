@@ -71,15 +71,10 @@ export const SignUp: React.FC = () => {
         </Typography>
         <Typography>
           <strong>2.</strong> At the end of a round, guess who was 🤖 possessed
-          and vote to ⚡ exorcise her.
+          to get +1 🧠. The 🤖 possessed gets +1 🧠 by remaining undetected.
         </Typography>
         <Typography>
-          <strong>3.</strong> Vote against the 🤖 possessed to get +1 🧠.
-          <br />
-          The 🤖 possessed gets +1 🧠 by remaining undetected.
-        </Typography>
-        <Typography>
-          <strong>4.</strong> Get 5 x 🧠 to win.
+          <strong>3.</strong> Get 5 x 🧠 to win.
         </Typography>
       </Box>
       {user?.id ? (
