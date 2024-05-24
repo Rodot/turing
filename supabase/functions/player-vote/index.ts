@@ -97,20 +97,29 @@ Deno.serve(async (req) => {
 
       // Post message in chat
       let message = "";
+
       if (!botPlayer) {
-        message = `+1 🧠 for ${blankVoters
-          .map((p) => p.name)
-          .join(" and ")} who realized 🚫 nobody was 🤖 possessed`;
-      } else if (botVoters.length) {
-        // bot was fount
-        message = `+1 🧠 for ${botVoters
-          .map((p) => p.name)
-          .join(" and ")} who ⚡ exorcised ${
-          botPlayer?.name
-        } the 🤖 possessed `;
+        if (!blankVoters.length) {
+          // people guessed there was no bot
+          message = `+1 🧠 for ${blankVoters
+            .map((p) => p.name)
+            .join(" and ")} who realized 🚫 nobody was 🤖 possessed`;
+        } else {
+          // nobody guessed there was no bot
+          message = `Nobody guessed 🚫 nobody was 🤖 possessed`;
+        }
       } else {
-        // bot escaped
-        message = `+1 🧠 for ${botPlayer?.name} the 🤖 possessed who escaped`;
+        if (botVoters.length) {
+          // bot was fount
+          message = `+1 🧠 for ${botVoters
+            .map((p) => p.name)
+            .join(" and ")} who ⚡ exorcised ${
+            botPlayer?.name
+          } the 🤖 possessed `;
+        } else {
+          // bot escaped
+          message = `+1 🧠 for ${botPlayer?.name} the 🤖 possessed who escaped`;
+        }
       }
       await insertMessage(supabase, {
         author: "system",

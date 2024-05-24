@@ -8,12 +8,12 @@
 import { fetchRoomProfiles } from "../_queries/profiles.query.ts";
 import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
 import { nextChatTurn } from "../_utils/chat.ts";
-import { nextVoteLength } from "../_utils/vote.ts";
 import { corsHeaders } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { PlayerData } from "../_types/Database.type.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
 import { insertPlayers } from "../_queries/players.query.ts";
+import { nextVoteLength } from "../_shared/chat.ts";
 
 const names = [
   "🐶 Alice",

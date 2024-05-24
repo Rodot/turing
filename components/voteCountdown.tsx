@@ -19,8 +19,6 @@ export const VoteCountdown: React.FC<Props> = ({ sx }) => {
     Math.min((100 * (numMessages - lastVote)) / (nextVote - lastVote), 100)
   );
 
-  console.log(lastVote, nextVote, numMessages, progress);
-
   return (
     <LinearProgress color="secondary" variant="determinate" value={progress} />
   );

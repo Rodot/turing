@@ -3,6 +3,7 @@ import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
 import {
   Box,
+  Chip,
   Container,
   LinearProgress,
   Paper,
@@ -11,6 +12,7 @@ import {
 } from "@mui/material";
 import {
   MessagesContext,
+  PlayersContext,
   RoomContext,
   RoomProfilesContext,
   UserContext,
@@ -24,6 +26,7 @@ export const Chat: React.FC = () => {
   const room = useContext(RoomContext);
   const messages = useContext(MessagesContext);
   const roomProfiles = useContext(RoomProfilesContext);
+  const players = useContext(PlayersContext);
 
   const nextRoomId = room?.data?.next_room_id;
   const host = roomProfiles?.[0];
@@ -50,6 +53,25 @@ export const Chat: React.FC = () => {
       }}
     >
       <Toolbar /> {/* empty toolbar to avoid covering page content */}
+      <Paper
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          alignContent: "center",
+          justifyContent: "center",
+          p: 1,
+          gap: 1,
+          borderRadius: 0,
+          zIndex: 2,
+        }}
+      >
+        {players.map((player) => (
+          <Chip
+            key={player.id}
+            label={player.name + " " + "🧠".repeat(player.score)}
+          />
+        ))}
+      </Paper>
       <ChatHistory
         sx={{
           flexGrow: 1,
@@ -57,7 +79,7 @@ export const Chat: React.FC = () => {
           overflowX: "hidden",
         }}
       />
-      <Paper elevation={8} sx={{ borderRadius: 0 }}>
+      <Paper elevation={8} sx={{ borderRadius: 0, zIndex: 2 }}>
         {isWarmup && (
           <Box>
             <LinearProgress
