@@ -63,6 +63,7 @@ export const Chat: React.FC = () => {
           gap: 1,
           borderRadius: 0,
           zIndex: 2,
+          flexWrap: "wrap",
         }}
       >
         {players.map((player) => (
