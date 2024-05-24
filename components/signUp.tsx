@@ -13,6 +13,7 @@ import { UserContext } from "./contextProvider";
 import { Spinner } from "./spinner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ButtonCreateGame } from "./buttonCreateGame";
+import { Send } from "@mui/icons-material";
 
 export const SignUp: React.FC = () => {
   const user = useContext(UserContext);
@@ -59,27 +60,26 @@ export const SignUp: React.FC = () => {
       <Typography variant="h4" color="primary" fontWeight={900}>
         The Turing <strong>Trial</strong>
       </Typography>
-      <Typography>Can you distinguish your friends from the AIs?</Typography>
+      <Typography>Can you distinguish your friend from AIs?</Typography>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 2 }}>
         <Typography variant="h6" color="primary" fontWeight={900}>
           Rules
         </Typography>
         <Typography>
-          <strong>1.</strong> Everybody talk in a group chat. A random 🧑 human
-          player is 🤖 possessed by the AI, which will send messages in her
-          name.
+          <strong>1.</strong> You are in a group chat. A player is 🤖 possessed
+          by the AI, which will send messages in her name.
         </Typography>
         <Typography>
-          <strong>2.</strong> At the end of the round, the 🧑 humans have to
-          guess who was 🤖 possessed and vote to ⚡ exorcise her.
+          <strong>2.</strong> At the end of a round, guess who was 🤖 possessed
+          and vote to ⚡ exorcise her.
         </Typography>
         <Typography>
-          <strong>3.</strong> If you were 🧑 human and correctly voted against
-          the 🤖 possessed, you get +1 🧠. If you were 🤖 possessed and avoided
-          getting ⚡ exorcised, you get +1 🧠
+          <strong>3.</strong> Vote against the 🤖 possessed to get +1 🧠.
+          <br />
+          The 🤖 possessed gets +1 🧠 by remaining undetected.
         </Typography>
         <Typography>
-          <strong>4.</strong> First one to get 5 🧠 wins.
+          <strong>4.</strong> Get 5 x 🧠 to win.
         </Typography>
       </Box>
       {user?.id ? (
@@ -100,7 +100,7 @@ export const SignUp: React.FC = () => {
             }}
           >
             <TextField
-              label="Name"
+              label="Your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               sx={{ mr: 1 }}
@@ -112,7 +112,7 @@ export const SignUp: React.FC = () => {
               color="secondary"
               disabled={loading || name.length < 3}
             >
-              Play
+              <Send />
               {loading && <Spinner />}
             </Button>
           </Box>

@@ -57,13 +57,17 @@ export const setRandomPlayerAsBotAndResetVotes = async (
   await updateRoomPlayers(supabase, {
     room_id: players[0].room_id,
     vote: null,
+    vote_blank: false,
     is_bot: false,
   });
-  // set bot
-  await updatePlayer(supabase, {
-    id: randomPlayer.id,
-    is_bot: true,
-  });
+
+  // set bot (70% chance)
+  if (Math.random() <= 0.7) {
+    await updatePlayer(supabase, {
+      id: randomPlayer.id,
+      is_bot: true,
+    });
+  }
 };
 
 export const forceBotTurns = async (

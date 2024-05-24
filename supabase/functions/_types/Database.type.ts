@@ -28,6 +28,7 @@ export type PlayerData = {
   room_id: string;
   user_id: string | null;
   vote: string | null;
+  vote_blank: boolean;
   is_bot: boolean;
   score: number;
 };

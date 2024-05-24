@@ -6,11 +6,9 @@ import {
   RoomContext,
   UserContext,
 } from "./contextProvider";
-import { playerName } from "@/utils/user";
 import {
   Box,
   Button,
-  Chip,
   SxProps,
   TextField,
   Theme,
@@ -114,101 +112,93 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   };
 
   return (
-    <Box sx={{ ...sx, display: "flex", flexDirection: "column" }}>
+    <>
       <VoteCountdown />
-      {isLate && (
-        <Typography textAlign="center" sx={{ my: 1 }}>
-          <strong>⏰ Hurry up!</strong>
-        </Typography>
-      )}
-      <Typography textAlign="center" sx={{ my: 1 }}>
-        {canTalk && (
-          <>
-            Your turn to talk as{" "}
-            <strong>{me.is_bot ? "🤖 Possesed" : "🧑 Human"}</strong>
-          </>
-        )}{" "}
+      <Box
+        sx={{ ...sx, display: "flex", flexDirection: "column", gap: 1, p: 1 }}
+      >
+        {isLate && (
+          <Typography textAlign="center">
+            <strong>⏰ Hurry up!</strong>
+          </Typography>
+        )}
         {!canTalk && talkingPlayers?.length && (
-          <>
+          <Typography textAlign="center">
             Waiting for{" "}
             {talkingPlayers.length > 2
               ? "others"
               : talkingPlayers.map((p) => p.name).join(", ")}
             ...
+          </Typography>
+        )}
+        {/* bot input */}
+        {me.is_bot && !botAnswers && (
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{ flexShrink: 1, flexGrow: 0 }}
+              onClick={generateAnswers}
+              disabled={loadingGeneration || !canTalk}
+            >
+              Generate 🤖 possessed answers
+              {loadingGeneration && <Spinner />}
+            </Button>
+          </Box>
+        )}
+        {me.is_bot && botAnswers && (
+          <>
+            {botAnswers.map((answer) => (
+              <Box key={answer} sx={{ display: "flex", flexDirection: "row" }}>
+                <Typography sx={{ textAlign: "center", flexGrow: 1 }}>
+                  {answer.toLowerCase()}
+                </Typography>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  key="answer"
+                  onClick={() => sendMessageFromBot(answer)}
+                  disabled={loadingSend || !canTalk}
+                >
+                  <Send />
+                  {loadingSend && <Spinner />}
+                </Button>
+              </Box>
+            ))}
           </>
         )}
-      </Typography>
-      {/* bot input */}
-      {canTalk && me.is_bot && !botAnswers && (
-        <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-          <Button
-            variant="contained"
-            color="secondary"
-            sx={{ flexShrink: 1, flexGrow: 0 }}
-            onClick={generateAnswers}
-            disabled={loadingGeneration}
-          >
-            Generate answers
-            {loadingGeneration && <Spinner />}
-          </Button>
-        </Box>
-      )}
-      {canTalk && me.is_bot && botAnswers && (
-        <>
-          {botAnswers.map((answer) => (
+
+        {/* human input */}
+        {!me.is_bot && (
+          <form onSubmit={handleSubmit}>
             <Box
-              key={answer}
-              sx={{ display: "flex", flexDirection: "row", m: 1 }}
+              sx={{
+                display: "flex",
+                alignContent: "center",
+                justifyContent: "center",
+              }}
             >
-              <Typography sx={{ p: 1, textAlign: "center", flexGrow: 1 }}>
-                {answer.toLowerCase()}
-              </Typography>
+              <TextField
+                type="text"
+                autoComplete="off"
+                value={content}
+                onChange={handleInputChange}
+                label="Talking as 🧑 human"
+                sx={{ flexGrow: 1, mr: 1 }}
+              />
               <Button
+                type="submit"
                 variant="contained"
                 color="secondary"
-                key="answer"
-                onClick={() => sendMessageFromBot(answer)}
-                disabled={loadingSend}
+                disabled={!canTalk || loadingSend}
               >
                 <Send />
                 {loadingSend && <Spinner />}
               </Button>
             </Box>
-          ))}
-        </>
-      )}
-
-      {/* human input */}
-      {!me.is_bot && (
-        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-          <Box
-            sx={{
-              display: "flex",
-              alignContent: "center",
-              justifyContent: "center",
-              p: 1,
-            }}
-          >
-            <TextField
-              type="text"
-              autoComplete="off"
-              value={content}
-              onChange={handleInputChange}
-              sx={{ flexGrow: 1, mr: 1 }}
-              label={"Talk as " + playerName(user?.id, players)}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              color="secondary"
-              disabled={!canTalk || loadingSend}
-            >
-              <Send />
-              {loadingSend && <Spinner />}
-            </Button>
-          </Box>
-        </form>
-      )}
-    </Box>
+          </form>
+        )}
+      </Box>
+    </>
   );
 };

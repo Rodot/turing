@@ -8,7 +8,8 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata = {
   metadataBase: new URL(defaultUrl),
   title: "The Turing Trial by BetaLab.fr",
-  description: "Can you distinguish AIs from your friends?",
+  description:
+    "Can you distinguish your friend from AIs? A 15 minutes party game, no account/app required.",
 };
 
 export default function RootLayout({

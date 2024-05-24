@@ -3,8 +3,6 @@ import { MessageData, RoomData } from "../_types/Database.type.ts";
 import { updateRoom } from "../_queries/room.query.ts";
 import { isNotSystem } from "../_shared/chat.ts";
 
-export const nextVoteLength = (numPlayers: number) => 3 * numPlayers;
-
 export const triggerVoteIfNeeded = async (
   supabase: SupabaseClient,
   room: RoomData,
