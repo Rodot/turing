@@ -5,11 +5,14 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
-import { insertMessage } from "../_queries/messages.query.ts";
+import { fetchMessages, insertMessage } from "../_queries/messages.query.ts";
 import { nextChatTurn } from "../_utils/chat.ts";
 import { corsHeaders } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { MessageData } from "../_types/Database.type.ts";
+import { triggerVoteIfNeeded } from "../_utils/vote.ts";
+import { fetchPlayers } from "../_queries/players.query.ts";
+import { fetchRoom } from "../_queries/room.query.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -26,9 +29,16 @@ Deno.serve(async (req) => {
 
     const supabase = createSupabaseClient(req);
 
+    const players = await fetchPlayers(supabase, message?.room_id);
+    const messages = await fetchMessages(supabase, message?.room_id);
+    const room = await fetchRoom(supabase, message?.room_id);
+    if (!players?.length) throw new Error("No players found");
+    if (!messages) throw new Error("No messages found");
+    if (!room) throw new Error("No room found");
+
     await insertMessage(supabase, message);
 
-    await nextChatTurn(supabase, message.room_id);
+    if (await triggerVoteIfNeeded(supabase, room, messages)) return;
 
     const data = {};
 

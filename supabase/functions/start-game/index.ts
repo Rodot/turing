@@ -7,87 +7,13 @@
 
 import { fetchRoomProfiles } from "../_queries/profiles.query.ts";
 import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
-import { nextChatTurn } from "../_utils/chat.ts";
 import { corsHeaders } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { PlayerData } from "../_types/Database.type.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
 import { insertPlayers } from "../_queries/players.query.ts";
 import { nextVoteLength } from "../_shared/chat.ts";
-
-const names = [
-  "🐶 Alice",
-  "🌳 Bob",
-  "🍎 Charlie",
-  "🚗 David",
-  "🎈 Eve",
-  "🌞 Frank",
-  "🌧️ Grace",
-  "🍕 Heidi",
-  "🏀 Ivan",
-  "🎧 Judy",
-  "🎁 Kevin",
-  "🚀 Mallory",
-  "🌈 Nancy",
-  "🎩 Olivia",
-  "🐠 Peggy",
-  "🍦 Quentin",
-  "🏖️ Romeo",
-  "🎃 Sybil",
-  "📚 Trent",
-  "🎸 Ursula",
-  "🌺 Victor",
-  "🍿 Walter",
-  "🏋️‍♀️ Xavier",
-  "🎡 Yvonne",
-  "🐎 Zelda",
-];
-
-export const iceBreakersEn = [
-  "If you could have any superpower, what would it be and why?",
-  "What's the most adventurous thing you've ever done?",
-  "If you could travel anywhere in the world, where would you go and why?",
-  "What's your favorite movie or TV show, and what do you love about it?",
-  "If you could meet any historical figure, who would it be and what would you ask them?",
-  "What's the most interesting or unusual job you've ever had?",
-  "If you could instantly become an expert in one skill or hobby, what would it be?",
-  "What's the best piece of advice you've ever received?",
-  "If you could have dinner with any three people, living or dead, who would they be?",
-  "What's your favorite book, and how has it influenced you?",
-  "If you could time travel, would you go to the past or the future, and why?",
-  "What's the most memorable gift you've ever received or given?",
-  "If you could switch lives with someone for a day, who would it be and why?",
-  "What's the most interesting place you've ever visited?",
-  "If you could have any animal as a pet, what would it be?",
-  "What's your favorite childhood memory?",
-  "If you could learn any language instantly, which one would you choose?",
-  "What's the most daring food you've ever tried?",
-  "If you could be any fictional character, who would you choose and why?",
-  "What's the most important life lesson you've learned so far?",
-];
-
-export const iceBreakersFr = [
-  "Si vous pouviez avoir un superpouvoir, lequel choisiriez-vous et pourquoi ?",
-  "Quelle est l'aventure la plus folle que vous ayez vécue ?",
-  "Si vous pouviez voyager n'importe où dans le monde, où iriez-vous et pourquoi ?",
-  "Quel est votre film ou votre émission de télévision préférée, et qu'est-ce que vous aimez à son sujet ?",
-  "Si vous pouviez rencontrer un personnage historique, qui choisiriez-vous et que lui demanderiez-vous ?",
-  "Quel est le travail le plus intéressant ou inhabituel que vous ayez jamais eu ?",
-  "Si vous pouviez instantanément devenir expert dans une compétence ou un passe-temps, lequel choisiriez-vous ?",
-  "Quel est le meilleur conseil que vous ayez jamais reçu ?",
-  "Si vous pouviez dîner avec trois personnes, vivantes ou décédées, qui choisiriez-vous ?",
-  "Quel est votre livre préféré, et comment vous a-t-il influencé ?",
-  "Si vous pouviez voyager dans le temps, iriez-vous dans le passé ou dans le futur, et pourquoi ?",
-  "Quel est le cadeau le plus mémorable que vous ayez jamais reçu ou offert ?",
-  "Si vous pouviez échanger de vie avec quelqu'un pendant une journée, qui choisiriez-vous et pourquoi ?",
-  "Quel est l'endroit le plus intéressant que vous ayez jamais visité ?",
-  "Si vous pouviez avoir n'importe quel animal comme animal de compagnie, lequel choisiriez-vous ?",
-  "Quel est votre souvenir d'enfance préféré ?",
-  "Si vous pouviez apprendre n'importe quelle langue instantanément, laquelle choisiriez-vous ?",
-  "Quel est le plat le plus audacieux que vous ayez jamais essayé ?",
-  "Si vous pouviez être n'importe quel personnage de fiction, qui choisiriez-vous et pourquoi ?",
-  "Quelle est la leçon de vie la plus importante que vous ayez apprise jusqu'à présent ?",
-];
+import { iceBreakersFr } from "../_shared/lang.ts";
 
 export const popRandom = <T>(array: Array<T>): T => {
   const index = Math.floor(Math.random() * array.length);
@@ -147,7 +73,6 @@ Deno.serve(async (req) => {
     const nextVote = nextVoteLength(players.length);
     const newRoom = { status: "talking", next_vote: nextVote };
     await updateRoom(supabase, roomId, newRoom);
-    await nextChatTurn(supabase, roomId);
 
     const data = {};
 

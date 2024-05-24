@@ -9,12 +9,11 @@ import { fetchMessages, insertMessage } from "../_queries/messages.query.ts";
 import { fetchPlayers, updatePlayer } from "../_queries/players.query.ts";
 import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
 import { corsHeaders } from "../_utils/cors.ts";
-import {
-  nextChatTurn,
-  setRandomPlayerAsBotAndResetVotes,
-} from "../_utils/chat.ts";
+import { setRandomPlayerAsBotAndResetVotes } from "../_utils/chat.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { isNotSystem, nextVoteLength } from "../_shared/chat.ts";
+import { pickRandom } from "../start-game/index.ts";
+import { iceBreakersFr } from "../_shared/lang.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -161,7 +160,12 @@ Deno.serve(async (req) => {
           last_vote: room?.next_vote,
           next_vote: nextVote,
         });
-        await nextChatTurn(supabase, roomId);
+
+        await insertMessage(supabase, {
+          room_id: roomId,
+          author: "intro",
+          content: pickRandom(iceBreakersFr),
+        });
       }
     }
 
