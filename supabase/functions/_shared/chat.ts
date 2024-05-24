@@ -1,6 +1,6 @@
 import { MessageData, PlayerData } from "../_types/Database.type.ts";
 
-export const nextVoteLength = (numPlayers: number) => 2;
+export const nextVoteLength = (numPlayers: number) => 3 * numPlayers;
 
 export const isSystem = (message: MessageData) => {
   if (message.author === "system") return true;
