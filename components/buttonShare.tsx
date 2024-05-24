@@ -19,7 +19,7 @@ export const ButtonShare: React.FC<Props> = ({ url: urlToCopy, sx }) => {
   };
 
   return (
-    <Button variant="contained" onClick={share} sx={sx}>
+    <Button variant="contained" color="secondary" onClick={share} sx={sx}>
       {clicked ? <Check sx={{ mr: 1 }} /> : <ContentCopyIcon sx={{ mr: 1 }} />}
       {clicked ? "Link Copied!" : "Copy Game Link"}
     </Button>
