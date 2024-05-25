@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { PlayersContext, RoomContext, UserContext } from "./contextProvider";
 import {
   Box,
@@ -11,6 +11,7 @@ import {
 import { supabase } from "@/utils/supabase/client";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
 import { playerVoteFunction } from "@/queries/functions/functions.query";
+import { Spinner } from "./spinner";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -20,6 +21,7 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   const user = useContext(UserContext);
   const room = useContext(RoomContext);
   const players = useContext(PlayersContext);
+  const [loading, setLoading] = useState(false);
   if (!players) return null;
   if (!room) return null;
   if (!user) return null;
@@ -42,6 +44,9 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   );
   const alreadyVoted = me.vote || me.vote_blank;
 
+  console.log("is_bot", me.is_bot);
+  console.log("me.vote", me.vote, me.vote_blank);
+
   const canVote = (player: { id: string; name: string }) => {
     if (me.is_bot) return false; //
     if (alreadyVoted) return false; // already voted
@@ -53,11 +58,18 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   const vote = async (playerId: string) => {
     if (!me) return;
     if (!room.data?.id) return;
-    playerVoteFunction(supabase, {
-      roomId: room.data.id,
-      playerId: me.id,
-      vote: playerId,
-    });
+    try {
+      setLoading(true);
+      await playerVoteFunction(supabase, {
+        roomId: room.data.id,
+        playerId: me.id,
+        vote: playerId,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const voteOptions = [...otherPlayers, { id: "blank", name: "Nobody" }];
@@ -94,17 +106,20 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                flexWrap: "wrap",
+                flexDirection: "row",
               }}
             >
               <Button
                 variant="contained"
-                color="secondary"
+                color={option.id === "blank" ? "primary" : "secondary"}
                 sx={{ ml: 1 }}
                 onClick={() => vote(option.id)}
-                disabled={!canVote(option)}
+                disabled={!canVote(option) || loading}
               >
-                {option.id === "blank" && "🚫 "}
+                {option.id === "blank" && "❌ "}
                 {option.name}
+                {loading && <Spinner />}
               </Button>
             </Box>
           ))}

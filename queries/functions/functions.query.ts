@@ -23,7 +23,7 @@ export const playerVoteFunction = async (
     vote: string;
   }
 ) => {
-  supabase.functions.invoke("player-vote", { body: params });
+  await supabase.functions.invoke("player-vote", { body: params });
 };
 
 export const postMessageFunction = async (
