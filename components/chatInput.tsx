@@ -22,7 +22,7 @@ import { VoteCountdown } from "./voteCountdown";
 import {
   cleanAnswer,
   getPlayersWithLeastMessages,
-} from "@/supabase/functions/_shared/chat";
+} from "@/supabase/functions/_shared/utils";
 import { Spinner } from "./spinner";
 import { Send } from "@mui/icons-material";
 

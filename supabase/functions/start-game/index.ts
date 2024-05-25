@@ -12,7 +12,7 @@ import { createSupabaseClient } from "../_utils/supabase.ts";
 import { PlayerData } from "../_types/Database.type.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
 import { insertPlayers } from "../_queries/players.query.ts";
-import { nextVoteLength } from "../_shared/chat.ts";
+import { nextVoteLength } from "../_shared/utils.ts";
 import { emojis, iceBreakersFr } from "../_shared/lang.ts";
 
 export const popRandom = <T>(array: Array<T>): T => {

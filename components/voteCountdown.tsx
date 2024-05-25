@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { MessagesContext, RoomContext } from "./contextProvider";
 import { LinearProgress, SxProps, Theme } from "@mui/material";
-import { isNotSystem } from "@/supabase/functions/_shared/chat";
+import { isNotSystem } from "@/supabase/functions/_shared/utils";
 
 type Props = {
   sx?: SxProps<Theme>;

@@ -7,8 +7,18 @@ export const isSystem = (message: MessageData) => {
   if (message.author === "intro") return true;
   return false;
 };
+
 export const isNotSystem = (message: MessageData) => {
   return !isSystem(message);
+};
+
+export const isHuman = (player: PlayerData) => !!player?.user_id;
+
+export const removeEmojis = (text: string) => {
+  return text.replace(
+    /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g,
+    ""
+  );
 };
 
 export const cleanAnswer = (str: string) => {

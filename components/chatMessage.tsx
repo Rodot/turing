@@ -4,7 +4,7 @@ import React from "react";
 import { User } from "@supabase/supabase-js";
 import { Box, Typography } from "@mui/material";
 import { MessageData } from "@/supabase/functions/_types/Database.type";
-import { isSystem } from "@/supabase/functions/_shared/chat";
+import { isSystem } from "@/supabase/functions/_shared/utils";
 
 export function ChatMessage({
   message,
