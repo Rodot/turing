@@ -13,7 +13,7 @@ import { PlayerData } from "../_types/Database.type.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
 import { insertPlayers } from "../_queries/players.query.ts";
 import { nextVoteLength } from "../_shared/chat.ts";
-import { iceBreakersFr } from "../_shared/lang.ts";
+import { emojis, iceBreakersFr } from "../_shared/lang.ts";
 
 export const popRandom = <T>(array: Array<T>): T => {
   const index = Math.floor(Math.random() * array.length);
@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
     profiles.forEach((profile) => {
       players.push({
         user_id: profile.id,
-        name: profile.name,
+        name: pickRandom(emojis) + " " + profile.name,
         room_id: roomId,
         vote: null,
         is_bot: profile.id === botProfile.id,

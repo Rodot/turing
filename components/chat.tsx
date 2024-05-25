@@ -66,12 +66,14 @@ export const Chat: React.FC = () => {
           flexWrap: "wrap",
         }}
       >
-        {players.map((player) => (
-          <Chip
-            key={player.id}
-            label={player.name + " " + "🧠".repeat(player.score)}
-          />
-        ))}
+        {players
+          .sort((a, b) => b.score - a.score)
+          .map((player) => (
+            <Chip
+              key={player.id}
+              label={player.name + " " + "🧠".repeat(player.score)}
+            />
+          ))}
       </Paper>
       <ChatHistory
         sx={{

@@ -26,6 +26,34 @@ export const names = [
   "🐎 Zelda",
 ];
 
+export const emojis = [
+  "🐶",
+  "🌳",
+  "🍎",
+  "🚗",
+  "🎈",
+  "🌞",
+  "🌧️",
+  "🍕",
+  "🏀",
+  "🎧",
+  "🎁",
+  "🚀",
+  "🌈",
+  "🎩",
+  "🐠",
+  "🍦",
+  "🏖️",
+  "🎃",
+  "📚",
+  "🎸",
+  "🌺",
+  "🍿",
+  "🏋️‍♀️",
+  "🎡",
+  "🐎",
+];
+
 export const iceBreakersEn = [
   "If you could have any superpower, what would it be and why?",
   "What's the most adventurous thing you've ever done?",
