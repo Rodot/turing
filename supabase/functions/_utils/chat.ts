@@ -52,7 +52,8 @@ export const setRandomPlayerAsBotAndResetVotes = async (
   players: PlayerData[]
 ) => {
   if (!players?.length) throw new Error("No players to pick from");
-  const playersWithoutPreviousBot = players.filter((player) => !player.is_bot);
+  const previousBot = players.find((player) => player.is_bot);
+  const previousHumans = players.filter((player) => !player.is_bot);
 
   // reset bots and votes
   await updateRoomPlayers(supabase, {
@@ -62,14 +63,16 @@ export const setRandomPlayerAsBotAndResetVotes = async (
     is_bot: false,
   });
 
-  // set bot (70% chance)
-  if (Math.random() <= 0.7) {
-    const randomPlayer =
-      playersWithoutPreviousBot[Math.floor(Math.random() * players.length)];
-    await updatePlayer(supabase, {
-      id: randomPlayer.id,
-      is_bot: true,
-    });
+  if (previousBot) {
+    // set bot (70% chance)
+    if (Math.random() <= 1 / players.length) {
+      const randomPlayer =
+        previousHumans[Math.floor(Math.random() * players.length)];
+      await updatePlayer(supabase, {
+        id: randomPlayer.id,
+        is_bot: true,
+      });
+    }
   }
 };
 
