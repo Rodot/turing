@@ -51,11 +51,17 @@ export function useRoom(profile: ProfileData | null): Room | null {
       setRoomData(null);
       return;
     }
+
+    const updateRoom = () => {
+      if (!profile?.room_id) return;
+      fetchRoom(supabase, profile?.room_id).then((roomData) =>
+        setRoomData(roomData)
+      );
+    };
+
     console.log("Joined room", profile.room_id);
 
-    fetchRoom(supabase, profile?.room_id).then((roomData) =>
-      setRoomData(roomData)
-    );
+    updateRoom();
 
     const channel = supabase
       .channel("room" + profile.room_id)
@@ -67,9 +73,7 @@ export function useRoom(profile: ProfileData | null): Room | null {
           table: "rooms",
           filter: "id=eq." + profile.room_id,
         },
-        (payload) => {
-          setRoomData(payload.new as RoomData);
-        }
+        updateRoom
       )
       .subscribe();
 

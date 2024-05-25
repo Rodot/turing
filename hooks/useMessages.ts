@@ -6,15 +6,16 @@ import { MessageData } from "@/supabase/functions/_types/Database.type";
 export function useMessages(roomId: string | null): MessageData[] {
   const [messages, setMessages] = useState<MessageData[]>([]);
 
-  const updateMessages = async (roomId: string) => {
-    const messages = await fetchMessages(supabase, roomId);
-    setMessages(messages);
-    return;
-  };
-
   useEffect(() => {
     if (!roomId) return;
-    updateMessages(roomId);
+
+    const updateMessages = async () => {
+      const messages = await fetchMessages(supabase, roomId);
+      setMessages(messages);
+      return;
+    };
+
+    updateMessages();
 
     const channel = supabase
       .channel("messages" + roomId)
@@ -26,12 +27,7 @@ export function useMessages(roomId: string | null): MessageData[] {
           table: "messages",
           filter: "room_id=eq." + roomId,
         },
-        (payload) => {
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            payload.new as MessageData,
-          ]);
-        }
+        updateMessages
       )
       .subscribe();
 
