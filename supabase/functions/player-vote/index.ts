@@ -30,6 +30,8 @@ Deno.serve(async (req) => {
 
     const supabase = createSupabaseClient(req);
 
+    console.log("Voting", { roomId, playerId });
+
     // Apply player vote
     if (vote === "blank") {
       await updatePlayer(supabase, {
@@ -60,6 +62,8 @@ Deno.serve(async (req) => {
 
     // All players have voted
     if (numVotes >= numHumans) {
+      console.log("All players have voted", roomId);
+
       // +1 point for those who voted for the bot
       if (botPlayer) {
         await Promise.all(
@@ -130,6 +134,7 @@ Deno.serve(async (req) => {
 
       if (maxScore >= 5) {
         // Game over
+        console.log("Game over", roomId);
         // Announce winner
         const winners = playersAfter.filter((p) => p.score === maxScore);
         if (winners.length) {
@@ -143,7 +148,8 @@ Deno.serve(async (req) => {
         // Close the room
         await updateRoom(supabase, roomId, { status: "over" });
       } else {
-        // Start next chat turn
+        // Next round
+        console.log("Next round", roomId);
 
         // Reset votes and set random player as bot
         await setRandomPlayerAsBotAndResetVotes(supabase, players);

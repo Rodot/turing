@@ -35,6 +35,7 @@ Deno.serve(async (req) => {
     if (!roomId) {
       throw new Error("Missing roomId");
     }
+    console.log("Starting game", roomId);
 
     const supabase = createSupabaseClient(req);
 
