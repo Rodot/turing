@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useEffect } from "react";
-import { MessagesContext, RoomContext, UserContext } from "./contextProvider";
+import { MessagesContext, UserContext } from "./contextProvider";
 import { List, SxProps, Theme } from "@mui/material";
 import { ChatMessage } from "./chatMessage";
 
@@ -10,7 +10,6 @@ type Props = {
 export const ChatHistory: React.FC<Props> = ({ sx }) => {
   const user = useContext(UserContext);
   const messages = useContext(MessagesContext);
-  const room = useContext(RoomContext);
   const endOfMessagesRef = useRef<null | HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -19,7 +18,7 @@ export const ChatHistory: React.FC<Props> = ({ sx }) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, room?.data?.status]);
+  }, [messages]);
 
   if (!user) return null;
 
