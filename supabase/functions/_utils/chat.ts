@@ -64,8 +64,7 @@ export const setRandomPlayerAsBotAndResetVotes = async (
   });
 
   if (previousBot) {
-    // set bot (70% chance)
-    if (Math.random() <= 1 / players.length) {
+    if (Math.random() <= 1 / (players.length + 1)) {
       const randomPlayer =
         previousHumans[Math.floor(Math.random() * players.length)];
       await updatePlayer(supabase, {
