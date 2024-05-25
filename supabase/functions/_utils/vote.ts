@@ -9,7 +9,6 @@ export const setRandomPlayerAsBotAndResetVotes = async (
   players: PlayerData[]
 ) => {
   if (!players?.length) throw new Error("No players to pick from");
-  const previousBot = players.find((player) => player.is_bot);
   const previousHumans = players.filter((player) => !player.is_bot);
 
   // reset bots and votes
@@ -20,16 +19,18 @@ export const setRandomPlayerAsBotAndResetVotes = async (
     is_bot: false,
   });
 
-  if (previousBot) {
-    if (Math.random() <= 1 / (players.length + 1)) {
-      const randomPlayer =
-        previousHumans[Math.floor(Math.random() * players.length)];
-      await updatePlayer(supabase, {
-        id: randomPlayer.id,
-        is_bot: true,
-      });
-    }
-  }
+  // chance to add no bot if there was a bot before
+  const previousBot = players.find((player) => player.is_bot);
+  const noBotThisRound = Math.random() <= 1 / (players.length + 1);
+  if (previousBot && noBotThisRound) return;
+
+  // set random player as bot
+  const randomPlayer =
+    previousHumans[Math.floor(Math.random() * players.length)];
+  await updatePlayer(supabase, {
+    id: randomPlayer.id,
+    is_bot: true,
+  });
 };
 
 export const triggerVoteIfNeeded = async (
@@ -39,6 +40,8 @@ export const triggerVoteIfNeeded = async (
 ) => {
   // not voting yet
   if (messages.filter(isNotSystem).length < room.next_vote) return false;
+
+  console.log("Triggering vote", room.id);
 
   // start voting
   await updateRoom(supabase, room.id, {
