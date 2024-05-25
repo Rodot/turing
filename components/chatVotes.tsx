@@ -32,7 +32,10 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   const otherPlayers = players.filter((player) => player.id !== me.id);
   const numVotes = players.filter(didVote).length;
   const humansDidntVote = humans.filter((player) => !didVote(player));
-  const humansDidntVoteString = humansDidntVote.map((p) => p.name).join(", ");
+  const humansDidntVoteString =
+    humansDidntVote.length > 2
+      ? "others"
+      : humansDidntVote.map((p) => p.name).join(", ");
   const voteProgress = Math.max(
     0,
     Math.min(100, (100 * numVotes) / players?.length)

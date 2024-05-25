@@ -127,7 +127,6 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
             {talkingPlayers.length > 2
               ? "others"
               : talkingPlayers.map((p) => p.name).join(", ")}
-            ...
           </Typography>
         )}
         {/* bot input */}
@@ -182,7 +181,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
                 autoComplete="off"
                 value={content}
                 onChange={handleInputChange}
-                label="Talking as 🧑 human"
+                label={`Send a message as ${me.name}`}
                 sx={{ flexGrow: 1, mr: 1 }}
               />
               <Button
