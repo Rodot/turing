@@ -32,16 +32,12 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   if (!me) return null;
   const humans = players.filter((player) => !player.is_bot);
   const otherPlayers = players.filter((player) => player.id !== me.id);
-  const numVotes = players.filter(didVote).length;
   const humansDidntVote = humans.filter((player) => !didVote(player));
   const humansDidntVoteString =
     humansDidntVote.length > 2
       ? "others"
       : humansDidntVote.map((p) => p.name).join(", ");
-  const voteProgress = Math.max(
-    0,
-    Math.min(100, (100 * numVotes) / players?.length)
-  );
+
   const alreadyVoted = me.vote || me.vote_blank;
 
   console.log("is_bot", me.is_bot);
@@ -91,11 +87,7 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
           pb: 1,
         }}
       >
-        <LinearProgress
-          color="secondary"
-          variant="determinate"
-          value={voteProgress}
-        />
+        <LinearProgress color="secondary" />
         <Typography sx={{ textAlign: "center" }}>{clueText()}</Typography>
         {!me.is_bot &&
           !alreadyVoted &&
