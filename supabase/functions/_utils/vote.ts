@@ -32,21 +32,3 @@ export const setRandomPlayerAsBotAndResetVotes = async (
     is_bot: true,
   });
 };
-
-export const triggerVoteIfNeeded = async (
-  supabase: SupabaseClient,
-  room: RoomData,
-  messages: MessageData[]
-) => {
-  // not voting yet
-  if (messages.filter(isNotSystem).length < room.next_vote) return false;
-
-  console.log("Triggering vote", room.id);
-
-  // start voting
-  await updateRoom(supabase, room.id, {
-    status: "voting",
-  });
-
-  return true;
-};

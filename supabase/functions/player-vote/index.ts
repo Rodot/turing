@@ -48,9 +48,10 @@ Deno.serve(async (req) => {
         vote_blank: false,
       });
     }
-
-    const players = await fetchPlayers(supabase, roomId);
-    const messages = await fetchMessages(supabase, roomId);
+    const [players, messages] = await Promise.all([
+      fetchPlayers(supabase, roomId),
+      fetchMessages(supabase, roomId),
+    ]);
 
     const numHumans = players.filter((player) => !player.is_bot).length;
     const botPlayer = players.find((player) => player.is_bot);

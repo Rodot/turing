@@ -9,8 +9,8 @@ import { fetchMessages, insertMessage } from "../_queries/messages.query.ts";
 import { corsHeaders } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { MessageData } from "../_types/Database.type.ts";
-import { triggerVoteIfNeeded } from "../_utils/vote.ts";
-import { fetchRoom } from "../_queries/room.query.ts";
+import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
+import { isNotSystem } from "../_shared/utils.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -28,16 +28,24 @@ Deno.serve(async (req) => {
 
     const supabase = createSupabaseClient(req);
 
-    console.log("Posting message", message);
+    const [messages, room] = await Promise.all([
+      fetchMessages(supabase, message?.room_id),
+      fetchRoom(supabase, message?.room_id),
+    ]);
 
-    await insertMessage(supabase, message);
-
-    const messages = await fetchMessages(supabase, message?.room_id);
-    const room = await fetchRoom(supabase, message?.room_id);
     if (!messages) throw new Error("No messages found");
     if (!room) throw new Error("No room found");
+    if (room.status !== "talking") throw new Error("Room not talking");
 
-    await triggerVoteIfNeeded(supabase, room, messages);
+    // trigger vote
+    const numMessages = messages.filter(isNotSystem).length + 1;
+    if (numMessages >= room.next_vote) {
+      await updateRoom(supabase, room.id, {
+        status: "voting",
+      });
+    }
+
+    await insertMessage(supabase, message);
 
     const data = {};
 

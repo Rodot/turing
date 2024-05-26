@@ -27,12 +27,14 @@ Deno.serve(async (req) => {
     const user = userResponse.data.user;
 
     // create new room
-    const room = await insertRoom(supabase);
+    const [room, profile] = await Promise.all([
+      insertRoom(supabase),
+      fetchUserProfile(supabase, user?.id),
+    ]);
 
     // add redirect to old rom
-    const profile = await fetchUserProfile(supabase, user?.id);
     if (profile?.room_id) {
-      updateRoom(supabase, profile.room_id, { next_room_id: room.id });
+      await updateRoom(supabase, profile.room_id, { next_room_id: room.id });
     }
 
     // join room
