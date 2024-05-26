@@ -105,22 +105,20 @@ Deno.serve(async (req) => {
           // bot was fount
           message = `+1 🧠 for ${botVoters
             .map((p) => p.name)
-            .join(" and ")} who ⚡ exorcised ${
-            botPlayer?.name
-          } the 🤖 possessed `;
+            .join(" and ")} who exorcised ${botPlayer?.name} the possessed `;
         } else {
           // bot escaped
-          message = `+1 🧠 for ${botPlayer?.name} the 🤖 possessed who escaped`;
+          message = `+1 🧠 for ${botPlayer?.name} the possessed who escaped`;
         }
       } else {
         if (blankVoters.length) {
           // people guessed there was no bot
           message = `+1 🧠 for ${blankVoters
             .map((p) => p.name)
-            .join(" and ")} who realized that nobody was 🤖 possessed`;
+            .join(" and ")} who realized that nobody was possessed`;
         } else {
           // nobody guessed there was no bot
-          message = `Nobody guessed that nobody was 🤖 possessed`;
+          message = `Nobody guessed that nobody was possessed 😏`;
         }
       }
       await insertMessage(supabase, {
