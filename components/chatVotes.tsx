@@ -68,7 +68,7 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
     }
   };
 
-  const voteOptions = [...otherPlayers, { id: "blank", name: "Nobody" }];
+  const voteOptions = [{ id: "blank", name: "Nobody" }, ...otherPlayers];
 
   const clueText = () => {
     if (!me.is_bot && !alreadyVoted) return <>Who was 🤖 possessed ?</>;
@@ -76,43 +76,44 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   };
 
   return (
-    <Box sx={sx}>
+    <Box
+      sx={{
+        ...sx,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignContent: "center",
+        gap: 1,
+        p: 1,
+      }}
+    >
+      <Typography sx={{ textAlign: "center" }}>{clueText()}</Typography>
       <Box
         sx={{
           display: "flex",
-          flexDirection: "column",
-          gap: 1,
+          flexDirection: "row",
           justifyContent: "center",
           alignContent: "center",
+          flexWrap: "wrap",
+          gap: 1,
           pb: 1,
         }}
       >
-        <Typography sx={{ textAlign: "center" }}>{clueText()}</Typography>
         {!me.is_bot &&
           !alreadyVoted &&
           voteOptions.map((option) => (
-            <Box
+            <Button
               key={option.id}
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                flexWrap: "wrap",
-                flexDirection: "row",
-              }}
+              variant="contained"
+              color={option.id === "blank" ? "primary" : "secondary"}
+              sx={{ ml: 1 }}
+              onClick={() => vote(option.id)}
+              disabled={!canVote(option) || loading}
             >
-              <Button
-                variant="contained"
-                color={option.id === "blank" ? "primary" : "secondary"}
-                sx={{ ml: 1 }}
-                onClick={() => vote(option.id)}
-                disabled={!canVote(option) || loading}
-              >
-                {option.id === "blank" && "❌ "}
-                {option.name}
-                {loading && <Spinner />}
-              </Button>
-            </Box>
+              {option.id === "blank" && "❌ "}
+              {option.name}
+              {loading && <Spinner />}
+            </Button>
           ))}
       </Box>
     </Box>
