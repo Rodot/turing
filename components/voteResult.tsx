@@ -8,7 +8,8 @@ type Props = {
 
 export const VoteResults: React.FC<Props> = ({ sx }) => {
   const players = useContext(PlayersContext);
-  const noBots = players.filter((player) => !player.is_bot)?.length;
+  const noBots =
+    (players.filter((player) => !player.is_bot)?.length ?? 0) === 0;
 
   return (
     <Box sx={{ ...sx, display: "flex", flexDirection: "column", gap: 1 }}>
