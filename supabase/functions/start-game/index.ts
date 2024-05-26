@@ -12,18 +12,8 @@ import { createSupabaseClient } from "../_utils/supabase.ts";
 import { PlayerData } from "../_types/Database.type.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
 import { insertPlayers } from "../_queries/players.query.ts";
-import { nextVoteLength } from "../_shared/utils.ts";
+import { nextVoteLength, pickRandom } from "../_shared/utils.ts";
 import { emojis, iceBreakersFr } from "../_shared/lang.ts";
-
-export const popRandom = <T>(array: Array<T>): T => {
-  const index = Math.floor(Math.random() * array.length);
-  return array.splice(index, 1)[0];
-};
-
-export const pickRandom = <T>(array: Array<T>): T => {
-  const index = Math.floor(Math.random() * array.length);
-  return array[index];
-};
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -67,7 +57,7 @@ Deno.serve(async (req) => {
     await insertMessage(supabase, {
       room_id: roomId,
       author: "intro",
-      content: pickRandom(iceBreakersFr),
+      content: "💡 " + pickRandom(iceBreakersFr),
     });
 
     // start the game
@@ -82,6 +72,7 @@ Deno.serve(async (req) => {
       status: 200,
     });
   } catch (error) {
+    console.error(error);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 400,

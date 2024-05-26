@@ -11,7 +11,8 @@ import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
 import { corsHeaders } from "../_utils/cors.ts";
 import { setRandomPlayerAsBotAndResetVotes } from "../_utils/vote.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
-import { isNotSystem, nextVoteLength } from "../_shared/utils.ts";
+import { isNotSystem, nextVoteLength, pickRandom } from "../_shared/utils.ts";
+import { iceBreakersFr } from "../_shared/lang.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -64,6 +65,8 @@ Deno.serve(async (req) => {
     // All players have voted
     if (numVotes >= numHumans) {
       console.log("All players have voted", roomId);
+
+      await new Promise((resolve) => setTimeout(resolve, 8000));
 
       // +1 point for those who voted for the bot
       if (botPlayer) {
@@ -150,25 +153,25 @@ Deno.serve(async (req) => {
         // Next round
         console.log("Next round", roomId);
 
-        // Reset votes and set random player as bot
-        await setRandomPlayerAsBotAndResetVotes(supabase, players);
-
         // set next vote
         const room = await fetchRoom(supabase, roomId);
         const nextVote =
           messages.filter(isNotSystem).length + nextVoteLength(players.length);
 
-        await updateRoom(supabase, roomId, {
-          status: "talking",
-          last_vote: room?.next_vote,
-          next_vote: nextVote,
-        });
-
-        // await insertMessage(supabase, {
-        //   room_id: roomId,
-        //   author: "intro",
-        //   content: pickRandom(iceBreakersFr),
-        // });
+        // Reset votes and set random player as bot
+        await Promise.all([
+          setRandomPlayerAsBotAndResetVotes(supabase, players),
+          updateRoom(supabase, roomId, {
+            status: "talking",
+            last_vote: room?.next_vote,
+            next_vote: nextVote,
+          }),
+          insertMessage(supabase, {
+            room_id: roomId,
+            author: "intro",
+            content: "💡 " + pickRandom(iceBreakersFr),
+          }),
+        ]);
       }
     }
 
@@ -179,6 +182,7 @@ Deno.serve(async (req) => {
       status: 200,
     });
   } catch (error) {
+    console.error(error);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 400,

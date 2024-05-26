@@ -1,7 +1,5 @@
 import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2/dist/module/index.js";
-import { MessageData, PlayerData, RoomData } from "../_types/Database.type.ts";
-import { updateRoom } from "../_queries/room.query.ts";
-import { isNotSystem } from "../_shared/utils.ts";
+import { PlayerData } from "../_types/Database.type.ts";
 import { updatePlayer, updateRoomPlayers } from "../_queries/players.query.ts";
 
 export const setRandomPlayerAsBotAndResetVotes = async (

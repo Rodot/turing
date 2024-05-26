@@ -9,7 +9,7 @@ export const metadata = {
   metadataBase: new URL(defaultUrl),
   title: "The Turing Trial by BetaLab.fr",
   description:
-    "Can you distinguish your friend from AIs? A 15 minutes party game, no account/app required.",
+    "Can you distinguish your friend from AIs? Online party game, no account nor download required, 3-6 players.",
 };
 
 export default function RootLayout({

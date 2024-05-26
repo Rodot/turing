@@ -21,6 +21,16 @@ export const removeEmojis = (text: string) => {
   );
 };
 
+export const popRandom = <T>(array: Array<T>): T => {
+  const index = Math.floor(Math.random() * array.length);
+  return array.splice(index, 1)[0];
+};
+
+export const pickRandom = <T>(array: Array<T>): T => {
+  const index = Math.floor(Math.random() * array.length);
+  return array[index];
+};
+
 export const cleanAnswer = (str: string) => {
   str = str.trim();
   str = str.toLowerCase();

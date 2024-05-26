@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { PlayersContext, RoomContext, UserContext } from "./contextProvider";
 import {
   Box,
@@ -12,6 +12,8 @@ import { supabase } from "@/utils/supabase/client";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
 import { playerVoteFunction } from "@/queries/functions/functions.query";
 import { Spinner } from "./spinner";
+import { VoteResults } from "./voteResult";
+import { ProgressTimer } from "./progressTimer";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -22,6 +24,7 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   const room = useContext(RoomContext);
   const players = useContext(PlayersContext);
   const [loading, setLoading] = useState(false);
+
   if (!players) return null;
   if (!room) return null;
   if (!user) return null;
@@ -37,11 +40,8 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
     humansDidntVote.length > 2
       ? "others"
       : humansDidntVote.map((p) => p.name).join(", ");
-
+  const everyoneVoted = humansDidntVote.length === 0;
   const alreadyVoted = me.vote || me.vote_blank;
-
-  console.log("is_bot", me.is_bot);
-  console.log("me.vote", me.vote, me.vote_blank);
 
   const canVote = (player: { id: string; name: string }) => {
     if (me.is_bot) return false; //
@@ -87,7 +87,15 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
         p: 1,
       }}
     >
-      <Typography sx={{ textAlign: "center" }}>{clueText()}</Typography>
+      {/* results timer */}
+      {everyoneVoted && <ProgressTimer duration={5} />}
+      {/* clue */}
+      {!everyoneVoted && (
+        <Typography sx={{ textAlign: "center" }}>{clueText()}</Typography>
+      )}
+      {/* vote results */}
+      {(alreadyVoted || me.is_bot) && <VoteResults />}
+      {/* vote buttons */}
       <Box
         sx={{
           display: "flex",
