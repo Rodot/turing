@@ -66,6 +66,7 @@ Deno.serve(async (req) => {
     if (numVotes >= numHumans) {
       console.log("All players have voted", roomId);
 
+      // give time to read results
       await new Promise((resolve) => setTimeout(resolve, 8000));
 
       // +1 point for those who voted for the bot

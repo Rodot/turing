@@ -25,7 +25,8 @@ export function useTable<T extends { id: string }>(
       const { data, error } = await supabase
         .from(props.tableName)
         .select("*")
-        .eq(props.filterColumn, props.filterValue);
+        .eq(props.filterColumn, props.filterValue)
+        .order("created_at", { ascending: true });
       if (error) throw new Error("Error fetching data:" + error.message);
       setStore(data);
     };

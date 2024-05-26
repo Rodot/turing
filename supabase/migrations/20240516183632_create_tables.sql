@@ -1,6 +1,7 @@
 -- rooms
 CREATE TABLE public.rooms(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_at timestamp NOT NULL DEFAULT NOW(),
     status text DEFAULT 'lobby' ::text,
     last_vote integer DEFAULT 0,
     next_vote integer DEFAULT 0,
@@ -13,6 +14,7 @@ ALTER publication supabase_realtime
 -- user profiles
 CREATE TABLE public.profiles(
     id uuid PRIMARY KEY NOT NULL REFERENCES auth.users ON DELETE CASCADE,
+    created_at timestamp NOT NULL DEFAULT NOW(),
     room_id uuid REFERENCES public.rooms ON DELETE SET NULL,
     name text
 );
@@ -25,8 +27,9 @@ ALTER publication supabase_realtime
 -- players
 CREATE TABLE public.players(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_at timestamp NOT NULL DEFAULT NOW(),
     room_id uuid NOT NULL REFERENCES public.rooms ON DELETE CASCADE,
-    user_id uuid REFERENCES auth.users ON DELETE CASCADE,
+    user_id uuid REFERENCES auth.users ON DELETE SET NULL,
     vote uuid REFERENCES public.players ON DELETE SET NULL,
     vote_blank boolean DEFAULT FALSE,
     is_bot boolean DEFAULT FALSE,
@@ -42,6 +45,7 @@ ALTER publication supabase_realtime
 -- messages
 CREATE TABLE public.messages(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_at timestamp NOT NULL DEFAULT NOW(),
     room_id uuid NOT NULL REFERENCES public.rooms ON DELETE CASCADE,
     user_id uuid REFERENCES auth.users ON DELETE SET NULL,
     player_id uuid REFERENCES public.players ON DELETE SET NULL,
