@@ -3,19 +3,17 @@
 import React, { createContext } from "react";
 import { useUser } from "@/hooks/useUser";
 import { User } from "@supabase/supabase-js";
-import { useMessages } from "@/hooks/useMessages";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../theme";
 import { Room, useRoom } from "@/hooks/useRoom";
-import { useRoomProfiles } from "@/hooks/useRoomProfiles";
-import { useUserProfile } from "@/hooks/useUserProfile";
 import {
   MessageData,
   PlayerData,
   ProfileData,
 } from "@/supabase/functions/_types/Database.type";
-import { usePlayers } from "@/hooks/usePlayers";
+import { useTable } from "@/hooks/useTable";
+import { supabase } from "@/utils/supabase/client";
 
 // Create the context
 export const UserContext = createContext<User | null>(null);
@@ -27,20 +25,36 @@ export const PlayersContext = createContext<PlayerData[]>([]);
 
 // Create the wrapper component
 export function ContextProvider({ children }: React.PropsWithChildren) {
-  const user = useUser();
-  const userProfile = useUserProfile(user?.id ?? null);
-  const room = useRoom(userProfile);
-  const roomProfiles = useRoomProfiles(room?.data?.id ?? null);
-  const players = usePlayers(room ?? null);
-  const messages = useMessages(room?.data?.id ?? null);
+  const myUser = useUser();
+  const myProfile = useTable<ProfileData>(supabase, {
+    tableName: "profiles",
+    filterColumn: "id",
+    filterValue: myUser?.id,
+  });
+  const room = useRoom(myProfile?.[0]);
+  const profiles = useTable<ProfileData>(supabase, {
+    tableName: "profiles",
+    filterColumn: "room_id",
+    filterValue: room?.data?.id,
+  });
+  const players = useTable<PlayerData>(supabase, {
+    tableName: "players",
+    filterColumn: "room_id",
+    filterValue: room?.data?.id,
+  });
+  const messages = useTable<MessageData>(supabase, {
+    tableName: "messages",
+    filterColumn: "room_id",
+    filterValue: room?.data?.id,
+  });
 
   return (
     <AppRouterCacheProvider>
       <ThemeProvider theme={theme}>
-        <UserContext.Provider value={user as any}>
-          <UserProfileContext.Provider value={userProfile}>
+        <UserContext.Provider value={myUser as any}>
+          <UserProfileContext.Provider value={myProfile?.[0]}>
             <RoomContext.Provider value={room}>
-              <RoomProfilesContext.Provider value={roomProfiles}>
+              <RoomProfilesContext.Provider value={profiles}>
                 <PlayersContext.Provider value={players}>
                   <MessagesContext.Provider value={messages}>
                     {children}

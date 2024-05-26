@@ -1,5 +1,5 @@
 export type MessageData = {
-  id: number;
+  id: string;
   user_id: string;
   player_id: string;
   room_id: string;
