@@ -98,11 +98,6 @@ export const Lobby: React.FC = () => {
           />
         ))}
       </Box>
-      {notEnoughPlayers && (
-        <Typography color="error">
-          3 or more players required to play
-        </Typography>
-      )}
       <ButtonGroup>
         <Button
           variant={room?.data?.lang === "en" ? "contained" : undefined}
@@ -134,6 +129,11 @@ export const Lobby: React.FC = () => {
           Start Game
           {loadingStart && <Spinner />}
         </Button>
+      )}
+      {notEnoughPlayers && (
+        <Typography color="error">
+          3 or more players required to play
+        </Typography>
       )}
       <ButtonLeaveGame sx={{ mt: 4 }} label={"Leave Game"} />
     </Container>
