@@ -17,15 +17,21 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { roomId, playerName } = await req.json();
+    const { roomId, playerName, lang } = await req.json();
     if (!roomId) throw new Error("Missing roomId");
     if (!playerName) throw new Error("Missing playerName");
+    if (!lang) throw new Error("Missing lang");
+    if (lang !== "fr" && lang !== "en") throw new Error("Invalid lang");
 
     const supabase = createSupabaseClient(req);
 
     const messagesData = await fetchMessages(supabase, roomId);
 
-    const messages = promptForNextMessageSuggestions(playerName, messagesData);
+    const messages = promptForNextMessageSuggestions(
+      playerName,
+      messagesData,
+      lang
+    );
 
     const gptAnswer = await fetchChatCompletionJson(messages);
 

@@ -2,6 +2,7 @@
 CREATE TABLE public.rooms(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     created_at timestamp NOT NULL DEFAULT NOW(),
+    lang text DEFAULT 'en' ::text,
     status text DEFAULT 'lobby' ::text,
     last_vote integer DEFAULT 0,
     next_vote integer DEFAULT 0,

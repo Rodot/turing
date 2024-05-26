@@ -13,7 +13,7 @@ import { PlayerData } from "../_types/Database.type.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
 import { insertPlayers } from "../_queries/players.query.ts";
 import { nextVoteLength, pickRandom } from "../_shared/utils.ts";
-import { emojis, iceBreakersFr } from "../_shared/lang.ts";
+import { emojis, iceBreakers } from "../_shared/lang.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -21,10 +21,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { roomId } = await req.json();
-    if (!roomId) {
-      throw new Error("Missing roomId");
-    }
+    const { roomId }: { roomId: string } = await req.json();
+    if (!roomId) throw new Error("Missing roomId");
     console.log("Starting game", roomId);
 
     const supabase = createSupabaseClient(req);
@@ -57,7 +55,7 @@ Deno.serve(async (req) => {
     await insertMessage(supabase, {
       room_id: roomId,
       author: "intro",
-      content: "💡 " + pickRandom(iceBreakersFr),
+      content: "💡 " + pickRandom(iceBreakers[room.lang]),
     });
 
     // start the game

@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useState } from "react";
 import {
   Box,
   Button,
+  ButtonGroup,
   Chip,
   Container,
   Toolbar,
@@ -18,25 +19,41 @@ import { ButtonShare } from "./buttonShare";
 import { Spinner } from "./spinner";
 import QRCode from "react-qr-code";
 import { ButtonLeaveGame } from "./buttonLeaveGame";
+import { updateRoom } from "@/queries/db/room.query";
+import { supabase } from "@/utils/supabase/client";
 
 export const Lobby: React.FC = () => {
   const user = useContext(UserContext);
   const room = useContext(RoomContext);
   const roomProfiles = useContext(RoomProfilesContext);
-  const [loading, setLoading] = useState(false);
+  const [loadingStart, setLoadingStart] = useState(false);
+  const [loadingLang, setLoadingLang] = useState(false);
   const [url, setUrl] = useState("");
+
   const isHost = roomProfiles?.[0]?.id === user?.id;
   const me = roomProfiles?.find((profile) => profile.id === user?.id);
   const notEnoughPlayers = roomProfiles?.length < 3;
 
   const startGame = async () => {
     try {
-      setLoading(true);
+      setLoadingStart(true);
       room?.startGame();
     } catch (error) {
       console.error("Failed to start game", error);
     } finally {
-      setLoading(false);
+      setLoadingStart(false);
+    }
+  };
+
+  const setLang = async (lang: "en" | "fr") => {
+    if (!room?.data?.id) return;
+    try {
+      setLoadingLang(true);
+      updateRoom(supabase, room?.data?.id, { lang });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingLang(false);
     }
   };
 
@@ -86,6 +103,24 @@ export const Lobby: React.FC = () => {
           3 or more players required to play
         </Typography>
       )}
+      <ButtonGroup>
+        <Button
+          variant={room?.data?.lang === "en" ? "contained" : undefined}
+          onClick={() => setLang("en")}
+          disabled={loadingLang}
+        >
+          English
+          {loadingLang && <Spinner />}
+        </Button>
+        <Button
+          variant={room?.data?.lang === "fr" ? "contained" : undefined}
+          onClick={() => setLang("fr")}
+          disabled={loadingLang}
+        >
+          French
+          {loadingLang && <Spinner />}
+        </Button>
+      </ButtonGroup>
       <Typography>
         {!isHost && `Waiting for ${roomProfiles?.[0]?.name} to start the game`}
       </Typography>
@@ -94,10 +129,10 @@ export const Lobby: React.FC = () => {
           color="secondary"
           variant="contained"
           onClick={startGame}
-          disabled={loading || notEnoughPlayers}
+          disabled={loadingStart || notEnoughPlayers}
         >
           Start Game
-          {loading && <Spinner />}
+          {loadingStart && <Spinner />}
         </Button>
       )}
       <ButtonLeaveGame sx={{ mt: 4 }} label={"Leave Game"} />

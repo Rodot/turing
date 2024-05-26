@@ -36,11 +36,12 @@ export const postMessageFunction = async (
 export const generateAnswersFunction = async (
   supabase: SupabaseClient,
   roomId: string,
-  playerName: string
+  playerName: string,
+  lang: "en" | "fr"
 ) => {
   if (!roomId) return;
   const req = await supabase.functions.invoke("generate-answers", {
-    body: { roomId, playerName },
+    body: { roomId, playerName, lang },
   });
   return req?.data;
 };

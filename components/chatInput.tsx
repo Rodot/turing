@@ -60,7 +60,8 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
         const req: any = await generateAnswersFunction(
           supabase,
           roomId,
-          me.name
+          me.name,
+          room?.data?.lang ?? "en"
         );
         console.log(req);
         receivedAnswers = (req?.possibleNextMessages ?? []).map(cleanAnswer);

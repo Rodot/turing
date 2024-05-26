@@ -1,13 +1,12 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { supabase } from "@/utils/supabase/client";
 import {
   updateProfileRoom,
   removeProfileFromRoom,
 } from "@/queries/db/profile.query";
-import { fetchRoom } from "@/queries/db/room.query";
 import {
   createRoomFunction,
   startGameFunction,

@@ -12,7 +12,7 @@ import { corsHeaders } from "../_utils/cors.ts";
 import { setRandomPlayerAsBotAndResetVotes } from "../_utils/vote.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { isNotSystem, nextVoteLength, pickRandom } from "../_shared/utils.ts";
-import { iceBreakersFr } from "../_shared/lang.ts";
+import { iceBreakers, iceBreakersFr } from "../_shared/lang.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -170,7 +170,7 @@ Deno.serve(async (req) => {
           insertMessage(supabase, {
             room_id: roomId,
             author: "intro",
-            content: "💡 " + pickRandom(iceBreakersFr),
+            content: "💡 " + pickRandom(iceBreakers[room?.lang ?? "en"]),
           }),
         ]);
       }

@@ -15,6 +15,7 @@ export type ProfileData = {
 
 export type RoomData = {
   id: string;
+  lang: "en" | "fr";
   status: string;
   last_vote: number;
   next_vote: number;
