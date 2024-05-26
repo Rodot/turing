@@ -87,7 +87,6 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
           pb: 1,
         }}
       >
-        <LinearProgress color="secondary" />
         <Typography sx={{ textAlign: "center" }}>{clueText()}</Typography>
         {!me.is_bot &&
           !alreadyVoted &&
