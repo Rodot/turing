@@ -11,13 +11,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
+
       - name: Install dependencies
         run: npm install
+
+      - name: Create .env file
+        run: |
+          echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+
       - name: Build Next.js app
         run: npm run build
 
@@ -59,6 +67,6 @@ jobs:
         with:
           version: latest
 
-      - run: supabase link --project-ref $PROJECT_ID
+      - run: supabase link --project-ref $SUPABASE_PROJECT_ID
       - run: echo 'y' | supabase db reset --db-url $SUPABASE_DB_URL
-      - run: supabase functions deploy --project-ref $PROJECT_ID
+      - run: supabase functions deploy --project-ref $SUPABASE_PROJECT_ID
