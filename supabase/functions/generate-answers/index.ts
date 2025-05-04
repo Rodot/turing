@@ -3,7 +3,7 @@
 // This enables autocomplete, go to definition, etc.
 
 // Setup type definitions for built-in Supabase Runtime APIs
-/// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
+/// <reference types="https://esm.sh/@supabase/functions-js@2.4.4/src/edge-runtime.d.ts" />
 
 import { fetchMessages } from "../_queries/messages.query.ts";
 import { corsHeaders } from "../_utils/cors.ts";
@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
     const messages = promptForNextMessageSuggestions(
       playerName,
       messagesData,
-      lang
+      lang,
     );
 
     const gptAnswer = await fetchChatCompletionJson(messages);
@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
     });
   } catch (error) {
     console.error(error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 400,
     });
