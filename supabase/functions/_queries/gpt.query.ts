@@ -1,7 +1,7 @@
 import { GptResponse } from "../_types/Gpt.type.ts";
 
 export const fetchChatCompletionJson = async (
-  messages: Array<{ role: string; content: string }>
+  messages: Array<{ role: string; content: string }>,
 ) => {
   const gptResponse = await fetch(
     "https://api.openai.com/v1/chat/completions",
@@ -12,14 +12,13 @@ export const fetchChatCompletionJson = async (
         Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
       },
       body: JSON.stringify({
-        // model: "gpt-3.5-turbo",
-        model: "gpt-4o",
+        model: "o4-mini",
         response_format: { type: "json_object" },
         frequency_penalty: 2.0,
         temperature: 1.0,
         messages,
       }),
-    }
+    },
   );
 
   if (!gptResponse.ok) {
