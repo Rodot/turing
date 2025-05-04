@@ -73,24 +73,37 @@ export const Lobby: React.FC = () => {
       }}
     >
       <Toolbar /> {/* empty toolbar to avoid covering page content */}
-      <Typography variant="h4" color="primary" fontWeight={900}>
-        Invite <strong>humans</strong>
-      </Typography>
-      <Typography sx={{ textAlign: "center" }}>
-        Ask players to scan the QR or send them the link
-      </Typography>
+
+      {notEnoughPlayers && (
+        <Typography>
+          <strong>3+ players required</strong>, invite people to start!
+        </Typography>
+      )}
+      {!notEnoughPlayers && !isHost && (
+        <Typography>
+          <strong>Waiting for {roomProfiles?.[0]?.name}</strong>{" "}
+          to start the game 😅
+        </Typography>
+      )}
+
+      <ButtonShare url={url} sx={{ mt: 6 }} />
       <QRCode size={150} value={url} />
-      <ButtonShare url={url} sx={{ mb: 4 }} />
-      <Typography variant="h4" color="primary" fontWeight={900}>
-        {isHost ? "Ready?" : "Get ready..."}
-      </Typography>
+      <Typography sx={{ mb: 6 }}>👆 Scan to join</Typography>
+
       <Box
         sx={{
           display: "flex",
           gap: 1,
-          flexDirection: "column",
+          flexDirection: "row",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          mb: 6,
         }}
       >
+        <Chip
+          label={`${roomProfiles.length} Players`}
+          sx={{ bgcolor: "primary.main", color: "background.paper" }}
+        />
         {roomProfiles?.map((profile) => (
           <Chip
             key={profile.id}
@@ -98,27 +111,28 @@ export const Lobby: React.FC = () => {
           />
         ))}
       </Box>
-      <ButtonGroup>
-        <Button
-          variant={room?.data?.lang === "en" ? "contained" : undefined}
-          onClick={() => setLang("en")}
-          disabled={loadingLang}
-        >
-          English
-          {loadingLang && <Spinner />}
-        </Button>
-        <Button
-          variant={room?.data?.lang === "fr" ? "contained" : undefined}
-          onClick={() => setLang("fr")}
-          disabled={loadingLang}
-        >
-          French
-          {loadingLang && <Spinner />}
-        </Button>
-      </ButtonGroup>
-      <Typography>
-        {!isHost && `Waiting for ${roomProfiles?.[0]?.name} to start the game`}
-      </Typography>
+
+      {isHost && (
+        <ButtonGroup>
+          <Button
+            variant={room?.data?.lang === "en" ? "contained" : undefined}
+            onClick={() => setLang("en")}
+            disabled={loadingLang}
+          >
+            English
+            {loadingLang && <Spinner />}
+          </Button>
+          <Button
+            variant={room?.data?.lang === "fr" ? "contained" : undefined}
+            onClick={() => setLang("fr")}
+            disabled={loadingLang}
+          >
+            French
+            {loadingLang && <Spinner />}
+          </Button>
+        </ButtonGroup>
+      )}
+
       {isHost && (
         <Button
           color="secondary"
@@ -130,12 +144,6 @@ export const Lobby: React.FC = () => {
           {loadingStart && <Spinner />}
         </Button>
       )}
-      {notEnoughPlayers && (
-        <Typography color="error">
-          3 or more players required to play
-        </Typography>
-      )}
-      <ButtonLeaveGame sx={{ mt: 4 }} label={"Leave Game"} />
     </Container>
   );
 };
