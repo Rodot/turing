@@ -7,7 +7,7 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "The Turing Trial by BetaLab.fr",
+  title: "The Turing Trial",
   description:
     "Can you distinguish your friend from AIs? Online party game, no account nor download required, 3-6 players.",
 };

@@ -1,6 +1,6 @@
 "use client";
 import React, { useContext } from "react";
-import { AppBar, Toolbar, Typography, Link } from "@mui/material";
+import { AppBar, Link, Toolbar, Typography } from "@mui/material";
 import { RoomContext } from "./contextProvider";
 import { Chat } from "./chat";
 import { Lobby } from "./lobby";
@@ -20,16 +20,8 @@ export const BaseLayout = () => {
     <>
       <AppBar>
         <Toolbar>
-          <Typography sx={{ flexGrow: "1" }}>
-            The Turing Trial{" "}
-            <Link
-              href="https://betaLab.fr"
-              target="_blank"
-              color="secondary.main"
-              underline="hover"
-            >
-              by BetaLab.fr
-            </Link>
+          <Typography sx={{ flexGrow: "1", fontWeight: "900" }}>
+            The Turing <strong>Trial</strong>
           </Typography>
 
           <ButtonLeaveGame label={"leave"} />

@@ -57,9 +57,6 @@ export const SignUp: React.FC = () => {
       }}
     >
       <Toolbar /> {/* empty toolbar to avoid covering page content */}
-      <Typography variant="h4" color="primary" fontWeight={900}>
-        The Turing <strong>Trial</strong>
-      </Typography>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 2 }}>
         <Typography fontWeight={900} align="center" sx={{ my: 2 }}>
           In a group chat, an AI controls one of your friends.
@@ -77,42 +74,44 @@ export const SignUp: React.FC = () => {
           Earn 5 🧠 to win
         </Typography>
       </Box>
-      {user?.id ? (
-        <>
-          <ButtonCreateGame />
-          <Typography sx={{ textAlign: "center" }}>
-            ...or ask a friend for their game&apos;s link.
-          </Typography>
-        </>
-      ) : (
-        <form onSubmit={signUp} style={{ width: "100%" }}>
-          <Box
-            sx={{
-              display: "flex",
-              alignContent: "center",
-              justifyContent: "center",
-              p: 1,
-            }}
-          >
-            <TextField
-              label="Your name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              sx={{ mr: 1 }}
-            />
-
-            <Button
-              type="submit"
-              variant="contained"
-              color="secondary"
-              disabled={loading || name.length < 3}
+      {user?.id
+        ? (
+          <>
+            <ButtonCreateGame />
+            <Typography sx={{ textAlign: "center" }}>
+              ...or ask a friend for their game&apos;s link.
+            </Typography>
+          </>
+        )
+        : (
+          <form onSubmit={signUp} style={{ width: "100%" }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignContent: "center",
+                justifyContent: "center",
+                p: 1,
+              }}
             >
-              <Send />
-              {loading && <Spinner />}
-            </Button>
-          </Box>
-        </form>
-      )}
+              <TextField
+                label="Your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                sx={{ mr: 1 }}
+              />
+
+              <Button
+                type="submit"
+                variant="contained"
+                color="secondary"
+                disabled={loading || name.length < 3}
+              >
+                <Send />
+                {loading && <Spinner />}
+              </Button>
+            </Box>
+          </form>
+        )}
     </Container>
   );
 };
