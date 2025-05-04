@@ -74,7 +74,7 @@ Deno.serve(async (req) => {
       const playersAfter = await fetchPlayers(supabase, roomId);
       const maxScore = Math.max(...playersAfter.map((p) => p.score));
 
-      if (maxScore >= 5) {
+      if (maxScore >= 10) {
         // Game over
         console.log("Game over", roomId);
 
@@ -186,7 +186,7 @@ async function gatherVotingData(
 
   // Find the maximum number of votes any player received
   const maxVotes = botPlayer ? Math.max(...Object.values(voteCounts)) : 0;
-  
+
   // Calculate human imposters (humans with more votes than bot AND have the most votes)
   const humanImposters = botPlayer
     ? players.filter((player) =>

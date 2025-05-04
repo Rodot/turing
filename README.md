@@ -8,7 +8,7 @@ A party game where an AI infiltrates your group chat.
 - +1 🧠 for guessing **who is the AI?**
 - +1 🧠 for convincing players you are the AI, as a human.
 - +1 🧠 for convincing players you are a human, as the AI.
-- Earn 5 🧠 to win
+- Earn 10 🧠 to win
 
 ## Development
 
