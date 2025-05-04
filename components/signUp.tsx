@@ -60,23 +60,21 @@ export const SignUp: React.FC = () => {
       <Typography variant="h4" color="primary" fontWeight={900}>
         The Turing <strong>Trial</strong>
       </Typography>
-      <Typography>Can you distinguish your friend from AIs?</Typography>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 2 }}>
-        <Typography variant="h6" color="primary" fontWeight={900}>
-          Rules
+        <Typography fontWeight={900} align="center" sx={{ my: 2 }}>
+          In a group chat, an AI controls one of your friends.
         </Typography>
         <Typography>
-          <strong>1.</strong> You are in a group chat... but each round, one of
-          the players is be possessed by an AI, which will pretend to be the
-          player.
+          +1 🧠 for guessing <strong>who is the AI?</strong>
         </Typography>
         <Typography>
-          <strong>2.</strong> At the end of a round, guess who was possessed by
-          the AI to get 1 🧠. The possessed player gets 1 🧠 by remaining
-          undetected.
+          +1 🧠 for convincing players you are the AI, as a human.
         </Typography>
         <Typography>
-          <strong>3.</strong> Get 5 🧠 to win.
+          +1 🧠 for convincing players you are a human, as the AI.
+        </Typography>
+        <Typography fontWeight={900} align="center" sx={{ my: 2 }}>
+          Earn 5 🧠 to win
         </Typography>
       </Box>
       {user?.id ? (
