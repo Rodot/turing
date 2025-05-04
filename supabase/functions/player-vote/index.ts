@@ -3,7 +3,7 @@
 // This enables autocomplete, go to definition, etc.
 
 // Setup type definitions for built-in Supabase Runtime APIs
-/// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
+/// <reference types="https://esm.sh/@supabase/functions-js@2.4.4/src/edge-runtime.d.ts" />
 
 import { fetchMessages, insertMessage } from "../_queries/messages.query.ts";
 import { fetchPlayers, updatePlayer } from "../_queries/players.query.ts";
@@ -12,7 +12,7 @@ import { corsHeaders } from "../_utils/cors.ts";
 import { setRandomPlayerAsBotAndResetVotes } from "../_utils/vote.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { isNotSystem, nextVoteLength, pickRandom } from "../_shared/utils.ts";
-import { iceBreakers, iceBreakersFr } from "../_shared/lang.ts";
+import { iceBreakers } from "../_shared/lang.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
     const botVoters = players.filter((player) => player.vote === botPlayer?.id);
     const blankVoters = players.filter((player) => player.vote_blank === true);
     const numVotes = players.filter(
-      (player) => player.vote || player.vote_blank
+      (player) => player.vote || player.vote_blank,
     ).length;
 
     // All players have voted
@@ -78,17 +78,18 @@ Deno.serve(async (req) => {
               room_id: roomId,
               score: winner.score + 1,
             })
-          )
+          ),
         );
-        // +1 point for the bot if nobody voted for it
-        if (!botVoters.length) {
-          await updatePlayer(supabase, {
-            id: botPlayer.id,
-            room_id: roomId,
-            score: botPlayer.score + 1,
-          });
-        }
-      } else {
+      }
+      // +1 point for the bot if nobody voted for it
+      if (botPlayer && !botVoters.length) {
+        await updatePlayer(supabase, {
+          id: botPlayer.id,
+          room_id: roomId,
+          score: botPlayer.score + 1,
+        });
+      }
+      if (!botPlayer) {
         // +1 point for those who voted for blank
         await Promise.all(
           blankVoters.map((winner) =>
@@ -97,34 +98,38 @@ Deno.serve(async (req) => {
               room_id: roomId,
               score: winner.score + 1,
             })
-          )
+          ),
         );
       }
 
       // Post message in chat
       let message = "";
 
-      if (botPlayer) {
-        if (botVoters.length) {
-          // bot was fount
-          message = `+1 🧠 for ${botVoters
+      if (botPlayer && botVoters.length) {
+        // bot was found
+        message = `+1 🧠 for ${
+          botVoters
             .map((p) => p.name)
-            .join(" and ")} who exorcised ${botPlayer?.name} the possessed `;
-        } else {
-          // bot escaped
-          message = `+1 🧠 for ${botPlayer?.name} the possessed who escaped`;
-        }
-      } else {
-        if (blankVoters.length) {
-          // people guessed there was no bot
-          message = `+1 🧠 for ${blankVoters
-            .map((p) => p.name)
-            .join(" and ")} who realized that nobody was possessed`;
-        } else {
-          // nobody guessed there was no bot
-          message = `Nobody guessed that nobody was possessed 😏`;
-        }
+            .join(" and ")
+        } who exorcised ${botPlayer?.name} the possessed `;
       }
+      if (botPlayer && !botVoters.length) {
+        // bot escaped
+        message = `+1 🧠 for ${botPlayer?.name} the possessed who escaped`;
+      }
+      if (!botPlayer && blankVoters.length) {
+        // people guessed there was no bot
+        message = `+1 🧠 for ${
+          blankVoters
+            .map((p) => p.name)
+            .join(" and ")
+        } who realized that nobody was possessed`;
+      }
+      if (!botPlayer && !blankVoters.length) {
+        // nobody guessed there was no bot
+        message = `Nobody guessed that nobody was possessed 😏`;
+      }
+
       await insertMessage(supabase, {
         author: "system",
         content: message,
@@ -156,8 +161,8 @@ Deno.serve(async (req) => {
 
         // set next vote
         const room = await fetchRoom(supabase, roomId);
-        const nextVote =
-          messages.filter(isNotSystem).length + nextVoteLength(players.length);
+        const nextVote = messages.filter(isNotSystem).length +
+          nextVoteLength(players.length);
 
         // Reset votes and set random player as bot
         await Promise.all([
@@ -184,7 +189,7 @@ Deno.serve(async (req) => {
     });
   } catch (error) {
     console.error(error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 400,
     });
