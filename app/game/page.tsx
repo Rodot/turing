@@ -1,17 +1,17 @@
 "use client";
-import { BaseLayout } from "@/components/baseLayout";
 import { ContextProvider } from "@/components/contextProvider";
-import { SignUp } from "@/components/signUp";
+import { BaseLayout } from "@/components/baseLayout";
 import { Spinner } from "@/components/spinner";
 import React, { Suspense } from "react";
+import { GameRouter } from "@/components/gameRouter";
 
-export default function HomePage() {
+export default function GamePage() {
   return (
     <>
       <Suspense fallback={<Spinner />}>
         <ContextProvider>
           <BaseLayout>
-            <SignUp />
+            <GameRouter />
           </BaseLayout>
         </ContextProvider>
       </Suspense>

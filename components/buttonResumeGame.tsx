@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, SxProps, Theme } from "@mui/material";
 import { useContext, useState } from "react";
-import { RoomContext } from "./contextProvider";
+import { UserProfileContext } from "./contextProvider";
 import { Spinner } from "./spinner";
 import { useRouter } from "next/navigation";
 
@@ -9,15 +9,14 @@ interface Props {
   sx?: SxProps<Theme>;
 }
 
-export const ButtonCreateGame: React.FC<Props> = ({ sx }) => {
-  const room = useContext(RoomContext);
+export const ButtonResumeGame: React.FC<Props> = ({ sx }) => {
+  const profile = useContext(UserProfileContext);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const startNewGame = async () => {
     try {
       setLoading(true);
-      await room?.createRoom();
       router.push("/game");
     } catch (error) {
       console.error(error);
@@ -25,6 +24,10 @@ export const ButtonCreateGame: React.FC<Props> = ({ sx }) => {
       setLoading(false);
     }
   };
+
+  if (!profile?.room_id) {
+    return null;
+  }
 
   return (
     <Button
@@ -34,7 +37,7 @@ export const ButtonCreateGame: React.FC<Props> = ({ sx }) => {
       disabled={loading}
       sx={sx}
     >
-      New Game
+      Resume Game
       {loading && <Spinner />}
     </Button>
   );

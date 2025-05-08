@@ -4,8 +4,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { supabase } from "@/utils/supabase/client";
 import {
-  updateProfileRoom,
   removeProfileFromRoom,
+  updateProfileRoom,
 } from "@/queries/db/profile.query";
 import {
   createRoomFunction,
@@ -31,21 +31,6 @@ export function useRoom(profile: ProfileData | null): Room | null {
     filterColumn: "id",
     filterValue: profile?.room_id,
   });
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  // get room id from url and push to server
-  useEffect(() => {
-    if (!profile?.id) return;
-    const newRoomId = searchParams.get("room") ?? null;
-    if (newRoomId?.length) {
-      if (newRoomId === profile?.room_id) {
-        router.push("/");
-      } else {
-        updateProfileRoom(supabase, profile?.id, newRoomId);
-      }
-    }
-  }, [searchParams, router, profile?.id, profile?.room_id]);
 
   const createRoom = async () => {
     await createRoomFunction(supabase);

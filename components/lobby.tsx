@@ -31,7 +31,7 @@ export const Lobby: React.FC = () => {
 
   const isHost = roomProfiles?.[0]?.id === user?.id;
   const me = roomProfiles?.find((profile) => profile.id === user?.id);
-  const notEnoughPlayers = roomProfiles?.length < 3;
+  const notEnoughPlayers = roomProfiles?.length < 2;
 
   const startGame = async () => {
     try {
@@ -57,7 +57,7 @@ export const Lobby: React.FC = () => {
   };
 
   useEffect(() => {
-    setUrl(window.location.href + "?room=" + room?.data?.id);
+    setUrl(window.location.host + "?room=" + room?.data?.id);
   }, [room?.data?.id]);
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Box,
   Button,
@@ -11,35 +11,24 @@ import {
 } from "@mui/material";
 import { UserContext } from "./contextProvider";
 import { Spinner } from "./spinner";
-import { useRouter, useSearchParams } from "next/navigation";
 import { ButtonCreateGame } from "./buttonCreateGame";
 import { Send } from "@mui/icons-material";
+import { ButtonJoinGame } from "./buttonJoinGame";
+import { ButtonResumeGame } from "./buttonResumeGame";
 
 export const SignUp: React.FC = () => {
   const user = useContext(UserContext);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
-  const [roomId, setRoomId] = useState<string | null>(null);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    const newRoomId = searchParams.get("room") ?? null;
-    if (newRoomId?.length) {
-      setRoomId(newRoomId);
-    }
-  }, [searchParams, router]);
 
   const signUp = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
     try {
-      await (user as any)?.signUp(name, roomId);
+      await (user as any)?.signUp(name);
     } catch (error) {
       console.error(error);
     } finally {
-      setRoomId(null);
-      router.push("/");
       setLoading(false);
     }
   };
@@ -77,10 +66,9 @@ export const SignUp: React.FC = () => {
       {user?.id
         ? (
           <>
+            <ButtonResumeGame />
+            <ButtonJoinGame />
             <ButtonCreateGame />
-            <Typography sx={{ textAlign: "center" }}>
-              ...or ask a friend for their game&apos;s link.
-            </Typography>
           </>
         )
         : (

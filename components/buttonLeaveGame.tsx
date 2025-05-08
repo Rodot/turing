@@ -5,6 +5,7 @@ import { useContext, useState } from "react";
 import { PlayersContext, RoomContext } from "./contextProvider";
 import { deletePlayer } from "@/queries/db/players.query";
 import { supabase } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 
 interface Props {
   label?: string;
@@ -16,12 +17,14 @@ export const ButtonLeaveGame: React.FC<Props> = ({ sx, label }) => {
   const players = useContext(PlayersContext);
   const me = players?.find((p) => p.id === p?.id);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const leaveGame = async () => {
     try {
       setLoading(true);
       if (me?.id) await deletePlayer(supabase, me.id);
       await room?.leaveRoom();
+      router.push("/");
     } finally {
       setLoading(false);
     }

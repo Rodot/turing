@@ -305,12 +305,13 @@ async function postPointsMessages(
       foundBotPlayers
         .map((p) => p.name)
         .join(" and ")
-    } who exorcised ${botPlayer.name} the possessed `;
+    } who guessed that ${botPlayer.name} was the AI`;
   }
 
   // Create message for escaped bot
   if (botPlayer && foundBotPlayers.length === 0) {
-    mainMessage = `+1 🧠 for ${botPlayer.name} the possessed who escaped`;
+    mainMessage =
+      `+1 🧠 for ${botPlayer.name} for pretending to be human... as the AI`;
   }
 
   // Create message for correct blank voters
@@ -319,12 +320,12 @@ async function postPointsMessages(
       correctlyGuessedNoBotPlayers
         .map((p) => p.name)
         .join(" and ")
-    } who realized that nobody was possessed`;
+    } who realized there was no AI`;
   }
 
   // Create message when nobody guessed there was no bot
   if (!botPlayer && correctlyGuessedNoBotPlayers.length === 0) {
-    mainMessage = `Nobody guessed that nobody was possessed 😏`;
+    mainMessage = `Nobody guessed that there was no AI`;
   }
 
   // Add message for humans who got more votes than the bot
@@ -333,7 +334,7 @@ async function postPointsMessages(
       humanImposters
         .map((p) => p.name)
         .join(" and ")
-    } for being more convincing than the actual possessed`;
+    } for pretending to be the AI... as a human`;
   }
 
   // Post the message

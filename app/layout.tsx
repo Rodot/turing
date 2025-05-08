@@ -21,9 +21,12 @@ export default function RootLayout({
     <html lang="en">
       <CssBaseline />
       <GlobalStyles
-        styles={{ strong: { color: "#f50057", fontWeight: 900 } }}
+        styles={{ 
+          body: { margin: 0, minHeight: "100vh" },
+          strong: { color: "#f50057", fontWeight: 900 } 
+        }}
       />
-      <body style={{ margin: 0 }}>{children}</body>
+      <body>{children}</body>
     </html>
   );
 }
