@@ -1,13 +1,10 @@
 {
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "supa-dev": "npx supabase start && npx supabase functions serve --env-file ./.env",
-    "supa-reset": "npx supabase stop --no-backup && npm run supa-dev",
-    "supa-remote-reset": "npx supabase db reset --linked",
-    "supa-remote-env": "npx supabase secrets set --env-file ./.env",
-    "build": "next build",
-    "start": "next start",
+    "next-dev": "next dev",
+    "supa-dev": "npx supabase start -x storage-api -x imgproxy -x mailpit -x logflare -x vector -x edge-runtime && supabase db reset && npx -y supabase gen types typescript --local >./supabase/functions/_types/database.types.g.ts && npx supabase functions serve --env-file ./.env",
+    "next-build": "next build",
+    "next-start": "next start",
     "fix": "eslint . --fix --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
