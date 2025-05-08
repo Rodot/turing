@@ -1,13 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { PlayersContext, RoomContext, UserContext } from "./contextProvider";
-import {
-  Box,
-  Button,
-  LinearProgress,
-  SxProps,
-  Theme,
-  Typography,
-} from "@mui/material";
+import { Box, Button, SxProps, Theme, Typography } from "@mui/material";
 import { supabase } from "@/utils/supabase/client";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
 import { playerVoteFunction } from "@/queries/functions/functions.query";
@@ -36,10 +29,9 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   const humans = players.filter((player) => !player.is_bot);
   const otherPlayers = players.filter((player) => player.id !== me.id);
   const humansDidntVote = humans.filter((player) => !didVote(player));
-  const humansDidntVoteString =
-    humansDidntVote.length > 2
-      ? "others"
-      : humansDidntVote.map((p) => p.name).join(", ");
+  const humansDidntVoteString = humansDidntVote.length > 2
+    ? "others"
+    : humansDidntVote.map((p) => p.name).join(", ");
   const everyoneVoted = humansDidntVote.length === 0;
   const alreadyVoted = me.vote || me.vote_blank;
 

@@ -1,6 +1,6 @@
 "use client";
 import React, { useContext } from "react";
-import { AppBar, Link, Toolbar, Typography } from "@mui/material";
+import { AppBar, Toolbar, Typography } from "@mui/material";
 import { RoomContext } from "./contextProvider";
 import { Chat } from "./chat";
 import { Lobby } from "./lobby";

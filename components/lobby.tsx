@@ -18,7 +18,6 @@ import {
 import { ButtonShare } from "./buttonShare";
 import { Spinner } from "./spinner";
 import QRCode from "react-qr-code";
-import { ButtonLeaveGame } from "./buttonLeaveGame";
 import { updateRoom } from "@/queries/db/room.query";
 import { supabase } from "@/utils/supabase/client";
 

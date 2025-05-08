@@ -25,7 +25,6 @@ import {
 } from "@/supabase/functions/_shared/utils";
 import { Spinner } from "./spinner";
 import { Send } from "@mui/icons-material";
-import { ProgressTimer } from "./progressTimer";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -61,7 +60,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
           supabase,
           roomId,
           me.name,
-          room?.data?.lang ?? "en"
+          room?.data?.lang ?? "en",
         );
         console.log(req);
         receivedAnswers = (req?.possibleNextMessages ?? []).map(cleanAnswer);
@@ -125,8 +124,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
         )}
         {!canTalk && talkingPlayers?.length && (
           <Typography textAlign="center">
-            Waiting for{" "}
-            {talkingPlayers.length > 2
+            Waiting for {talkingPlayers.length > 2
               ? "others"
               : talkingPlayers.map((p) => p.name).join(", ")}
           </Typography>
@@ -157,7 +155,8 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
                   variant="contained"
                   color="secondary"
                   key="answer"
-                  onClick={() => sendMessageFromBot(answer)}
+                  onClick={() =>
+                    sendMessageFromBot(answer)}
                   disabled={loadingSend || !canTalk}
                 >
                   <Send />
