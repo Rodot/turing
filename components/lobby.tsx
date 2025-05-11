@@ -26,7 +26,7 @@ export const Lobby: React.FC = () => {
   const roomProfiles = useContext(RoomProfilesContext);
   const isHost = roomProfiles?.[0]?.id === userQuery.data?.id;
   const me = roomProfiles?.find((profile) => profile.id === userQuery.data?.id);
-  const notEnoughPlayers = roomProfiles?.length < 2;
+  const notEnoughPlayers = roomProfiles?.length < 3;
   const url = window.location.href;
   const startGameMutation = useStartGameMutation();
   const roomLanguageMutation = useRoomLanguageMutation();

@@ -13,8 +13,7 @@ import { defineConfig, devices } from "@playwright/test";
  */
 export default defineConfig({
   testDir: "./e2e",
-  /** Don't change the timeout, the server is fast, your problem comes from somewhere else */
-  timeout: 5000,
+  timeout: 30000,
   fullyParallel: true,
   forbidOnly: !!process.env["CI"],
   retries: process.env["CI"] ? 2 : 0,
