@@ -88,9 +88,11 @@ export const SignUp: React.FC = () => {
             type="submit"
             variant="contained"
             color="secondary"
-            disabled={profileQuery.isLoading ||
+            disabled={
+              profileQuery.isLoading ||
               profileNameMutation.isPending ||
-              name.length < 3}
+              name.length < 3
+            }
           >
             <Send />
             {(profileQuery.isLoading || profileNameMutation.isPending) && (

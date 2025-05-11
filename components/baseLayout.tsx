@@ -25,9 +25,7 @@ export function BaseLayout({ children }: React.PropsWithChildren) {
               <ButtonLeaveGame label={"leave"} />
             </Toolbar>
           </AppBar>
-          <Suspense fallback={<Spinner />}>
-            {children}
-          </Suspense>
+          <Suspense fallback={<Spinner />}>{children}</Suspense>
         </ContextProvider>
       </QueryClientProvider>
     </>

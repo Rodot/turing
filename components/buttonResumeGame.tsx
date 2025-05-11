@@ -1,12 +1,12 @@
 import React from "react";
 import { Button } from "@mui/material";
-import { useContext, useState } from "react";
-import { UserProfileContext } from "./contextProvider";
+import { useState } from "react";
 import { Spinner } from "./spinner";
 import { useRouter } from "next/navigation";
+import { useProfileQuery } from "@/hooks/useProfileQuery";
 
 export const ButtonResumeGame: React.FC = () => {
-  const profile = useContext(UserProfileContext);
+  const profileQuery = useProfileQuery();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -21,7 +21,7 @@ export const ButtonResumeGame: React.FC = () => {
     }
   };
 
-  if (!profile?.room_id) {
+  if (!profileQuery.data?.room_id) {
     return null;
   }
 

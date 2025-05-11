@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { PlayersContext, RoomContext, UserContext } from "./contextProvider";
+import { PlayersContext, RoomContext } from "./contextProvider";
 import { Box, Button, SxProps, Theme, Typography } from "@mui/material";
 import { supabase } from "@/utils/supabase/client";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
@@ -7,24 +7,25 @@ import { playerVoteFunction } from "@/queries/functions/functions.query";
 import { Spinner } from "./spinner";
 import { VoteResults } from "./voteResult";
 import { ProgressTimer } from "./progressTimer";
+import { useUserQuery } from "@/hooks/useUserQuery";
 
 type Props = {
   sx?: SxProps<Theme>;
 };
 
 export const ChatVote: React.FC<Props> = ({ sx }) => {
-  const user = useContext(UserContext);
+  const userQuery = useUserQuery();
   const room = useContext(RoomContext);
   const players = useContext(PlayersContext);
   const [loading, setLoading] = useState(false);
 
   if (!players) return null;
   if (!room) return null;
-  if (!user) return null;
+  if (!userQuery.data) return null;
 
   const didVote = (player: PlayerData) => player.vote || player.vote_blank;
 
-  const me = players.find((player) => player.user_id === user?.id);
+  const me = players.find((player) => player.user_id === userQuery.data?.id);
   if (!me) return null;
   const humans = players.filter((player) => !player.is_bot);
   const otherPlayers = players.filter((player) => player.id !== me.id);

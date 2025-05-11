@@ -15,14 +15,14 @@ import {
   PlayersContext,
   RoomContext,
   RoomProfilesContext,
-  UserContext,
 } from "./contextProvider";
 import { ChatVote } from "./chatVotes";
 import { ButtonLeaveGame } from "./buttonLeaveGame";
 import { ButtonCreateGame } from "./buttonCreateGame";
+import { useUserQuery } from "@/hooks/useUserQuery";
 
 export const Chat: React.FC = () => {
-  const user = useContext(UserContext);
+  const userQuery = useUserQuery();
   const room = useContext(RoomContext);
   const messages = useContext(MessagesContext);
   const roomProfiles = useContext(RoomProfilesContext);
@@ -30,7 +30,7 @@ export const Chat: React.FC = () => {
 
   const nextRoomId = room?.data?.next_room_id;
   const host = roomProfiles?.[0];
-  const isHost = roomProfiles?.[0]?.id === user?.id;
+  const isHost = roomProfiles?.[0]?.id === userQuery.data?.id;
   const isWarmup = room?.data?.status === "warmup";
   const isTalking = room?.data?.status === "talking";
   const isVoting = room?.data?.status === "voting";

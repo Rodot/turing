@@ -4,7 +4,6 @@ import {
   MessagesContext,
   PlayersContext,
   RoomContext,
-  UserContext,
 } from "./contextProvider";
 import {
   Box,
@@ -25,6 +24,7 @@ import {
 } from "@/supabase/functions/_shared/utils";
 import { Spinner } from "./spinner";
 import { Send } from "@mui/icons-material";
+import { useUserQuery } from "@/hooks/useUserQuery";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -35,14 +35,14 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   const [loadingSend, setLoadingSend] = useState(false);
   const [content, setContent] = useState("");
   const [botAnswers, setBotAnswers] = useState<string[] | undefined>();
-  const user = useContext(UserContext);
+  const userQuery = useUserQuery();
   const room = useContext(RoomContext);
   const players = useContext(PlayersContext);
   const messages = useContext(MessagesContext);
-  if (!user) return null;
+  if (!userQuery.data) return null;
   const roomId = room?.data?.id;
   if (!roomId) return null;
-  const me = players.find((player) => player.user_id === user?.id);
+  const me = players.find((player) => player.user_id === userQuery.data?.id);
   if (!me) return null;
 
   const talkingPlayers = getPlayersWithLeastMessages(players, messages);
@@ -78,11 +78,16 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   };
 
   const sendMessage = async (text: string) => {
+    if (!userQuery.data?.id) {
+      console.error("User ID not available");
+      return;
+    }
+
     try {
       setLoadingSend(true);
       await postMessageFunction(supabase, {
         room_id: roomId,
-        user_id: user.id,
+        user_id: userQuery.data.id,
         player_id: me.id,
         author: me.name,
         content: cleanAnswer(text),

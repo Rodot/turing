@@ -5,7 +5,6 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../theme";
 import { Room, useRoom } from "@/hooks/useRoom";
-import { User } from "@supabase/supabase-js";
 import {
   MessageData,
   PlayerData,
@@ -15,11 +14,7 @@ import { useTable } from "@/hooks/useTable";
 import { supabase } from "@/utils/supabase/client";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
 
-// Create the context with User type
-export const UserContext = createContext<User | undefined>(undefined);
-export const UserProfileContext = createContext<ProfileData | undefined>(
-  undefined,
-);
+// Create contexts
 export const MessagesContext = createContext<MessageData[]>([]);
 export const RoomContext = createContext<Room | undefined>(undefined);
 export const RoomProfilesContext = createContext<ProfileData[]>([]);

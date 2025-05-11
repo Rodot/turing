@@ -10,27 +10,24 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import {
-  RoomContext,
-  RoomProfilesContext,
-  UserContext,
-} from "./contextProvider";
+import { RoomContext, RoomProfilesContext } from "./contextProvider";
 import { ButtonShare } from "./buttonShare";
 import { Spinner } from "./spinner";
 import QRCode from "react-qr-code";
 import { updateRoom } from "@/queries/db/room.query";
 import { supabase } from "@/utils/supabase/client";
+import { useUserQuery } from "@/hooks/useUserQuery";
 
 export const Lobby: React.FC = () => {
-  const user = useContext(UserContext);
+  const userQuery = useUserQuery();
   const room = useContext(RoomContext);
   const roomProfiles = useContext(RoomProfilesContext);
   const [loadingStart, setLoadingStart] = useState(false);
   const [loadingLang, setLoadingLang] = useState(false);
   const [url, setUrl] = useState("");
 
-  const isHost = roomProfiles?.[0]?.id === user?.id;
-  const me = roomProfiles?.find((profile) => profile.id === user?.id);
+  const isHost = roomProfiles?.[0]?.id === userQuery.data?.id;
+  const me = roomProfiles?.find((profile) => profile.id === userQuery.data?.id);
   const notEnoughPlayers = roomProfiles?.length < 2;
 
   const startGame = async () => {
