@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { Box, Button, Container, TextField, Typography } from "@mui/material";
-import { Spinner } from "./spinner";
 import { ButtonCreateGame } from "./buttonCreateGame";
 import { Send } from "@mui/icons-material";
 import { ButtonJoinGame } from "./buttonJoinGame";
@@ -93,9 +92,6 @@ export const SignUp: React.FC = () => {
               }
             >
               <Send />
-              {(profileQuery.isLoading || profileNameMutation.isPending) && (
-                <Spinner />
-              )}
             </Button>
           </Box>
         </form>

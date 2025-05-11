@@ -12,11 +12,14 @@ import {
 import { useTable } from "@/hooks/useTable";
 import { supabase } from "@/utils/supabase/client";
 import { useRoomId } from "@/hooks/useRoomId";
+import { SnackbarProvider } from "./snackbarContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Create contexts
 export const MessagesContext = createContext<MessageData[]>([]);
 export const RoomProfilesContext = createContext<ProfileData[]>([]);
 export const PlayersContext = createContext<PlayerData[]>([]);
+const queryClient = new QueryClient();
 
 // Create the wrapper component
 export function ContextProvider({ children }: React.PropsWithChildren) {
@@ -38,16 +41,20 @@ export function ContextProvider({ children }: React.PropsWithChildren) {
   });
 
   return (
-    <AppRouterCacheProvider>
-      <ThemeProvider theme={theme}>
-        <RoomProfilesContext.Provider value={profiles}>
-          <PlayersContext.Provider value={players}>
-            <MessagesContext.Provider value={messages}>
-              {children}
-            </MessagesContext.Provider>
-          </PlayersContext.Provider>
-        </RoomProfilesContext.Provider>
-      </ThemeProvider>
-    </AppRouterCacheProvider>
+    <QueryClientProvider client={queryClient}>
+      <AppRouterCacheProvider>
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <RoomProfilesContext.Provider value={profiles}>
+              <PlayersContext.Provider value={players}>
+                <MessagesContext.Provider value={messages}>
+                  {children}
+                </MessagesContext.Provider>
+              </PlayersContext.Provider>
+            </RoomProfilesContext.Provider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </AppRouterCacheProvider>
+    </QueryClientProvider>
   );
 }

@@ -4,7 +4,6 @@ import { Box, Button, SxProps, Theme, Typography } from "@mui/material";
 import { supabase } from "@/utils/supabase/client";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
 import { playerVoteFunction } from "@/queries/functions/functions.query";
-import { Spinner } from "./spinner";
 import { VoteResults } from "./voteResult";
 import { ProgressTimer } from "./progressTimer";
 import { useUserQuery } from "@/hooks/useUserQuery";
@@ -115,7 +114,6 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
             >
               {option.id === "blank" && "❌ "}
               {option.name}
-              {loading && <Spinner />}
             </Button>
           ))}
       </Box>

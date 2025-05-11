@@ -1,6 +1,5 @@
 import React from "react";
 import { Button } from "@mui/material";
-import { Spinner } from "./spinner";
 import { useRouter } from "next/navigation";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
 
@@ -24,7 +23,6 @@ export const ButtonResumeGame: React.FC = () => {
       disabled={profileQuery.isLoading}
     >
       Return To Last Game
-      {profileQuery.isLoading && <Spinner />}
     </Button>
   );
 };

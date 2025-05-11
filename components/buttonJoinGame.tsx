@@ -1,6 +1,5 @@
 import React from "react";
 import { Button } from "@mui/material";
-import { Spinner } from "./spinner";
 import { useRoomId } from "../hooks/useRoomId";
 import { useJoinRoomMutation } from "@/hooks/useRoomQuery";
 
@@ -20,7 +19,6 @@ export const ButtonJoinGame: React.FC = () => {
       disabled={joinRoomMutation.isPending}
     >
       Join Game
-      {joinRoomMutation.isPending && <Spinner />}
     </Button>
   );
 };
