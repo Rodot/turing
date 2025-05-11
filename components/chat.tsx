@@ -1,7 +1,14 @@
 import React, { useContext, useEffect } from "react";
 import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
-import { Box, Chip, Container, Paper, Typography } from "@mui/material";
+import {
+  Box,
+  Chip,
+  Container,
+  Paper,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import { PlayersContext, RoomProfilesContext } from "./contextProvider";
 import { ChatVote } from "./chatVotes";
 import { ButtonLeaveGame } from "./buttonLeaveGame";
@@ -39,6 +46,7 @@ export const Chat: React.FC = () => {
         p: 0,
       }}
     >
+      <Toolbar /> {/* empty toolbar to avoid covering page content */}
       <Paper
         sx={{
           display: "flex",
