@@ -12,4 +12,6 @@ A party game where an AI infiltrates your group chat.
 
 ## Development
 
+Setup by runnin `npm install`
+
 See [package.json](/package.json) for dev commands.
