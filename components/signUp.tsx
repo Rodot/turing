@@ -10,15 +10,19 @@ import {
   useProfileNameMutation,
   useProfileQuery,
 } from "@/hooks/useProfileQuery";
-import { useUserQuery } from "@/hooks/useUserQuery";
+import { useIsFetching, useIsMutating } from "@tanstack/react-query";
+import { Spinner } from "./spinner";
+import { profile } from "console";
 
 export const SignUp: React.FC = () => {
-  const userQuery = useUserQuery();
   const profileQuery = useProfileQuery();
   const profileNameMutation = useProfileNameMutation();
   const [name, setName] = useState("");
   const isNameSet = (profileQuery?.data?.name?.length ?? 0) > 1;
-  const isProfileLoading = profileQuery.isLoading || userQuery.isLoading;
+  const isFetching = useIsFetching();
+  const isMutating = useIsMutating();
+  const isLoading =
+    isFetching > 0 || isMutating > 0 || profileQuery.data?.id === undefined;
 
   useEffect(() => {
     if (profileQuery.data?.name) {
@@ -64,7 +68,9 @@ export const SignUp: React.FC = () => {
         </Typography>
       </Box>
 
-      {!isProfileLoading && !isNameSet && (
+      {isLoading && <Spinner />}
+
+      {!isLoading && !isNameSet && (
         <form onSubmit={onSubmit} style={{ width: "100%" }}>
           <Box
             sx={{
@@ -97,7 +103,7 @@ export const SignUp: React.FC = () => {
           </Box>
         </form>
       )}
-      {isNameSet && (
+      {!isLoading && isNameSet && (
         <>
           <ButtonResumeGame />
           <ButtonJoinGame />
