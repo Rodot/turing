@@ -65,7 +65,7 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   const voteOptions = [{ id: "blank", name: "Nobody" }, ...otherPlayers];
 
   const clueText = () => {
-    if (!me.is_bot && !alreadyVoted) return <>Who was 🤖 the AI ?</>;
+    if (!me.is_bot && !alreadyVoted) return <>Who was the AI? 🤖</>;
     return <>Waiting for {humansDidntVoteString} to vote</>;
   };
 

@@ -142,7 +142,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
               onClick={generateAnswers}
               disabled={loadingGeneration || !canTalk}
             >
-              Generate 🤖 AI Answers
+              Generate AI Answers 🤖
               {loadingGeneration && <Spinner />}
             </Button>
           </Box>

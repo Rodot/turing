@@ -304,31 +304,31 @@ async function postPointsMessages(
   if (botPlayer && foundBotPlayers.length > 0) {
     mainMessage = `+1 🧠 for ${foundBotPlayers
       .map((p) => p.name)
-      .join(" and ")} who guessed that ${botPlayer.name} was the AI`;
+      .join(" and ")} who guessed that ${botPlayer.name} was the AI 🤖`;
   }
 
   // Create message for escaped bot
   if (botPlayer && foundBotPlayers.length === 0) {
-    mainMessage = `+1 🧠 for ${botPlayer.name} for pretending to be human... as the AI`;
+    mainMessage = `+1 🧠 for ${botPlayer.name} for pretending to be human... as the AI 🤖`;
   }
 
   // Create message for correct blank voters
   if (!botPlayer && correctlyGuessedNoBotPlayers.length > 0) {
     mainMessage = `+1 🧠 for ${correctlyGuessedNoBotPlayers
       .map((p) => p.name)
-      .join(" and ")} who realized there was no AI`;
+      .join(" and ")} who realized there was no AI ❌`;
   }
 
   // Create message when nobody guessed there was no bot
   if (!botPlayer && correctlyGuessedNoBotPlayers.length === 0) {
-    mainMessage = `Nobody guessed that there was no AI`;
+    mainMessage = `Nobody guessed that there was no AI ❌`;
   }
 
   // Add message for humans who got more votes than the bot
   if (humanImposters.length > 0) {
     additionalMessage = `\n+1 🧠 for ${humanImposters
       .map((p) => p.name)
-      .join(" and ")} for pretending to be the AI... as a human`;
+      .join(" and ")} for pretending to be the AI... as a human 👤`;
   }
 
   // Post the message
