@@ -1,40 +1,20 @@
 import React from "react";
 import { Button } from "@mui/material";
-import { useContext, useState } from "react";
-import { RoomContext } from "./contextProvider";
 import { Spinner } from "./spinner";
-import { useRouter } from "next/navigation";
+import { useCreateRoomMutation } from "@/hooks/useRoomQuery";
 
 export const ButtonCreateGame: React.FC = () => {
-  const room = useContext(RoomContext);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-
-  const startNewGame = async () => {
-    try {
-      setLoading(true);
-      const newRoomId = await room?.createRoom();
-      if (newRoomId) {
-        router.push(`/game?room=${newRoomId}`);
-      } else {
-        console.error("Failed to create room - no room ID returned");
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const createRoomMutation = useCreateRoomMutation();
 
   return (
     <Button
       color="secondary"
       variant="contained"
-      onClick={startNewGame}
-      disabled={loading}
+      onClick={() => createRoomMutation.mutate()}
+      disabled={createRoomMutation.isPending}
     >
       New Game
-      {loading && <Spinner />}
+      {createRoomMutation.isPending && <Spinner />}
     </Button>
   );
 };

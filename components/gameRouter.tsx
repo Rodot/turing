@@ -1,18 +1,18 @@
 "use client";
-import React, { useContext } from "react";
-import { RoomContext } from "./contextProvider";
+import React from "react";
 import { Chat } from "./chat";
 import { Lobby } from "./lobby";
 import { useRoomId } from "@/hooks/useRoomId";
 import { Typography } from "@mui/material";
+import { useRoomQuery } from "@/hooks/useRoomQuery";
 
 export const GameRouter = () => {
-  const room = useContext(RoomContext);
+  const roomQuery = useRoomQuery();
   const roomId = useRoomId();
 
-  if (!room?.data?.id) {
+  if (!roomQuery?.data?.id) {
     return <Typography>Loading...</Typography>;
-  } else if (room.data.status === "lobby") {
+  } else if (roomQuery.data.status === "lobby") {
     return <Lobby roomId={roomId} />;
   } else {
     return <Chat />;

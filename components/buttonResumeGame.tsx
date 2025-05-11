@@ -1,24 +1,15 @@
 import React from "react";
 import { Button } from "@mui/material";
-import { useState } from "react";
 import { Spinner } from "./spinner";
 import { useRouter } from "next/navigation";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
 
 export const ButtonResumeGame: React.FC = () => {
   const profileQuery = useProfileQuery();
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const startNewGame = async () => {
-    try {
-      setLoading(true);
-      router.push("/game");
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+    router.push(`/game?room=${profileQuery.data?.room_id}`);
   };
 
   if (!profileQuery.data?.room_id) {
@@ -30,10 +21,10 @@ export const ButtonResumeGame: React.FC = () => {
       color="secondary"
       variant="contained"
       onClick={startNewGame}
-      disabled={loading}
+      disabled={profileQuery.isLoading}
     >
       Resume Game
-      {loading && <Spinner />}
+      {profileQuery.isLoading && <Spinner />}
     </Button>
   );
 };

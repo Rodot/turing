@@ -13,34 +13,35 @@ import {
 import {
   MessagesContext,
   PlayersContext,
-  RoomContext,
   RoomProfilesContext,
 } from "./contextProvider";
 import { ChatVote } from "./chatVotes";
 import { ButtonLeaveGame } from "./buttonLeaveGame";
 import { ButtonCreateGame } from "./buttonCreateGame";
 import { useUserQuery } from "@/hooks/useUserQuery";
+import { useJoinRoomMutation, useRoomQuery } from "@/hooks/useRoomQuery";
 
 export const Chat: React.FC = () => {
   const userQuery = useUserQuery();
-  const room = useContext(RoomContext);
+  const roomQuery = useRoomQuery();
   const messages = useContext(MessagesContext);
   const roomProfiles = useContext(RoomProfilesContext);
   const players = useContext(PlayersContext);
+  const joinRoomMutation = useJoinRoomMutation();
 
-  const nextRoomId = room?.data?.next_room_id;
   const host = roomProfiles?.[0];
   const isHost = roomProfiles?.[0]?.id === userQuery.data?.id;
-  const isWarmup = room?.data?.status === "warmup";
-  const isTalking = room?.data?.status === "talking";
-  const isVoting = room?.data?.status === "voting";
-  const isOver = room?.data?.status === "over";
+  const isWarmup = roomQuery?.data?.status === "warmup";
+  const isTalking = roomQuery?.data?.status === "talking";
+  const isVoting = roomQuery?.data?.status === "voting";
+  const isOver = roomQuery?.data?.status === "over";
 
   useEffect(() => {
+    const nextRoomId = roomQuery?.data?.next_room_id;
     if (nextRoomId) {
-      room.joinRoom(nextRoomId);
+      joinRoomMutation.mutate(nextRoomId);
     }
-  }, [room, nextRoomId]);
+  }, [joinRoomMutation, roomQuery]);
 
   return (
     <Container

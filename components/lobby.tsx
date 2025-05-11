@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import {
   Box,
   Button,
@@ -10,13 +10,16 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import { RoomContext, RoomProfilesContext } from "./contextProvider";
+import { RoomProfilesContext } from "./contextProvider";
 import { ButtonShare } from "./buttonShare";
 import { QRShare } from "./qrShare";
 import { Spinner } from "./spinner";
-import { updateRoom } from "@/queries/db/room.query";
-import { supabase } from "@/utils/supabase/client";
 import { useUserQuery } from "@/hooks/useUserQuery";
+import {
+  useRoomQuery,
+  useStartGameMutation,
+  useRoomLanguageMutation,
+} from "@/hooks/useRoomQuery";
 
 interface LobbyProps {
   roomId: string;
@@ -24,37 +27,14 @@ interface LobbyProps {
 
 export const Lobby: React.FC<LobbyProps> = ({ roomId }) => {
   const userQuery = useUserQuery();
-  const room = useContext(RoomContext);
+  const roomQuery = useRoomQuery();
   const roomProfiles = useContext(RoomProfilesContext);
-  const [loadingStart, setLoadingStart] = useState(false);
-  const [loadingLang, setLoadingLang] = useState(false);
   const isHost = roomProfiles?.[0]?.id === userQuery.data?.id;
   const me = roomProfiles?.find((profile) => profile.id === userQuery.data?.id);
   const notEnoughPlayers = roomProfiles?.length < 3;
   const url = window.location.host + "?room=" + roomId;
-
-  const startGame = async () => {
-    try {
-      setLoadingStart(true);
-      room?.startGame();
-    } catch (error) {
-      console.error("Failed to start game", error);
-    } finally {
-      setLoadingStart(false);
-    }
-  };
-
-  const setLang = async (lang: "en" | "fr") => {
-    if (!roomId) return;
-    try {
-      setLoadingLang(true);
-      updateRoom(supabase, roomId, { lang });
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoadingLang(false);
-    }
-  };
+  const startGameMutation = useStartGameMutation();
+  const roomLanguageMutation = useRoomLanguageMutation();
 
   return (
     <Container
@@ -108,21 +88,21 @@ export const Lobby: React.FC<LobbyProps> = ({ roomId }) => {
         <ButtonGroup>
           <Button
             component="button"
-            variant={room?.data?.lang === "en" ? "contained" : "text"}
-            onClick={() => setLang("en")}
-            disabled={loadingLang}
+            variant={roomQuery?.data?.lang === "en" ? "contained" : "text"}
+            onClick={() => roomLanguageMutation.mutate("en")}
+            disabled={roomLanguageMutation.isPending}
           >
             English
-            {loadingLang && <Spinner />}
+            {roomLanguageMutation.isPending && <Spinner />}
           </Button>
           <Button
             component="button"
-            variant={room?.data?.lang === "fr" ? "contained" : "text"}
-            onClick={() => setLang("fr")}
-            disabled={loadingLang}
+            variant={roomQuery?.data?.lang === "fr" ? "contained" : "text"}
+            onClick={() => roomLanguageMutation.mutate("fr")}
+            disabled={roomLanguageMutation.isPending}
           >
             French
-            {loadingLang && <Spinner />}
+            {roomLanguageMutation.isPending && <Spinner />}
           </Button>
         </ButtonGroup>
       )}
@@ -131,11 +111,11 @@ export const Lobby: React.FC<LobbyProps> = ({ roomId }) => {
           component="button"
           color="secondary"
           variant="contained"
-          onClick={startGame}
-          disabled={loadingStart || notEnoughPlayers}
+          onClick={() => startGameMutation.mutate()}
+          disabled={startGameMutation.isPending || notEnoughPlayers}
         >
           Start Game
-          {loadingStart && <Spinner />}
+          {startGameMutation.isPending && <Spinner />}
         </Button>
       )}
     </Container>

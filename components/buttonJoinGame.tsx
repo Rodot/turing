@@ -1,28 +1,12 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Button } from "@mui/material";
-import { useState } from "react";
 import { Spinner } from "./spinner";
-import { useRouter } from "next/navigation";
-import { RoomContext } from "./contextProvider";
 import { useRoomId } from "../hooks/useRoomId";
+import { useJoinRoomMutation } from "@/hooks/useRoomQuery";
 
 export const ButtonJoinGame: React.FC = () => {
-  const room = useContext(RoomContext);
-  const [loading, setLoading] = useState(false);
   const roomId = useRoomId();
-  const router = useRouter();
-
-  const joinGame = async () => {
-    try {
-      setLoading(true);
-      await room?.joinRoom(roomId);
-      router.push(`/game?room=${roomId}`);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const joinRoomMutation = useJoinRoomMutation();
 
   if (!roomId?.length) {
     return null;
@@ -32,11 +16,11 @@ export const ButtonJoinGame: React.FC = () => {
     <Button
       color="secondary"
       variant="contained"
-      onClick={joinGame}
-      disabled={loading}
+      onClick={() => joinRoomMutation.mutate(roomId)}
+      disabled={joinRoomMutation.isPending}
     >
       Join Game
-      {loading && <Spinner />}
+      {joinRoomMutation.isPending && <Spinner />}
     </Button>
   );
 };

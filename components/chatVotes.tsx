@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { PlayersContext, RoomContext } from "./contextProvider";
+import { PlayersContext } from "./contextProvider";
 import { Box, Button, SxProps, Theme, Typography } from "@mui/material";
 import { supabase } from "@/utils/supabase/client";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
@@ -8,6 +8,7 @@ import { Spinner } from "./spinner";
 import { VoteResults } from "./voteResult";
 import { ProgressTimer } from "./progressTimer";
 import { useUserQuery } from "@/hooks/useUserQuery";
+import { useRoomQuery } from "@/hooks/useRoomQuery";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -15,12 +16,12 @@ type Props = {
 
 export const ChatVote: React.FC<Props> = ({ sx }) => {
   const userQuery = useUserQuery();
-  const room = useContext(RoomContext);
+  const roomQuery = useRoomQuery();
   const players = useContext(PlayersContext);
   const [loading, setLoading] = useState(false);
 
   if (!players) return null;
-  if (!room) return null;
+  if (!roomQuery) return null;
   if (!userQuery.data) return null;
 
   const didVote = (player: PlayerData) => player.vote || player.vote_blank;
@@ -41,17 +42,17 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
     if (me.is_bot) return false; //
     if (alreadyVoted) return false; // already voted
     if (player.id === me.id) return false; // can't vote for self
-    if (room.data?.status !== "voting") return false; // not voting
+    if (roomQuery.data?.status !== "voting") return false; // not voting
     return true;
   };
 
   const vote = async (playerId: string) => {
     if (!me) return;
-    if (!room.data?.id) return;
+    if (!roomQuery.data?.id) return;
     try {
       setLoading(true);
       await playerVoteFunction(supabase, {
-        roomId: room.data.id,
+        roomId: roomQuery.data.id,
         playerId: me.id,
         vote: playerId,
       });
