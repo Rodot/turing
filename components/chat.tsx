@@ -115,7 +115,7 @@ export const Chat: React.FC = () => {
                 Waiting for {host?.name} to start the game
               </Typography>
             )}
-            {<ButtonLeaveGame label={"Leave Game"} />}
+            {<ButtonLeaveGame />}
           </Box>
         )}
       </Paper>

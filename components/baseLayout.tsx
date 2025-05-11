@@ -22,7 +22,7 @@ export function BaseLayout({ children }: React.PropsWithChildren) {
                   </Typography>
                 </Link>
               </Box>
-              <ButtonLeaveGame label={"leave"} />
+              <ButtonLeaveGame />
             </Toolbar>
           </AppBar>
           <Suspense fallback={<Spinner />}>{children}</Suspense>

@@ -7,11 +7,7 @@ import { deletePlayer } from "@/queries/db/players.query";
 import { supabase } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 
-interface Props {
-  label?: string;
-}
-
-export const ButtonLeaveGame: React.FC<Props> = ({ label }) => {
+export const ButtonLeaveGame: React.FC = () => {
   const room = useContext(RoomContext);
   const players = useContext(PlayersContext);
   const me = players?.find((p) => p.id === p?.id);
@@ -35,8 +31,8 @@ export const ButtonLeaveGame: React.FC<Props> = ({ label }) => {
       onClick={leaveGame}
       disabled={loading || !room?.data?.id}
     >
-      <Logout sx={{ mr: label?.length ? 1 : 0 }} />
-      {label}
+      <Logout sx={{ mr: 1 }} />
+      Leave Game
     </Button>
   );
 };
