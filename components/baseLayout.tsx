@@ -10,7 +10,7 @@ import { QueryErrorReporter } from "./queryErrorReporter";
 
 export function BaseLayout({ children }: React.PropsWithChildren) {
   return (
-    <>
+    <Suspense fallback={<Spinner />}>
       <ContextProvider>
         <QueryErrorReporter />
         <AppBar>
@@ -27,8 +27,8 @@ export function BaseLayout({ children }: React.PropsWithChildren) {
         </AppBar>
         <Toolbar /> {/* empty toolbar to avoid covering page content */}
         <QueryLoadingBar />
-        <Suspense fallback={<Spinner />}>{children}</Suspense>
+        {children}
       </ContextProvider>
-    </>
+    </Suspense>
   );
 }
