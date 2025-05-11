@@ -38,6 +38,9 @@ test("multi-user game flow", async ({ browser }) => {
   await host.getByRole("button", { name: "Start Game" }).waitFor();
   await host.getByRole("button", { name: "Start Game" }).click();
 
+  // wait 3 seconds
+  await host.waitForTimeout(3000);
+
   // get human ai roles
   const hostIsAI = await guest
     .getByText("Send a message as GuestPlayer")
