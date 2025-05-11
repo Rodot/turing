@@ -27,7 +27,7 @@ jobs:
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
 
       - name: Build Next.js app
-        run: npm run build
+        run: npm run next-build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
