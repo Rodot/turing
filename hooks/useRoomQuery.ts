@@ -20,9 +20,7 @@ import { useEffect } from "react";
 
 export const useRoomQuery = () => {
   const queryClient = useQueryClient();
-  const profileQuery = useProfileQuery();
-  const profile = profileQuery.data;
-  const roomId = profile?.room_id;
+  const roomId = useRoomId();
 
   const query = useQuery({
     queryKey: ["room", roomId],

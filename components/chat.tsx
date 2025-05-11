@@ -1,20 +1,8 @@
 import React, { useContext, useEffect } from "react";
 import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
-import {
-  Box,
-  Chip,
-  Container,
-  LinearProgress,
-  Paper,
-  Toolbar,
-  Typography,
-} from "@mui/material";
-import {
-  MessagesContext,
-  PlayersContext,
-  RoomProfilesContext,
-} from "./contextProvider";
+import { Box, Chip, Container, Paper, Typography } from "@mui/material";
+import { PlayersContext, RoomProfilesContext } from "./contextProvider";
 import { ChatVote } from "./chatVotes";
 import { ButtonLeaveGame } from "./buttonLeaveGame";
 import { ButtonCreateGame } from "./buttonCreateGame";
@@ -24,14 +12,12 @@ import { useJoinRoomMutation, useRoomQuery } from "@/hooks/useRoomQuery";
 export const Chat: React.FC = () => {
   const userQuery = useUserQuery();
   const roomQuery = useRoomQuery();
-  const messages = useContext(MessagesContext);
   const roomProfiles = useContext(RoomProfilesContext);
   const players = useContext(PlayersContext);
   const joinRoomMutation = useJoinRoomMutation();
 
   const host = roomProfiles?.[0];
   const isHost = roomProfiles?.[0]?.id === userQuery.data?.id;
-  const isWarmup = roomQuery?.data?.status === "warmup";
   const isTalking = roomQuery?.data?.status === "talking";
   const isVoting = roomQuery?.data?.status === "voting";
   const isOver = roomQuery?.data?.status === "over";
@@ -53,7 +39,6 @@ export const Chat: React.FC = () => {
         p: 0,
       }}
     >
-      <Toolbar /> {/* empty toolbar to avoid covering page content */}
       <Paper
         sx={{
           display: "flex",
@@ -86,18 +71,6 @@ export const Chat: React.FC = () => {
         <ChatHistory />
       </Box>
       <Paper elevation={8} sx={{ borderRadius: 0, zIndex: 2 }}>
-        {isWarmup && (
-          <Box>
-            <LinearProgress
-              variant="determinate"
-              color="secondary"
-              value={(100 * messages.length) / 10}
-            />
-            <Typography sx={{ textAlign: "center", p: 1 }}>
-              Warming up...
-            </Typography>
-          </Box>
-        )}
         {isTalking && <ChatInput />}
         {isVoting && <ChatVote />}
         {isOver && (

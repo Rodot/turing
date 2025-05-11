@@ -8,6 +8,10 @@ export const ButtonLeaveGame: React.FC = () => {
   const leaveRoomMutation = useLeaveRoomMutation();
   const profileQuery = useProfileQuery();
 
+  if (!profileQuery.data?.room_id) {
+    return null;
+  }
+
   return (
     <Button
       color="secondary"

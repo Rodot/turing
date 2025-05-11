@@ -13,7 +13,7 @@ export const ButtonCreateGame: React.FC = () => {
       onClick={() => createRoomMutation.mutate()}
       disabled={createRoomMutation.isPending}
     >
-      New Game
+      Create New Game
       {createRoomMutation.isPending && <Spinner />}
     </Button>
   );

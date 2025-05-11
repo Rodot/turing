@@ -25,6 +25,7 @@ export function BaseLayout({ children }: React.PropsWithChildren) {
               <ButtonLeaveGame />
             </Toolbar>
           </AppBar>
+          <Toolbar /> {/* empty toolbar to avoid covering page content */}
           <Suspense fallback={<Spinner />}>{children}</Suspense>
         </ContextProvider>
       </QueryClientProvider>

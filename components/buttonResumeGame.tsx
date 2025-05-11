@@ -23,7 +23,7 @@ export const ButtonResumeGame: React.FC = () => {
       onClick={startNewGame}
       disabled={profileQuery.isLoading}
     >
-      Resume Game
+      Resume Last Game
       {profileQuery.isLoading && <Spinner />}
     </Button>
   );

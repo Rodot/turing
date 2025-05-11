@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Container,
-  TextField,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Container, TextField, Typography } from "@mui/material";
 import { Spinner } from "./spinner";
 import { ButtonCreateGame } from "./buttonCreateGame";
 import { Send } from "@mui/icons-material";
@@ -18,12 +11,15 @@ import {
   useProfileNameMutation,
   useProfileQuery,
 } from "@/hooks/useProfileQuery";
+import { useUserQuery } from "@/hooks/useUserQuery";
 
 export const SignUp: React.FC = () => {
+  const userQuery = useUserQuery();
   const profileQuery = useProfileQuery();
   const profileNameMutation = useProfileNameMutation();
   const [name, setName] = useState("");
-  const isNameSet = profileQuery?.data?.name?.length ?? 0 > 1;
+  const isNameSet = (profileQuery?.data?.name?.length ?? 0) > 1;
+  const isProfileLoading = profileQuery.isLoading || userQuery.isLoading;
 
   useEffect(() => {
     if (profileQuery.data?.name) {
@@ -51,7 +47,6 @@ export const SignUp: React.FC = () => {
         p: 2,
       }}
     >
-      <Toolbar /> {/* empty toolbar to avoid covering page content */}
       <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 2 }}>
         <Typography fontWeight={900} align="center" sx={{ my: 2 }}>
           In a group chat, an AI controls one of your friends.
@@ -69,7 +64,8 @@ export const SignUp: React.FC = () => {
           Earn 10 🧠 to win
         </Typography>
       </Box>
-      {!isNameSet && (
+
+      {!isProfileLoading && !isNameSet && (
         <form onSubmit={onSubmit} style={{ width: "100%" }}>
           <Box
             sx={{
@@ -82,7 +78,8 @@ export const SignUp: React.FC = () => {
             <TextField
               label="Your name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) =>
+                setName(e.target.value)}
               sx={{ mr: 1 }}
             />
 
@@ -90,11 +87,9 @@ export const SignUp: React.FC = () => {
               type="submit"
               variant="contained"
               color="secondary"
-              disabled={
-                profileQuery.isLoading ||
+              disabled={profileQuery.isLoading ||
                 profileNameMutation.isPending ||
-                name.length < 3
-              }
+                name.length < 3}
             >
               <Send />
               {(profileQuery.isLoading || profileNameMutation.isPending) && (

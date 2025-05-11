@@ -2,19 +2,30 @@
 import React from "react";
 import { Chat } from "./chat";
 import { Lobby } from "./lobby";
-import { useRoomId } from "@/hooks/useRoomId";
-import { Typography } from "@mui/material";
 import { useRoomQuery } from "@/hooks/useRoomQuery";
+import { SignUp } from "./signUp";
+import { Spinner } from "./spinner";
+import { useProfileQuery } from "@/hooks/useProfileQuery";
+import { Typography } from "@mui/material";
 
 export const GameRouter = () => {
   const roomQuery = useRoomQuery();
-  const roomId = useRoomId();
+  const profileQuery = useProfileQuery();
+  const notInRoom = !roomQuery?.data?.id !== !profileQuery?.data?.room_id;
 
-  if (!roomQuery?.data?.id) {
-    return <Typography>Loading...</Typography>;
-  } else if (roomQuery.data.status === "lobby") {
-    return <Lobby roomId={roomId} />;
-  } else {
-    return <Chat />;
+  if (!roomQuery?.data?.status) {
+    return <Spinner />;
   }
+
+  if (notInRoom) {
+    <Typography>signup</Typography>;
+    return <SignUp />;
+  }
+
+  if (roomQuery.data?.status === "lobby") {
+    <Typography>lobby</Typography>;
+    return <Lobby />;
+  }
+
+  return <Chat />;
 };

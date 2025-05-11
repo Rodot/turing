@@ -21,18 +21,14 @@ import {
   useStartGameMutation,
 } from "@/hooks/useRoomQuery";
 
-interface LobbyProps {
-  roomId: string;
-}
-
-export const Lobby: React.FC<LobbyProps> = ({ roomId }) => {
+export const Lobby: React.FC = () => {
   const userQuery = useUserQuery();
   const roomQuery = useRoomQuery();
   const roomProfiles = useContext(RoomProfilesContext);
   const isHost = roomProfiles?.[0]?.id === userQuery.data?.id;
   const me = roomProfiles?.find((profile) => profile.id === userQuery.data?.id);
   const notEnoughPlayers = roomProfiles?.length < 3;
-  const url = window.location.host + "?room=" + roomId;
+  const url = window.location.href;
   const startGameMutation = useStartGameMutation();
   const roomLanguageMutation = useRoomLanguageMutation();
 
@@ -47,7 +43,6 @@ export const Lobby: React.FC<LobbyProps> = ({ roomId }) => {
         p: 2,
       }}
     >
-      <Toolbar /> {/* empty toolbar to avoid covering page content */}
       <Box sx={{ mb: 6 }}></Box>
       <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
         Game Invite Link
@@ -123,8 +118,8 @@ export const Lobby: React.FC<LobbyProps> = ({ roomId }) => {
       )}
       {!isHost && (
         <Typography>
-          <strong>Waiting for {roomProfiles?.[0]?.name}</strong> to start the
-          game
+          <strong>Waiting for {roomProfiles?.[0]?.name}</strong>{" "}
+          to start the game
         </Typography>
       )}
     </Container>
