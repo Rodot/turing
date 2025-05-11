@@ -56,7 +56,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
           supabase,
           roomId,
           me.name,
-          roomQuery?.data?.lang ?? "en"
+          roomQuery?.data?.lang ?? "en",
         );
         console.log(req);
         receivedAnswers = (req?.possibleNextMessages ?? []).map(cleanAnswer);
