@@ -16,14 +16,14 @@ import {
 import { useTable } from "./useTable";
 
 export type Room = {
-  data: RoomData | null;
+  data: RoomData | undefined;
   createRoom: () => void;
   joinRoom: (roomId: string) => void;
   leaveRoom: () => void;
   startGame: () => void;
 };
 
-export function useRoom(profile: ProfileData | null): Room | null {
+export function useRoom(profile: ProfileData | undefined): Room | undefined {
   const roomData = useTable<RoomData>(supabase, {
     tableName: "rooms",
     filterColumn: "id",
@@ -53,7 +53,7 @@ export function useRoom(profile: ProfileData | null): Room | null {
     await startGameFunction(supabase, roomId);
   };
 
-  const data = roomData?.[0] ?? null;
+  const data = roomData?.[0] ?? undefined;
   return {
     data,
     createRoom,

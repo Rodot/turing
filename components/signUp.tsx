@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -9,29 +9,32 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import { UserContext } from "./contextProvider";
 import { Spinner } from "./spinner";
 import { ButtonCreateGame } from "./buttonCreateGame";
 import { Send } from "@mui/icons-material";
 import { ButtonJoinGame } from "./buttonJoinGame";
 import { ButtonResumeGame } from "./buttonResumeGame";
+import {
+  useProfileNameMutation,
+  useProfileQuery,
+} from "@/hooks/useProfileQuery";
 
 export const SignUp: React.FC = () => {
-  const user = useContext(UserContext);
-  const [loading, setLoading] = useState(false);
+  const profileQuery = useProfileQuery();
+  const profileNameMutation = useProfileNameMutation();
   const [name, setName] = useState("");
 
-  const signUp = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setLoading(true);
-    try {
-      if (user?.signUp) {
-        await user.signUp(name);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (profileQuery.data?.name) {
+      setName(profileQuery.data.name);
+    }
+  }, [profileQuery.data]);
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Submitting name", name);
+    if (name.length >= 3) {
+      profileNameMutation.mutate(name);
     }
   };
 
@@ -65,41 +68,40 @@ export const SignUp: React.FC = () => {
           Earn 10 🧠 to win
         </Typography>
       </Box>
-      {user?.id ? (
-        <>
-          <ButtonResumeGame />
-          <ButtonJoinGame />
-          <ButtonCreateGame />
-        </>
-      ) : (
-        <form onSubmit={signUp} style={{ width: "100%" }}>
-          <Box
-            sx={{
-              display: "flex",
-              alignContent: "center",
-              justifyContent: "center",
-              p: 1,
-            }}
-          >
-            <TextField
-              label="Your name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              sx={{ mr: 1 }}
-            />
+      <form onSubmit={onSubmit} style={{ width: "100%" }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignContent: "center",
+            justifyContent: "center",
+            p: 1,
+          }}
+        >
+          <TextField
+            label="Your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            sx={{ mr: 1 }}
+          />
 
-            <Button
-              type="submit"
-              variant="contained"
-              color="secondary"
-              disabled={loading || name.length < 3}
-            >
-              <Send />
-              {loading && <Spinner />}
-            </Button>
-          </Box>
-        </form>
-      )}
+          <Button
+            type="submit"
+            variant="contained"
+            color="secondary"
+            disabled={profileQuery.isLoading ||
+              profileNameMutation.isPending ||
+              name.length < 3}
+          >
+            <Send />
+            {(profileQuery.isLoading || profileNameMutation.isPending) && (
+              <Spinner />
+            )}
+          </Button>
+        </Box>
+      </form>
+      <ButtonResumeGame />
+      <ButtonJoinGame />
+      <ButtonCreateGame />
     </Container>
   );
 };
