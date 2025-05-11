@@ -54,7 +54,9 @@ export const Lobby: React.FC = () => {
   };
 
   useEffect(() => {
-    setUrl(window.location.host + "?room=" + room?.data?.id);
+    if (room?.data?.id) {
+      setUrl(window.location.host + "?room=" + room.data.id);
+    }
   }, [room?.data?.id]);
 
   return (
@@ -76,8 +78,8 @@ export const Lobby: React.FC = () => {
       )}
       {!notEnoughPlayers && !isHost && (
         <Typography>
-          <strong>Waiting for {roomProfiles?.[0]?.name}</strong> to start the
-          game 😅
+          <strong>Waiting for {roomProfiles?.[0]?.name}</strong>{" "}
+          to start the game 😅
         </Typography>
       )}
       <Box sx={{ mt: 6 }}>

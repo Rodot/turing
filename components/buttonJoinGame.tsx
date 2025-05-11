@@ -1,23 +1,16 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { Button } from "@mui/material";
 import { useState } from "react";
 import { Spinner } from "./spinner";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { RoomContext } from "./contextProvider";
+import { useRoomId } from "../hooks/useRoomId";
 
 export const ButtonJoinGame: React.FC = () => {
   const room = useContext(RoomContext);
   const [loading, setLoading] = useState(false);
-  const [roomId, setRoomId] = useState("");
+  const roomId = useRoomId();
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    const newRoomId = searchParams.get("room") ?? null;
-    if (newRoomId?.length) {
-      setRoomId(newRoomId);
-    }
-  }, [searchParams, room]);
 
   const joinGame = async () => {
     try {
