@@ -16,9 +16,9 @@ import { QRShare } from "./qrShare";
 import { Spinner } from "./spinner";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import {
+  useRoomLanguageMutation,
   useRoomQuery,
   useStartGameMutation,
-  useRoomLanguageMutation,
 } from "@/hooks/useRoomQuery";
 
 interface LobbyProps {
@@ -84,28 +84,26 @@ export const Lobby: React.FC<LobbyProps> = ({ roomId }) => {
           />
         ))}
       </Box>
-      {isHost && (
-        <ButtonGroup>
-          <Button
-            component="button"
-            variant={roomQuery?.data?.lang === "en" ? "contained" : "text"}
-            onClick={() => roomLanguageMutation.mutate("en")}
-            disabled={roomLanguageMutation.isPending}
-          >
-            English
-            {roomLanguageMutation.isPending && <Spinner />}
-          </Button>
-          <Button
-            component="button"
-            variant={roomQuery?.data?.lang === "fr" ? "contained" : "text"}
-            onClick={() => roomLanguageMutation.mutate("fr")}
-            disabled={roomLanguageMutation.isPending}
-          >
-            French
-            {roomLanguageMutation.isPending && <Spinner />}
-          </Button>
-        </ButtonGroup>
-      )}
+      <ButtonGroup>
+        <Button
+          component="button"
+          variant={roomQuery?.data?.lang === "en" ? "contained" : "text"}
+          onClick={() => roomLanguageMutation.mutate("en")}
+          disabled={roomLanguageMutation.isPending}
+        >
+          English
+          {roomLanguageMutation.isPending && <Spinner />}
+        </Button>
+        <Button
+          component="button"
+          variant={roomQuery?.data?.lang === "fr" ? "contained" : "text"}
+          onClick={() => roomLanguageMutation.mutate("fr")}
+          disabled={roomLanguageMutation.isPending}
+        >
+          French
+          {roomLanguageMutation.isPending && <Spinner />}
+        </Button>
+      </ButtonGroup>
       {isHost && (
         <Button
           component="button"

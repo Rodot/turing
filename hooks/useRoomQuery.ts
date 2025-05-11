@@ -16,13 +16,15 @@ import {
 import { updateRoom } from "@/queries/db/room.query";
 import { useRouter } from "next/navigation";
 import { useRoomId } from "./useRoomId";
+import { useEffect } from "react";
 
 export const useRoomQuery = () => {
+  const queryClient = useQueryClient();
   const profileQuery = useProfileQuery();
   const profile = profileQuery.data;
   const roomId = profile?.room_id;
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ["room", roomId],
     queryFn: async (): Promise<RoomData | undefined> => {
       if (!roomId) return undefined;
@@ -31,6 +33,34 @@ export const useRoomQuery = () => {
     },
     enabled: !!roomId,
   });
+
+  // Set up real-time subscription
+  useEffect(() => {
+    if (!roomId) return;
+
+    const channel = supabase
+      .channel(`room-${roomId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "rooms",
+          filter: `id=eq.${roomId}`,
+        },
+        () => {
+          // Invalidate query when changes detected
+          queryClient.invalidateQueries({ queryKey: ["room", roomId] });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [roomId, queryClient]);
+
+  return query;
 };
 
 export const useCreateRoomMutation = () => {
