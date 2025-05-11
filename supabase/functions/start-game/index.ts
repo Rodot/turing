@@ -13,7 +13,7 @@ import { PlayerData } from "../_types/Database.type.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
 import { insertPlayers } from "../_queries/players.query.ts";
 import { nextVoteLength, pickRandom } from "../_shared/utils.ts";
-import { emojis, iceBreakers } from "../_shared/lang.ts";
+import { iceBreakers } from "../_shared/lang.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
     profiles.forEach((profile) => {
       players.push({
         user_id: profile.id,
-        name: pickRandom(emojis) + " " + profile.name,
+        name: profile.name,
         room_id: roomId,
         vote: null,
         is_bot: profile.id === botProfile.id,

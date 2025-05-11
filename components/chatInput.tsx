@@ -126,7 +126,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
         )}
         {!canTalk && talkingPlayers?.length && (
           <Typography textAlign="center">
-            Waiting for{" "}
+            Waiting for messages from{" "}
             {talkingPlayers.length > 2
               ? "others"
               : talkingPlayers.map((p) => p.name).join(", ")}

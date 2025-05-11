@@ -66,6 +66,7 @@ export const cleanAnswer = (str: string) => {
   if (str.endsWith(".")) {
     return str.slice(0, -1);
   }
+  str = str.replace(/—/g, ",");
   return str;
 };
 
