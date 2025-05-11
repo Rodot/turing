@@ -11,14 +11,13 @@ import { Typography } from "@mui/material";
 export const GameRouter = () => {
   const roomQuery = useRoomQuery();
   const profileQuery = useProfileQuery();
-  const notInRoom = !roomQuery?.data?.id !== !profileQuery?.data?.room_id;
+  const notInRoom = roomQuery?.data?.id !== profileQuery?.data?.room_id;
 
   if (!roomQuery?.data?.status) {
     return <Spinner />;
   }
 
   if (notInRoom) {
-    <Typography>signup</Typography>;
     return <SignUp />;
   }
 

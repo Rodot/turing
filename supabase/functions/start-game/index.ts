@@ -60,8 +60,10 @@ Deno.serve(async (req) => {
 
     // start the game
     const nextVote = nextVoteLength(players.length);
-    const newRoom = { status: "talking", next_vote: nextVote };
-    await updateRoom(supabase, roomId, newRoom);
+    await updateRoom(supabase, roomId, {
+      status: "talking",
+      next_vote: nextVote,
+    });
 
     const data = {};
 

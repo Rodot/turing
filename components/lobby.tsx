@@ -7,7 +7,6 @@ import {
   ButtonGroup,
   Chip,
   Container,
-  Toolbar,
   Typography,
 } from "@mui/material";
 import { RoomProfilesContext } from "./contextProvider";
@@ -118,8 +117,8 @@ export const Lobby: React.FC = () => {
       )}
       {!isHost && (
         <Typography>
-          <strong>Waiting for {roomProfiles?.[0]?.name}</strong>{" "}
-          to start the game
+          <strong>Waiting for {roomProfiles?.[0]?.name}</strong> to start the
+          game
         </Typography>
       )}
     </Container>
