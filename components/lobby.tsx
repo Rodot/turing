@@ -43,47 +43,26 @@ export const Lobby: React.FC<LobbyProps> = ({ roomId }) => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: 2,
+        gap: 1,
         p: 2,
       }}
     >
       <Toolbar /> {/* empty toolbar to avoid covering page content */}
-      {notEnoughPlayers && (
-        <Typography>
-          <strong>3+ players required</strong>, invite people to start!
-        </Typography>
-      )}
-      {!notEnoughPlayers && !isHost && (
-        <Typography>
-          <strong>Waiting for {roomProfiles?.[0]?.name}</strong> to start the
-          game 😅
-        </Typography>
-      )}
-      <Box sx={{ mt: 6 }}>
+      <Box sx={{ mb: 6 }}></Box>
+      <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
+        Game Invite Link
+      </Typography>
+      <Box>
         <ButtonShare url={url} />
       </Box>
+      <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
+        Scan to join 👇
+      </Typography>
       <QRShare url={url} />
-      <Box
-        sx={{
-          display: "flex",
-          gap: 1,
-          flexDirection: "row",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          my: 6,
-        }}
-      >
-        <Chip
-          label={`${roomProfiles.length} Players`}
-          sx={{ bgcolor: "primary.main", color: "background.paper" }}
-        />
-        {roomProfiles?.map((profile) => (
-          <Chip
-            key={profile.id}
-            label={`${profile.name} ${profile.id === me?.id ? "(you)" : ""}`}
-          />
-        ))}
-      </Box>
+      <Box sx={{ mb: 6 }}></Box>
+      <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
+        Group Chat Language
+      </Typography>
       <ButtonGroup>
         <Button
           component="button"
@@ -104,6 +83,27 @@ export const Lobby: React.FC<LobbyProps> = ({ roomId }) => {
           {roomLanguageMutation.isPending && <Spinner />}
         </Button>
       </ButtonGroup>
+      <Box sx={{ mb: 6 }}></Box>
+      <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
+        {roomProfiles.length} Players Connected
+      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          gap: 1,
+          flexDirection: "row",
+          flexWrap: "wrap",
+          justifyContent: "center",
+        }}
+      >
+        {roomProfiles?.map((profile) => (
+          <Chip
+            key={profile.id}
+            label={`${profile.name} ${profile.id === me?.id ? "(you)" : ""}`}
+          />
+        ))}
+      </Box>
+      <Box sx={{ mb: 6 }}></Box>
       {isHost && (
         <Button
           component="button"
@@ -115,6 +115,17 @@ export const Lobby: React.FC<LobbyProps> = ({ roomId }) => {
           Start Game
           {startGameMutation.isPending && <Spinner />}
         </Button>
+      )}
+      {notEnoughPlayers && (
+        <Typography>
+          <strong>3+ players required</strong>, invite people to start!
+        </Typography>
+      )}
+      {!isHost && (
+        <Typography>
+          <strong>Waiting for {roomProfiles?.[0]?.name}</strong> to start the
+          game
+        </Typography>
       )}
     </Container>
   );

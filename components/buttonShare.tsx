@@ -1,5 +1,5 @@
 import { Check, ContentCopy as ContentCopyIcon } from "@mui/icons-material";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import React, { useState } from "react";
 
 interface Props {
@@ -19,9 +19,6 @@ export const ButtonShare: React.FC<Props> = ({ url: urlToCopy }) => {
 
   return (
     <>
-      <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
-        Invite Link
-      </Typography>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <TextField
           value={urlToCopy}
