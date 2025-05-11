@@ -7,7 +7,7 @@
 
 import { fetchRoomProfiles } from "../_queries/profiles.query.ts";
 import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
-import { corsHeaders } from "../_utils/cors.ts";
+import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { PlayerData } from "../_types/Database.type.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
@@ -17,7 +17,7 @@ import { emojis, iceBreakers } from "../_shared/lang.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers });
   }
 
   try {
@@ -65,17 +65,11 @@ Deno.serve(async (req) => {
       next_vote: nextVote,
     });
 
-    const data = {};
-
-    return new Response(JSON.stringify(data), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    const data = JSON.stringify({});
+    return new Response(data, { headers, status: 200 });
   } catch (error) {
     console.error(error);
-    return new Response(JSON.stringify({ error }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 400,
-    });
+    const data = JSON.stringify({ error });
+    return new Response(data, { headers, status: 400 });
   }
 });

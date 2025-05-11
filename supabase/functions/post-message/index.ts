@@ -6,7 +6,7 @@
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
 import { fetchMessages, insertMessage } from "../_queries/messages.query.ts";
-import { corsHeaders } from "../_utils/cors.ts";
+import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { MessageData } from "../_types/Database.type.ts";
 import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
@@ -14,7 +14,7 @@ import { isNotSystem } from "../_shared/utils.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers });
   }
 
   try {
@@ -47,16 +47,10 @@ Deno.serve(async (req) => {
 
     await insertMessage(supabase, message);
 
-    const data = {};
-
-    return new Response(JSON.stringify(data), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    const data = JSON.stringify({});
+    return new Response(data, { headers, status: 200 });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 400,
-    });
+    const data = JSON.stringify({ error });
+    return new Response(data, { headers, status: 400 });
   }
 });

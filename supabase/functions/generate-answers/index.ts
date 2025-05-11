@@ -6,14 +6,14 @@
 /// <reference types="https://esm.sh/@supabase/functions-js@2.4.4/src/edge-runtime.d.ts" />
 
 import { fetchMessages } from "../_queries/messages.query.ts";
-import { corsHeaders } from "../_utils/cors.ts";
+import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { fetchChatCompletionJson } from "../_queries/gpt.query.ts";
 import { promptForNextMessageSuggestions } from "../_utils/prompts.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers });
   }
 
   try {
@@ -35,17 +35,10 @@ Deno.serve(async (req) => {
 
     const gptAnswer = await fetchChatCompletionJson(messages);
 
-    const data = gptAnswer;
-
-    return new Response(JSON.stringify(data), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    const data = JSON.stringify(gptAnswer);
+    return new Response(data, { headers, status: 200 });
   } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ error }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 400,
-    });
+    const data = JSON.stringify({ error });
+    return new Response(data, { headers, status: 400 });
   }
 });

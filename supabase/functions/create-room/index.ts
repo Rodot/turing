@@ -10,12 +10,12 @@ import {
   fetchUserProfile,
 } from "../_queries/profiles.query.ts";
 import { insertRoom, updateRoom } from "../_queries/room.query.ts";
-import { corsHeaders } from "../_utils/cors.ts";
+import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers });
   }
 
   try {
@@ -40,17 +40,10 @@ Deno.serve(async (req) => {
     // join room
     await addProfileToRoom(supabase, user?.id, room.id);
 
-    const data = { room_id: room.id };
-
-    return new Response(JSON.stringify(data), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    const data = JSON.stringify({ room_id: room.id });
+    return new Response(data, { headers, status: 200 });
   } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 400,
-    });
+    const data = JSON.stringify({ error });
+    return new Response(data, { headers, status: 400 });
   }
 });
