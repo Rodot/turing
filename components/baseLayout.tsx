@@ -7,8 +7,9 @@ import { Spinner } from "./spinner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ContextProvider } from "./contextProvider";
 
+const queryClient = new QueryClient();
+
 export function BaseLayout({ children }: React.PropsWithChildren) {
-  const queryClient = new QueryClient();
   return (
     <>
       <QueryClientProvider client={queryClient}>
