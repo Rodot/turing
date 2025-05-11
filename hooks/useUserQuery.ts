@@ -4,14 +4,11 @@ import { supabase } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { useQuery } from "@tanstack/react-query";
 
-// Get or create user function
 const getOrCreateUser = async (): Promise<User | undefined> => {
-  // Try to get existing user
   const { data: userData, error: userError } = await supabase.auth.getUser();
 
   // If user exists, return it
   if (userData?.user) {
-    console.log("Found existing user: " + userData.user.id);
     return userData.user;
   }
 
@@ -24,16 +21,13 @@ const getOrCreateUser = async (): Promise<User | undefined> => {
     await supabase.auth.signInAnonymously();
 
   if (signupError) {
-    console.error("Error signing up:", signupError);
-    return undefined;
+    throw new Error("Error signing up: " + signupError.message);
   }
 
   if (!signupData?.user) {
-    console.error("No user returned from sign up");
-    return undefined;
+    throw new Error("No user returned from sign up");
   }
 
-  console.log("Signed up new user: " + signupData.user.id);
   return signupData.user;
 };
 
