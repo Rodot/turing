@@ -19,7 +19,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 export const MessagesContext = createContext<MessageData[]>([]);
 export const RoomProfilesContext = createContext<ProfileData[]>([]);
 export const PlayersContext = createContext<PlayerData[]>([]);
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } }, // 5 minutes
+});
 
 // Create the wrapper component
 export function ContextProvider({ children }: React.PropsWithChildren) {

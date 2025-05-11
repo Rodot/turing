@@ -17,7 +17,13 @@ export const useProfileQuery = () => {
     queryKey: ["profile", userId],
     queryFn: async (): Promise<ProfileData | undefined> => {
       if (!userId) return undefined;
-      return fetchUserProfile(supabase, userId);
+
+      const profile = await fetchUserProfile(supabase, userId);
+      if (profile === undefined) {
+        throw new Error("Profile not found");
+      }
+      console.log("profileQuery", profile);
+      return profile;
     },
     enabled: !!userId,
   });

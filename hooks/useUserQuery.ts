@@ -1,34 +1,45 @@
 "use client";
 
+import { fetchUserProfile } from "@/queries/db/profile.query";
 import { supabase } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { useQuery } from "@tanstack/react-query";
 
-const getOrCreateUser = async (): Promise<User | undefined> => {
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-
+const getOrCreateUser = async (): Promise<User> => {
   // If user exists, return it
-  if (userData?.user) {
+  try {
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError) {
+      throw Error("userError:", userError);
+    }
+    const profile = await fetchUserProfile(supabase, userData.user.id);
+    if (profile === undefined) {
+      throw new Error(
+        "getOrCreateUser: No profile returned from fetchUserProfile",
+      );
+    }
+    console.log("existing user:", profile.id, profile.name);
     return userData.user;
-  }
-
-  if (userError) {
-    console.error("Error getting user:", userError);
+  } catch (error) {
+    console.error("getUser:", error);
   }
 
   // If no user exists, sign up anonymously
-  const { data: signupData, error: signupError } =
-    await supabase.auth.signInAnonymously();
-
-  if (signupError) {
-    throw new Error("Error signing up: " + signupError.message);
+  try {
+    const { data: signupData, error: signupError } =
+      await supabase.auth.signInAnonymously();
+    if (signupError) {
+      throw new Error("signupError: " + signupError.message);
+    }
+    if (!signupData?.user) {
+      throw new Error("No user returned from sign up");
+    }
+    console.log("new user:", signupData.user.id);
+    return signupData.user;
+  } catch (error) {
+    console.error("signInAnonymously:", error);
   }
-
-  if (!signupData?.user) {
-    throw new Error("No user returned from sign up");
-  }
-
-  return signupData.user;
+  throw new Error("getOrCreateUser: Failed to get or create user");
 };
 
 export const useUserQuery = () => {

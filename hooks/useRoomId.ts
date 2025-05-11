@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 export const useRoomId = () => {
@@ -7,10 +7,10 @@ export const useRoomId = () => {
 
   useEffect(() => {
     const newRoomId = searchParams.get("room") ?? null;
-    if (newRoomId?.length) {
+    if (newRoomId?.length && newRoomId !== roomId) {
       setRoomId(newRoomId);
     }
-  }, [searchParams]);
+  }, [searchParams, roomId]);
 
   return roomId;
 };

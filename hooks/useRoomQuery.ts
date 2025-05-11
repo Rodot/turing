@@ -27,7 +27,11 @@ export const useRoomQuery = () => {
     queryFn: async (): Promise<RoomData | undefined> => {
       if (!roomId) return undefined;
       const room = await fetchRoom(supabase, roomId);
-      return room || undefined;
+      console.log("roomQuery", room);
+      if (!room) {
+        throw new Error("Room not found");
+      }
+      return room;
     },
     enabled: !!roomId,
   });
@@ -124,7 +128,6 @@ export const useLeaveRoomMutation = () => {
 };
 
 export const useStartGameMutation = () => {
-  const queryClient = useQueryClient();
   const profileQuery = useProfileQuery();
   const profile = profileQuery.data;
   const roomId = profile?.room_id;
@@ -135,15 +138,11 @@ export const useStartGameMutation = () => {
       await startGameFunction(supabase, roomId);
       return { roomId };
     },
-    onSuccess: (data) => {
-      // Invalidate room query to trigger a refetch
-      queryClient.invalidateQueries({ queryKey: ["room", data.roomId] });
-    },
+    // don't invalidate the room query, as it will be done by the subscription
   });
 };
 
 export const useRoomLanguageMutation = () => {
-  const queryClient = useQueryClient();
   const roomId = useRoomId();
 
   return useMutation({
@@ -152,9 +151,6 @@ export const useRoomLanguageMutation = () => {
       await updateRoom(supabase, roomId, { lang });
       return { roomId };
     },
-    onSuccess: (data) => {
-      // Invalidate room query to trigger a refetch
-      queryClient.invalidateQueries({ queryKey: ["room", data.roomId] });
-    },
+    // don't invalidate the room query, as it will be done by the subscription
   });
 };
