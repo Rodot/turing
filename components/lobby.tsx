@@ -105,6 +105,7 @@ export const Lobby: React.FC = () => {
           variant="contained"
           onClick={() => startGameMutation.mutate()}
           disabled={startGameMutation.isPending || notEnoughPlayers}
+          aria-label="Start Game"
         >
           Start Game
           {startGameMutation.isPending && <Spinner />}

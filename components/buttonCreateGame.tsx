@@ -11,6 +11,7 @@ export const ButtonCreateGame: React.FC = () => {
       variant="contained"
       onClick={() => createRoomMutation.mutate()}
       disabled={createRoomMutation.isPending}
+      aria-label="New Game"
     >
       Create New Game
     </Button>

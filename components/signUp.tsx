@@ -85,6 +85,7 @@ export const SignUp: React.FC = () => {
               type="submit"
               variant="contained"
               color="secondary"
+              aria-label="Submit"
               disabled={
                 profileQuery.isLoading ||
                 profileNameMutation.isPending ||

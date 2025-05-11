@@ -141,6 +141,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
               sx={{ flexShrink: 1, flexGrow: 0 }}
               onClick={generateAnswers}
               disabled={loadingGeneration || !canTalk}
+              aria-label="AI Answers"
             >
               Generate AI Answers 🤖
               {loadingGeneration && <Spinner />}
@@ -186,12 +187,14 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
                 onChange={handleInputChange}
                 label={`Send a message as ${me.name}`}
                 sx={{ flexGrow: 1, mr: 1 }}
+                aria-label="Message Input"
               />
               <Button
                 type="submit"
                 variant="contained"
                 color="secondary"
                 disabled={!canTalk || loadingSend}
+                aria-label="Send message"
               >
                 <Send />
                 {loadingSend && <Spinner />}

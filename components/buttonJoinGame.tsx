@@ -17,6 +17,7 @@ export const ButtonJoinGame: React.FC = () => {
       variant="contained"
       onClick={() => joinRoomMutation.mutate(roomId)}
       disabled={joinRoomMutation.isPending}
+      aria-label="Join Game"
     >
       Join Game
     </Button>

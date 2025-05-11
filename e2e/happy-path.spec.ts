@@ -1,17 +1,18 @@
-import { test } from "@playwright/test";
+import { expect, Page, test } from "@playwright/test";
 
 test("multi-user game flow", async ({ browser }) => {
   const hostContext = await browser.newContext();
   const guestContext = await browser.newContext();
   const host = await hostContext.newPage();
   const guest = await guestContext.newPage();
+  const players = [host, guest];
 
   // HOST: Sign up and create a room
   await host.goto("/");
   await host.getByLabel("Your name").fill("HostPlayer");
-  await host.locator('button[type="submit"]').click();
-  await host.getByRole("button", { name: "New Game" }).waitFor();
-  await host.getByRole("button", { name: "New Game" }).click();
+  await host.getByLabel("Submit").click();
+  await host.getByLabel("New Game").waitFor();
+  await host.getByLabel("New Game").click();
 
   // HOST: Wait for room to be created and get the URL
   await host.getByText("Invite Link").waitFor();
@@ -22,9 +23,9 @@ test("multi-user game flow", async ({ browser }) => {
   // GUEST: Navigate to the app, sign up, and join the room
   await guest.goto(roomUrl);
   await guest.getByLabel("Your name").fill("GuestPlayer");
-  await guest.locator('button[type="submit"]').click();
-  await guest.getByRole("button", { name: "Join Game" }).waitFor();
-  await guest.getByRole("button", { name: "Join Game" }).click();
+  await guest.getByLabel("Submit").click();
+  await guest.getByLabel("Join Game").waitFor();
+  await guest.getByLabel("Join Game").click();
 
   // HOST: In the lobby
   await host.getByText("HostPlayer (you)").waitFor();
@@ -35,26 +36,43 @@ test("multi-user game flow", async ({ browser }) => {
   await guest.getByText("Waiting for HostPlayer").waitFor();
 
   // HOST: Start the game
-  await host.getByRole("button", { name: "Start Game" }).waitFor();
-  await host.getByRole("button", { name: "Start Game" }).click();
+  await host.getByLabel("Start Game").waitFor();
+  await host.getByLabel("Start Game").click();
 
-  // wait 3 seconds
-  await host.waitForTimeout(3000);
+  await host.waitForTimeout(1000);
 
-  // get human ai roles
-  const hostIsAI = await guest
-    .getByText("Send a message as GuestPlayer")
-    .isVisible();
-  const human = hostIsAI ? host : guest;
-  const ai = hostIsAI ? guest : host;
+  // Get human and ai roles
+  const humans = [] as Page[];
+  const ais = [] as Page[];
+  for (const player of players) {
+    console.log("Checking player");
+    try {
+      if (await player.getByLabel("Message Input").isVisible()) {
+        console.log("Found human");
+        humans.push(player);
+      }
+    } catch {}
+    try {
+      if (await player.getByLabel("AI Answers").isVisible()) {
+        console.log("Found AI");
+        ais.push(player);
+      }
+    } catch {}
+  }
+
+  expect(humans.length).toBe(players.length - 1);
+  expect(ais.length).toBe(1);
 
   // HUMAN: Send a message
-  await human.locator('input[type="text"]').fill("Hello");
-  await human.locator('button[type="submit"]').click();
+  await humans[0]
+    ?.getByLabel("Message Input")
+    .getByRole("textbox")
+    .fill("Hello");
+  await humans[0]?.getByLabel("Send message").click();
 
   // AI: Check if the message is received
-  await ai.getByText("Hello").waitFor();
+  await ais[0]?.getByText("Hello").waitFor();
 
   // AI: Generate answers
-  await ai.getByRole("button", { name: "AI Answers" }).click();
+  await ais[0]?.getByLabel("AI Answers").click();
 });
