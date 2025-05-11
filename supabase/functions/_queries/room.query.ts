@@ -22,7 +22,7 @@ export const insertRoom = async (supabase: SupabaseClient) => {
 export const updateRoom = async (
   supabase: SupabaseClient,
   id: string,
-  data: Partial<RoomData>
+  data: Partial<RoomData>,
 ) => {
   const req = await supabase.from("rooms").update(data).eq("id", id);
   if (req.error) {

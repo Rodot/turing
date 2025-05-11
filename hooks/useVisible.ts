@@ -15,10 +15,11 @@ export function useVisible() {
       return () => {
         document.removeEventListener(
           "visibilitychange",
-          handleVisibilityChange
+          handleVisibilityChange,
         );
       };
     }
+    return undefined;
   }, []);
 
   return isVisible;

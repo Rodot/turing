@@ -10,6 +10,6 @@ export const createSupabaseClient = (req: Request) => {
       global: {
         headers: { Authorization },
       },
-    }
+    },
   );
 };

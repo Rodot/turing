@@ -17,18 +17,32 @@ export const isHuman = (player: PlayerData) => !!player?.user_id;
 export const removeEmojis = (text: string) => {
   return text.replace(
     /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g,
-    ""
+    "",
   );
 };
 
 export const popRandom = <T>(array: Array<T>): T => {
+  if (array.length === 0) {
+    throw new Error("Cannot pop from empty array");
+  }
   const index = Math.floor(Math.random() * array.length);
-  return array.splice(index, 1)[0];
+  const result = array.splice(index, 1)[0];
+  if (result === undefined) {
+    throw new Error("Popped element is undefined");
+  }
+  return result;
 };
 
 export const pickRandom = <T>(array: Array<T>): T => {
+  if (array.length === 0) {
+    throw new Error("Cannot pick from empty array");
+  }
   const index = Math.floor(Math.random() * array.length);
-  return array[index];
+  const result = array[index];
+  if (result === undefined) {
+    throw new Error("Picked element is undefined");
+  }
+  return result;
 };
 
 export const cleanAnswer = (str: string) => {
@@ -57,7 +71,7 @@ export const cleanAnswer = (str: string) => {
 
 export const getPlayersWithLeastMessages = (
   players: PlayerData[],
-  messages: MessageData[]
+  messages: MessageData[],
 ) => {
   const messagesCountPerPlayer = players.map((player) => ({
     player,

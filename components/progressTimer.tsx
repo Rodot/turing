@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { LinearProgress, SxProps, Theme } from "@mui/material";
+import { LinearProgress } from "@mui/material";
 
 type Props = {
-  sx?: SxProps<Theme>;
   duration: number;
 };
 
-export const ProgressTimer: React.FC<Props> = ({ sx, duration }) => {
+export const ProgressTimer: React.FC<Props> = ({ duration }) => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [progress, setProgress] = useState(0);
 

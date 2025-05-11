@@ -3,7 +3,7 @@ import { PlayerData } from "../_types/Database.type.ts";
 
 export const fetchPlayers = async (
   supabase: SupabaseClient,
-  roomId: string
+  roomId: string,
 ) => {
   const { data, error } = await supabase
     .from("players")
@@ -16,7 +16,7 @@ export const fetchPlayers = async (
 
 export const fetchPlayer = async (
   supabase: SupabaseClient,
-  playerId: string
+  playerId: string,
 ) => {
   const { data, error } = await supabase
     .from("players")
@@ -29,7 +29,7 @@ export const fetchPlayer = async (
 
 export const deletePlayer = async (
   supabase: SupabaseClient,
-  playerId: string
+  playerId: string,
 ) => {
   const deleteResponse = await supabase
     .from("players")
@@ -42,19 +42,19 @@ export const deletePlayer = async (
 
 export const insertPlayers = async (
   supabase: SupabaseClient,
-  players: Partial<PlayerData>[]
+  players: Partial<PlayerData>[],
 ) => {
   const insertPlayerResponse = await supabase.from("players").insert(players);
   if (insertPlayerResponse.error) {
     throw new Error(
-      "Error inserting player: " + insertPlayerResponse.error.message
+      "Error inserting player: " + insertPlayerResponse.error.message,
     );
   }
 };
 
 export const updatePlayer = async (
   supabase: SupabaseClient,
-  player: Partial<PlayerData>
+  player: Partial<PlayerData>,
 ) => {
   const updateResponse = await supabase
     .from("players")
@@ -68,7 +68,7 @@ export const updatePlayer = async (
 
 export const updateRoomPlayers = async (
   supabase: SupabaseClient,
-  player: Partial<PlayerData>
+  player: Partial<PlayerData>,
 ) => {
   const updateResponse = await supabase
     .from("players")
@@ -77,7 +77,7 @@ export const updateRoomPlayers = async (
 
   if (updateResponse.error) {
     throw new Error(
-      "Error updating room players: " + updateResponse.error.message
+      "Error updating room players: " + updateResponse.error.message,
     );
   }
 };

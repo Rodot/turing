@@ -3,7 +3,7 @@ import { MessageData } from "../_types/Database.type.ts";
 
 export const fetchMessages = async (
   supabase: SupabaseClient,
-  roomId: string
+  roomId: string,
 ) => {
   const { data, error } = await supabase
     .from("messages")
@@ -20,14 +20,14 @@ export const fetchMessages = async (
 
 export const insertMessage = async (
   supabase: SupabaseClient,
-  message: Partial<MessageData>
+  message: Partial<MessageData>,
 ) => {
   const insertMessageResponse = await supabase
     .from("messages")
     .insert([message]);
   if (insertMessageResponse.error) {
     throw new Error(
-      "Error inserting message: " + insertMessageResponse.error.message
+      "Error inserting message: " + insertMessageResponse.error.message,
     );
   }
 };

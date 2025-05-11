@@ -1,6 +1,3 @@
 {
-  "recommendations": [
-    "denoland.vscode-deno",
-    "github.vscode-github-actions"
-  ]
+  "recommendations": ["denoland.vscode-deno", "github.vscode-github-actions"]
 }

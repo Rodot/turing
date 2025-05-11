@@ -25,7 +25,9 @@ export const SignUp: React.FC = () => {
     event.preventDefault();
     setLoading(true);
     try {
-      await (user as any)?.signUp(name);
+      if (user?.signUp) {
+        await user.signUp(name);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -63,43 +65,41 @@ export const SignUp: React.FC = () => {
           Earn 10 🧠 to win
         </Typography>
       </Box>
-      {user?.id
-        ? (
-          <>
-            <ButtonResumeGame />
-            <ButtonJoinGame />
-            <ButtonCreateGame />
-          </>
-        )
-        : (
-          <form onSubmit={signUp} style={{ width: "100%" }}>
-            <Box
-              sx={{
-                display: "flex",
-                alignContent: "center",
-                justifyContent: "center",
-                p: 1,
-              }}
-            >
-              <TextField
-                label="Your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                sx={{ mr: 1 }}
-              />
+      {user?.id ? (
+        <>
+          <ButtonResumeGame />
+          <ButtonJoinGame />
+          <ButtonCreateGame />
+        </>
+      ) : (
+        <form onSubmit={signUp} style={{ width: "100%" }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignContent: "center",
+              justifyContent: "center",
+              p: 1,
+            }}
+          >
+            <TextField
+              label="Your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              sx={{ mr: 1 }}
+            />
 
-              <Button
-                type="submit"
-                variant="contained"
-                color="secondary"
-                disabled={loading || name.length < 3}
-              >
-                <Send />
-                {loading && <Spinner />}
-              </Button>
-            </Box>
-          </form>
-        )}
+            <Button
+              type="submit"
+              variant="contained"
+              color="secondary"
+              disabled={loading || name.length < 3}
+            >
+              <Send />
+              {loading && <Spinner />}
+            </Button>
+          </Box>
+        </form>
+      )}
     </Container>
   );
 };

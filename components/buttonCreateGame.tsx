@@ -1,15 +1,11 @@
 import React from "react";
-import { Button, SxProps, Theme } from "@mui/material";
+import { Button } from "@mui/material";
 import { useContext, useState } from "react";
 import { RoomContext } from "./contextProvider";
 import { Spinner } from "./spinner";
 import { useRouter } from "next/navigation";
 
-interface Props {
-  sx?: SxProps<Theme>;
-}
-
-export const ButtonCreateGame: React.FC<Props> = ({ sx }) => {
+export const ButtonCreateGame: React.FC = () => {
   const room = useContext(RoomContext);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -32,7 +28,6 @@ export const ButtonCreateGame: React.FC<Props> = ({ sx }) => {
       variant="contained"
       onClick={startNewGame}
       disabled={loading}
-      sx={sx}
     >
       New Game
       {loading && <Spinner />}

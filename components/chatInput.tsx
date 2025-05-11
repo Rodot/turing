@@ -56,7 +56,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
       let timeout = 3;
       while (!receivedAnswers?.length) {
         if (!timeout--) throw new Error("Answer generation timed out");
-        const req: any = await generateAnswersFunction(
+        const req = await generateAnswersFunction(
           supabase,
           roomId,
           me.name,
@@ -124,7 +124,8 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
         )}
         {!canTalk && talkingPlayers?.length && (
           <Typography textAlign="center">
-            Waiting for {talkingPlayers.length > 2
+            Waiting for{" "}
+            {talkingPlayers.length > 2
               ? "others"
               : talkingPlayers.map((p) => p.name).join(", ")}
           </Typography>
@@ -155,8 +156,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
                   variant="contained"
                   color="secondary"
                   key="answer"
-                  onClick={() =>
-                    sendMessageFromBot(answer)}
+                  onClick={() => sendMessageFromBot(answer)}
                   disabled={loadingSend || !canTalk}
                 >
                   <Send />

@@ -6,14 +6,14 @@ import { v4 } from "uuid";
 import { useVisible } from "./useVisible";
 
 export type TableProps = {
-  tableName?: string;
-  filterColumn?: string;
-  filterValue?: string;
+  tableName: string;
+  filterColumn: string;
+  filterValue: string | undefined;
 };
 
 export function useTable<T extends { id: string }>(
   supabase: SupabaseClient,
-  props: TableProps
+  props: TableProps,
 ) {
   const isVisible = useVisible();
   const [store, setStore] = useState<T[]>([]);
@@ -48,11 +48,11 @@ export function useTable<T extends { id: string }>(
           table: props.tableName,
           filter: `${props.filterColumn}=eq.${props.filterValue}`,
         },
-        (payload) => {
+        () => {
           reload();
           // wont work if some event don't arrive in the right order or get lost
           // setStore((prev) => [...prev, payload.new as T]);
-        }
+        },
       )
       .on(
         "postgres_changes",
@@ -76,7 +76,7 @@ export function useTable<T extends { id: string }>(
           //     item.id === payload.new.id ? (payload.new as T) : item
           //   )
           // );
-        }
+        },
       )
       .on(
         "postgres_changes",
@@ -85,13 +85,13 @@ export function useTable<T extends { id: string }>(
           schema: "public",
           table: props.tableName,
         },
-        (payload) => {
+        () => {
           reload();
           // delete events are not filterable https://supabase.com/docs/guides/realtime/postgres-changes#delete-events-are-not-filterable
           // setStore((prev) => {
           //   return prev.filter((item) => item?.id !== payload.old?.id);
           // });
-        }
+        },
       )
       .subscribe((status) => {
         if (status === "SUBSCRIBED") {

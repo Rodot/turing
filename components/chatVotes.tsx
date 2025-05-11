@@ -29,9 +29,10 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   const humans = players.filter((player) => !player.is_bot);
   const otherPlayers = players.filter((player) => player.id !== me.id);
   const humansDidntVote = humans.filter((player) => !didVote(player));
-  const humansDidntVoteString = humansDidntVote.length > 2
-    ? "others"
-    : humansDidntVote.map((p) => p.name).join(", ");
+  const humansDidntVoteString =
+    humansDidntVote.length > 2
+      ? "others"
+      : humansDidntVote.map((p) => p.name).join(", ");
   const everyoneVoted = humansDidntVote.length === 0;
   const alreadyVoted = me.vote || me.vote_blank;
 

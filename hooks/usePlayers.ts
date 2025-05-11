@@ -37,7 +37,7 @@ export function usePlayers(room: Room | null) {
         },
         () => {
           updatePlayers();
-        }
+        },
       )
       .subscribe();
 

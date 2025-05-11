@@ -11,9 +11,7 @@ export function BaseLayout({ children }: React.PropsWithChildren) {
         <Toolbar>
           <Box sx={{ flexGrow: "1" }}>
             <Link href="/" style={{ textDecoration: "none" }}>
-              <Typography
-                sx={{ fontWeight: "900", color: "white" }}
-              >
+              <Typography sx={{ fontWeight: "900", color: "white" }}>
                 The Turing <strong>Trial</strong>
               </Typography>
             </Link>

@@ -4,7 +4,7 @@ import { updatePlayer, updateRoomPlayers } from "../_queries/players.query.ts";
 
 export const setRandomPlayerAsBotAndResetVotes = async (
   supabase: SupabaseClient,
-  players: PlayerData[]
+  players: PlayerData[],
 ) => {
   if (!players?.length) throw new Error("No players to pick from");
   const previousHumans = players.filter((player) => !player.is_bot);

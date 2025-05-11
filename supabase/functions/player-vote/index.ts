@@ -97,7 +97,8 @@ Deno.serve(async (req) => {
 
         // Set up next vote
         const room = await fetchRoom(supabase, roomId);
-        const nextVote = votingData.messages.filter(isNotSystem).length +
+        const nextVote =
+          votingData.messages.filter(isNotSystem).length +
           nextVoteLength(votingData.players.length);
 
         // Reset votes and set random player as bot
@@ -172,12 +173,15 @@ async function gatherVotingData(
   const blankVoters = players.filter((player) => player.vote_blank === true);
 
   // Count votes for each player
-  const voteCounts = players.reduce((counts, player) => {
-    if (player.vote && !player.vote_blank) {
-      counts[player.vote] = (counts[player.vote] || 0) + 1;
-    }
-    return counts;
-  }, {} as Record<string, number>);
+  const voteCounts = players.reduce(
+    (counts, player) => {
+      if (player.vote && !player.vote_blank) {
+        counts[player.vote] = (counts[player.vote] || 0) + 1;
+      }
+      return counts;
+    },
+    {} as Record<string, number>,
+  );
 
   // Calculate total votes
   const numVotes = players.filter(
@@ -189,11 +193,12 @@ async function gatherVotingData(
 
   // Calculate human imposters (humans with more votes than bot AND have the most votes)
   const humanImposters = botPlayer
-    ? players.filter((player) =>
-      !player.is_bot &&
-      (voteCounts[player.id] || 0) > (voteCounts[botPlayer.id] || 0) &&
-      (voteCounts[player.id] || 0) === maxVotes
-    )
+    ? players.filter(
+        (player) =>
+          !player.is_bot &&
+          (voteCounts[player.id] || 0) > (voteCounts[botPlayer.id] || 0) &&
+          (voteCounts[player.id] || 0) === maxVotes,
+      )
     : [];
 
   return {
@@ -272,7 +277,7 @@ async function updatePlayerPoints(
       id: allocation.player.id,
       room_id: roomId,
       score: allocation.player.score + allocation.points,
-    })
+    }),
   );
 
   await Promise.all(updatePromises);
@@ -301,26 +306,21 @@ async function postPointsMessages(
 
   // Create message for bot voters
   if (botPlayer && foundBotPlayers.length > 0) {
-    mainMessage = `+1 🧠 for ${
-      foundBotPlayers
-        .map((p) => p.name)
-        .join(" and ")
-    } who guessed that ${botPlayer.name} was the AI`;
+    mainMessage = `+1 🧠 for ${foundBotPlayers
+      .map((p) => p.name)
+      .join(" and ")} who guessed that ${botPlayer.name} was the AI`;
   }
 
   // Create message for escaped bot
   if (botPlayer && foundBotPlayers.length === 0) {
-    mainMessage =
-      `+1 🧠 for ${botPlayer.name} for pretending to be human... as the AI`;
+    mainMessage = `+1 🧠 for ${botPlayer.name} for pretending to be human... as the AI`;
   }
 
   // Create message for correct blank voters
   if (!botPlayer && correctlyGuessedNoBotPlayers.length > 0) {
-    mainMessage = `+1 🧠 for ${
-      correctlyGuessedNoBotPlayers
-        .map((p) => p.name)
-        .join(" and ")
-    } who realized there was no AI`;
+    mainMessage = `+1 🧠 for ${correctlyGuessedNoBotPlayers
+      .map((p) => p.name)
+      .join(" and ")} who realized there was no AI`;
   }
 
   // Create message when nobody guessed there was no bot
@@ -330,11 +330,9 @@ async function postPointsMessages(
 
   // Add message for humans who got more votes than the bot
   if (humanImposters.length > 0) {
-    additionalMessage = `\n+1 🧠 for ${
-      humanImposters
-        .map((p) => p.name)
-        .join(" and ")
-    } for pretending to be the AI... as a human`;
+    additionalMessage = `\n+1 🧠 for ${humanImposters
+      .map((p) => p.name)
+      .join(" and ")} for pretending to be the AI... as a human`;
   }
 
   // Post the message

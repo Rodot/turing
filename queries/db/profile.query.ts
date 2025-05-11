@@ -4,7 +4,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 export const updateProfileName = async (
   supabase: SupabaseClient,
   userId: string,
-  name: string
+  name: string,
 ) => {
   const req = await supabase
     .from("profiles")
@@ -18,7 +18,7 @@ export const updateProfileName = async (
 export const updateProfileRoom = async (
   supabase: SupabaseClient,
   userId: string,
-  roomId: string
+  roomId: string,
 ) => {
   const req = await supabase
     .from("profiles")
@@ -31,7 +31,7 @@ export const updateProfileRoom = async (
 
 export const removeProfileFromRoom = async (
   supabase: SupabaseClient,
-  userId: string
+  userId: string,
 ) => {
   const req = await supabase
     .from("profiles")
@@ -44,7 +44,7 @@ export const removeProfileFromRoom = async (
 
 export const fetchRoomProfiles = async (
   supabase: SupabaseClient,
-  roomId: string
+  roomId: string,
 ): Promise<ProfileData[]> => {
   const req = await supabase.from("profiles").select("*").eq("room_id", roomId);
   if (req.error) {
@@ -57,7 +57,7 @@ export const fetchRoomProfiles = async (
 
 export const fetchUserProfile = async (
   supabase: SupabaseClient,
-  userId: string
+  userId: string,
 ): Promise<ProfileData> => {
   const req = await supabase.from("profiles").select("*").eq("id", userId);
   if (req.error) {

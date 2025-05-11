@@ -2,10 +2,14 @@ import { supabase } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 
+export type ExtendedUser = User & {
+  signUp: (name: string | null, room_id?: string | null) => Promise<void>;
+};
+
 export const useUser = () => {
   const [user, setUser] = useState<User | null>(null);
 
-  const signUp = async (name: string | null, room_id: string | null) => {
+  const signUp = async (name: string | null, room_id?: string | null) => {
     const { data, error } = await supabase.auth.signInAnonymously({
       options: { data: { name, room_id } },
     });
@@ -33,5 +37,5 @@ export const useUser = () => {
     signInOrUp();
   }, []);
 
-  return { ...user, signUp };
+  return user ? ({ ...user, signUp } as ExtendedUser) : null;
 };

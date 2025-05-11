@@ -75,13 +75,15 @@ export const Chat: React.FC = () => {
             />
           ))}
       </Paper>
-      <ChatHistory
+      <Box
         sx={{
           flexGrow: 1,
           overflowY: "auto",
           overflowX: "hidden",
         }}
-      />
+      >
+        <ChatHistory />
+      </Box>
       <Paper elevation={8} sx={{ borderRadius: 0, zIndex: 2 }}>
         {isWarmup && (
           <Box>

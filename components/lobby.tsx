@@ -72,7 +72,6 @@ export const Lobby: React.FC = () => {
       }}
     >
       <Toolbar /> {/* empty toolbar to avoid covering page content */}
-
       {notEnoughPlayers && (
         <Typography>
           <strong>3+ players required</strong>, invite people to start!
@@ -80,15 +79,15 @@ export const Lobby: React.FC = () => {
       )}
       {!notEnoughPlayers && !isHost && (
         <Typography>
-          <strong>Waiting for {roomProfiles?.[0]?.name}</strong>{" "}
-          to start the game 😅
+          <strong>Waiting for {roomProfiles?.[0]?.name}</strong> to start the
+          game 😅
         </Typography>
       )}
-
-      <ButtonShare url={url} sx={{ mt: 6 }} />
+      <Box sx={{ mt: 6 }}>
+        <ButtonShare url={url} />
+      </Box>
       <QRCode size={150} value={url} />
       <Typography sx={{ mb: 6 }}>👆 Scan to join</Typography>
-
       <Box
         sx={{
           display: "flex",
@@ -110,11 +109,11 @@ export const Lobby: React.FC = () => {
           />
         ))}
       </Box>
-
       {isHost && (
         <ButtonGroup>
           <Button
-            variant={room?.data?.lang === "en" ? "contained" : undefined}
+            component="button"
+            variant={room?.data?.lang === "en" ? "contained" : "text"}
             onClick={() => setLang("en")}
             disabled={loadingLang}
           >
@@ -122,7 +121,8 @@ export const Lobby: React.FC = () => {
             {loadingLang && <Spinner />}
           </Button>
           <Button
-            variant={room?.data?.lang === "fr" ? "contained" : undefined}
+            component="button"
+            variant={room?.data?.lang === "fr" ? "contained" : "text"}
             onClick={() => setLang("fr")}
             disabled={loadingLang}
           >
@@ -131,9 +131,9 @@ export const Lobby: React.FC = () => {
           </Button>
         </ButtonGroup>
       )}
-
       {isHost && (
         <Button
+          component="button"
           color="secondary"
           variant="contained"
           onClick={startGame}

@@ -11,7 +11,7 @@ export function formatUser(user: User | null | undefined): string {
 
 export function playerName(
   userId: string | undefined,
-  players: PlayerData[]
+  players: PlayerData[],
 ): string {
   if (!userId) return "...";
   const player = players.find((player) => player.user_id === userId);

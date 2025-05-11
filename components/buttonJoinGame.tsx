@@ -1,15 +1,11 @@
 import React, { useContext, useEffect } from "react";
-import { Button, SxProps, Theme } from "@mui/material";
+import { Button } from "@mui/material";
 import { useState } from "react";
 import { Spinner } from "./spinner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { RoomContext } from "./contextProvider";
 
-interface Props {
-  sx?: SxProps<Theme>;
-}
-
-export const ButtonJoinGame: React.FC<Props> = ({ sx }) => {
+export const ButtonJoinGame: React.FC = () => {
   const room = useContext(RoomContext);
   const [loading, setLoading] = useState(false);
   const [roomId, setRoomId] = useState("");
@@ -45,7 +41,6 @@ export const ButtonJoinGame: React.FC<Props> = ({ sx }) => {
       variant="contained"
       onClick={joinGame}
       disabled={loading}
-      sx={sx}
     >
       Join Game
       {loading && <Spinner />}

@@ -1,6 +1,6 @@
 import React from "react";
 import { Logout } from "@mui/icons-material";
-import { Button, SxProps, Theme } from "@mui/material";
+import { Button } from "@mui/material";
 import { useContext, useState } from "react";
 import { PlayersContext, RoomContext } from "./contextProvider";
 import { deletePlayer } from "@/queries/db/players.query";
@@ -9,10 +9,9 @@ import { useRouter } from "next/navigation";
 
 interface Props {
   label?: string;
-  sx?: SxProps<Theme>;
 }
 
-export const ButtonLeaveGame: React.FC<Props> = ({ sx, label }) => {
+export const ButtonLeaveGame: React.FC<Props> = ({ label }) => {
   const room = useContext(RoomContext);
   const players = useContext(PlayersContext);
   const me = players?.find((p) => p.id === p?.id);
@@ -32,7 +31,6 @@ export const ButtonLeaveGame: React.FC<Props> = ({ sx, label }) => {
 
   return (
     <Button
-      sx={sx}
       color="secondary"
       onClick={leaveGame}
       disabled={loading || !room?.data?.id}

@@ -27,7 +27,7 @@ export function useRoom(profile: ProfileData | null): Room | null {
   const roomData = useTable<RoomData>(supabase, {
     tableName: "rooms",
     filterColumn: "id",
-    filterValue: profile?.room_id,
+    filterValue: profile?.room_id || "",
   });
 
   const createRoom = async () => {

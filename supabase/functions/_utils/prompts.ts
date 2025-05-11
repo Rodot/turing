@@ -3,7 +3,7 @@ import { removeEmojis } from "../_shared/utils.ts";
 
 const messagesToPrompt = (
   speakerName: string,
-  messages: Array<MessageData>
+  messages: Array<MessageData>,
 ) => {
   let prompt = "";
   messages.forEach((message) => {
@@ -18,7 +18,7 @@ const messagesToPrompt = (
 export const promptForNextMessageSuggestions = (
   speakerName: string,
   messagesData: MessageData[],
-  lang: "en" | "fr"
+  lang: "en" | "fr",
 ) => {
   let systemPrompt = "";
   switch (lang) {
