@@ -1,5 +1,5 @@
 import { Check, ContentCopy as ContentCopyIcon } from "@mui/icons-material";
-import { Button } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 
 interface Props {
@@ -14,13 +14,39 @@ export const ButtonShare: React.FC<Props> = ({ url: urlToCopy }) => {
     setClicked(true);
     setTimeout(() => {
       setClicked(false);
-    }, 1000);
+    }, 3000);
   };
 
   return (
-    <Button variant="contained" color="secondary" onClick={share}>
-      {clicked ? <Check sx={{ mr: 1 }} /> : <ContentCopyIcon sx={{ mr: 1 }} />}
-      {clicked ? "Link Copied!" : "Copy Game Link"}
-    </Button>
+    <>
+      <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
+        Invite Link
+      </Typography>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <TextField
+          value={urlToCopy}
+          InputProps={{
+            readOnly: true,
+          }}
+          disabled
+          size="small"
+          variant="outlined"
+          fullWidth
+        />
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={share}
+          disabled={clicked}
+        >
+          {clicked ? (
+            <Check sx={{ mr: 0.5 }} />
+          ) : (
+            <ContentCopyIcon data-testid="ContentCopyIcon" sx={{ mr: 0.5 }} />
+          )}
+          {clicked ? "Copied" : "Copy"}
+        </Button>
+      </Box>
+    </>
   );
 };

@@ -69,48 +69,48 @@ export const SignUp: React.FC = () => {
           Earn 10 🧠 to win
         </Typography>
       </Box>
-      {!isNameSet &&
-        (
-          <form onSubmit={onSubmit} style={{ width: "100%" }}>
-            <Box
-              sx={{
-                display: "flex",
-                alignContent: "center",
-                justifyContent: "center",
-                p: 1,
-              }}
-            >
-              <TextField
-                label="Your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                sx={{ mr: 1 }}
-              />
+      {!isNameSet && (
+        <form onSubmit={onSubmit} style={{ width: "100%" }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignContent: "center",
+              justifyContent: "center",
+              p: 1,
+            }}
+          >
+            <TextField
+              label="Your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              sx={{ mr: 1 }}
+            />
 
-              <Button
-                type="submit"
-                variant="contained"
-                color="secondary"
-                disabled={profileQuery.isLoading ||
-                  profileNameMutation.isPending ||
-                  name.length < 3}
-              >
-                <Send />
-                {(profileQuery.isLoading || profileNameMutation.isPending) && (
-                  <Spinner />
-                )}
-              </Button>
-            </Box>
-          </form>
-        )}
-      {isNameSet &&
-        (
-          <>
-            <ButtonResumeGame />
-            <ButtonJoinGame />
-            <ButtonCreateGame />
-          </>
-        )}
+            <Button
+              type="submit"
+              variant="contained"
+              color="secondary"
+              disabled={
+                profileQuery.isLoading ||
+                profileNameMutation.isPending ||
+                name.length < 3
+              }
+            >
+              <Send />
+              {(profileQuery.isLoading || profileNameMutation.isPending) && (
+                <Spinner />
+              )}
+            </Button>
+          </Box>
+        </form>
+      )}
+      {isNameSet && (
+        <>
+          <ButtonResumeGame />
+          <ButtonJoinGame />
+          <ButtonCreateGame />
+        </>
+      )}
     </Container>
   );
 };

@@ -12,8 +12,8 @@ import {
 } from "@mui/material";
 import { RoomContext, RoomProfilesContext } from "./contextProvider";
 import { ButtonShare } from "./buttonShare";
+import { QRShare } from "./qrShare";
 import { Spinner } from "./spinner";
-import QRCode from "react-qr-code";
 import { updateRoom } from "@/queries/db/room.query";
 import { supabase } from "@/utils/supabase/client";
 import { useUserQuery } from "@/hooks/useUserQuery";
@@ -28,7 +28,7 @@ export const Lobby: React.FC = () => {
 
   const isHost = roomProfiles?.[0]?.id === userQuery.data?.id;
   const me = roomProfiles?.find((profile) => profile.id === userQuery.data?.id);
-  const notEnoughPlayers = roomProfiles?.length < 2;
+  const notEnoughPlayers = roomProfiles?.length < 3;
 
   const startGame = async () => {
     try {
@@ -83,8 +83,7 @@ export const Lobby: React.FC = () => {
       <Box sx={{ mt: 6 }}>
         <ButtonShare url={url} />
       </Box>
-      <QRCode size={150} value={url} />
-      <Typography sx={{ mb: 6 }}>👆 Scan to join</Typography>
+      <QRShare url={url} />
       <Box
         sx={{
           display: "flex",
@@ -92,7 +91,7 @@ export const Lobby: React.FC = () => {
           flexDirection: "row",
           flexWrap: "wrap",
           justifyContent: "center",
-          mb: 6,
+          my: 6,
         }}
       >
         <Chip
