@@ -12,7 +12,6 @@ import {
 import { RoomProfilesContext } from "./contextProvider";
 import { ButtonShare } from "./buttonShare";
 import { QRShare } from "./qrShare";
-import { Spinner } from "./spinner";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import {
   useRoomLanguageMutation,
@@ -65,7 +64,6 @@ export const Lobby: React.FC = () => {
           disabled={roomLanguageMutation.isPending}
         >
           English
-          {roomLanguageMutation.isPending && <Spinner />}
         </Button>
         <Button
           component="button"
@@ -74,7 +72,6 @@ export const Lobby: React.FC = () => {
           disabled={roomLanguageMutation.isPending}
         >
           French
-          {roomLanguageMutation.isPending && <Spinner />}
         </Button>
       </ButtonGroup>
       <Box sx={{ mb: 6 }}></Box>
@@ -108,7 +105,6 @@ export const Lobby: React.FC = () => {
           aria-label="Start Game"
         >
           Start Game
-          {startGameMutation.isPending && <Spinner />}
         </Button>
       )}
       {notEnoughPlayers && (

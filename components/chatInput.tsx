@@ -18,7 +18,6 @@ import {
   cleanAnswer,
   getPlayersWithLeastMessages,
 } from "@/supabase/functions/_shared/utils";
-import { Spinner } from "./spinner";
 import { Send } from "@mui/icons-material";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useRoomQuery } from "@/hooks/useRoomQuery";
@@ -57,7 +56,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
           supabase,
           roomId,
           me.name,
-          roomQuery?.data?.lang ?? "en",
+          roomQuery?.data?.lang ?? "en"
         );
         console.log(req);
         receivedAnswers = (req?.possibleNextMessages ?? []).map(cleanAnswer);
@@ -144,7 +143,6 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
               aria-label="AI Answers"
             >
               Generate AI Answers 🤖
-              {loadingGeneration && <Spinner />}
             </Button>
           </Box>
         )}
@@ -163,7 +161,6 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
                   disabled={loadingSend || !canTalk}
                 >
                   <Send />
-                  {loadingSend && <Spinner />}
                 </Button>
               </Box>
             ))}
@@ -197,7 +194,6 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
                 aria-label="Send message"
               >
                 <Send />
-                {loadingSend && <Spinner />}
               </Button>
             </Box>
           </form>
