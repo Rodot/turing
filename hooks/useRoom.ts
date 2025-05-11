@@ -17,7 +17,7 @@ import { useTable } from "./useTable";
 
 export type Room = {
   data: RoomData | undefined;
-  createRoom: () => void;
+  createRoom: () => Promise<string | undefined>;
   joinRoom: (roomId: string) => void;
   leaveRoom: () => void;
   startGame: () => void;
@@ -31,7 +31,7 @@ export function useRoom(profile: ProfileData | undefined): Room | undefined {
   });
 
   const createRoom = async () => {
-    await createRoomFunction(supabase);
+    return await createRoomFunction(supabase);
   };
 
   const joinRoom = async (roomId: string) => {

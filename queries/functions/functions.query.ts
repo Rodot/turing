@@ -12,7 +12,8 @@ export const startGameFunction = async (
 };
 
 export const createRoomFunction = async (supabase: SupabaseClient) => {
-  await supabase.functions.invoke("create-room");
+  const response = await supabase.functions.invoke("create-room");
+  return response?.data?.room_id as string | undefined;
 };
 
 export const playerVoteFunction = async (

@@ -16,7 +16,7 @@ export const ButtonJoinGame: React.FC = () => {
     try {
       setLoading(true);
       await room?.joinRoom(roomId);
-      router.push("/game");
+      router.push(`/game?room=${roomId}`);
     } catch (error) {
       console.error(error);
     } finally {

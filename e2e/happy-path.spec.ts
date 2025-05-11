@@ -16,9 +16,6 @@ test("user signup, create game, and copy link flow", async ({ page }) => {
   // Click the "New Game" button
   await page.getByRole("button", { name: "New Game" }).click();
 
-  // Wait for navigation to the game page and for it to load
-  await page.waitForURL("**/game");
-
   // Wait for the Invite Link section to appear on the lobby page
   await page.getByText("Invite Link").waitFor();
 

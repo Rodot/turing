@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
     // join room
     await addProfileToRoom(supabase, user?.id, room.id);
 
-    const data = {};
+    const data = { room_id: room.id };
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

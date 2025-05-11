@@ -13,8 +13,12 @@ export const ButtonCreateGame: React.FC = () => {
   const startNewGame = async () => {
     try {
       setLoading(true);
-      await room?.createRoom();
-      router.push("/game");
+      const newRoomId = await room?.createRoom();
+      if (newRoomId) {
+        router.push(`/game?room=${newRoomId}`);
+      } else {
+        console.error("Failed to create room - no room ID returned");
+      }
     } catch (error) {
       console.error(error);
     } finally {

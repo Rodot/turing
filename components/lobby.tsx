@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Box,
   Button,
@@ -18,17 +18,20 @@ import { updateRoom } from "@/queries/db/room.query";
 import { supabase } from "@/utils/supabase/client";
 import { useUserQuery } from "@/hooks/useUserQuery";
 
-export const Lobby: React.FC = () => {
+interface LobbyProps {
+  roomId: string;
+}
+
+export const Lobby: React.FC<LobbyProps> = ({ roomId }) => {
   const userQuery = useUserQuery();
   const room = useContext(RoomContext);
   const roomProfiles = useContext(RoomProfilesContext);
   const [loadingStart, setLoadingStart] = useState(false);
   const [loadingLang, setLoadingLang] = useState(false);
-  const [url, setUrl] = useState("");
-
   const isHost = roomProfiles?.[0]?.id === userQuery.data?.id;
   const me = roomProfiles?.find((profile) => profile.id === userQuery.data?.id);
   const notEnoughPlayers = roomProfiles?.length < 3;
+  const url = window.location.host + "?room=" + roomId;
 
   const startGame = async () => {
     try {
@@ -42,22 +45,16 @@ export const Lobby: React.FC = () => {
   };
 
   const setLang = async (lang: "en" | "fr") => {
-    if (!room?.data?.id) return;
+    if (!roomId) return;
     try {
       setLoadingLang(true);
-      updateRoom(supabase, room?.data?.id, { lang });
+      updateRoom(supabase, roomId, { lang });
     } catch (e) {
       console.error(e);
     } finally {
       setLoadingLang(false);
     }
   };
-
-  useEffect(() => {
-    if (room?.data?.id) {
-      setUrl(window.location.host + "?room=" + room.data.id);
-    }
-  }, [room?.data?.id]);
 
   return (
     <Container
@@ -78,8 +75,8 @@ export const Lobby: React.FC = () => {
       )}
       {!notEnoughPlayers && !isHost && (
         <Typography>
-          <strong>Waiting for {roomProfiles?.[0]?.name}</strong>{" "}
-          to start the game 😅
+          <strong>Waiting for {roomProfiles?.[0]?.name}</strong> to start the
+          game 😅
         </Typography>
       )}
       <Box sx={{ mt: 6 }}>
