@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "next-dev": "next dev",
-    "supa-dev": "npx supabase start -x storage-api -x imgproxy -x mailpit -x logflare -x vector -x edge-runtime && supabase db reset && npx -y supabase gen types typescript --local >./supabase/functions/_types/database.types.g.ts && npx supabase functions serve --env-file ./.env",
+    "supa-dev": "npx -y supabase start -x storage-api -x imgproxy -x mailpit -x logflare -x vector -x edge-runtime && npx -y supabase db reset && npx -y supabase gen types typescript --local >./supabase/functions/_types/database.types.g.ts && npx -y supabase functions serve --env-file ./.env",
     "next-build": "next build",
     "next-start": "next start",
     "typecheck": "tsc --noEmit",
