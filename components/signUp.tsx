@@ -63,7 +63,7 @@ export const SignUp: React.FC = () => {
           +1 🧠 for convincing players you are a human, as the AI.
         </Typography>
         <Typography fontWeight={900} align="center" sx={{ my: 2 }}>
-          Earn 10 🧠 to win
+          Earn 5 🧠 to win
         </Typography>
       </Box>
 
