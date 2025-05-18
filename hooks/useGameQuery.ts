@@ -6,9 +6,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useProfileQuery } from "./useProfileQuery";
 import { fetchGame } from "@/queries/db/game.query";
 import {
-  createGameFunction,
-  startGameFunction,
-} from "@/queries/functions/functions.query";
+  useCreateGameMutation as useCreateGameFunctionMutation,
+  useStartGameMutation as useStartGameFunctionMutation,
+} from "@/hooks/useFunctionsQuery";
 import {
   removeProfileFromGame,
   updateProfileGame,
@@ -69,11 +69,11 @@ export const useCreateGameMutation = () => {
   const queryClient = useQueryClient();
   const profileQuery = useProfileQuery();
   const profile = profileQuery.data;
-  const router = useRouter();
+  const createGameMutation = useCreateGameFunctionMutation();
 
   return useMutation({
     mutationFn: async () => {
-      return await createGameFunction(supabase);
+      return await createGameMutation.mutateAsync();
     },
     onSuccess: (gameId) => {
       if (gameId && profile?.id) {
@@ -81,7 +81,6 @@ export const useCreateGameMutation = () => {
         updateProfileGame(supabase, profile.id, gameId);
         // Invalidate profile query to trigger a refetch
         queryClient.invalidateQueries({ queryKey: ["profile", profile.id] });
-        router.push(`/?game=${gameId}`);
       }
     },
   });
@@ -128,6 +127,7 @@ export const useLeaveGameMutation = () => {
 };
 
 export const useStartGameMutation = () => {
+  const startGameMutation = useStartGameFunctionMutation();
   const profileQuery = useProfileQuery();
   const profile = profileQuery.data;
   const gameId = profile?.game_id;
@@ -135,7 +135,7 @@ export const useStartGameMutation = () => {
   return useMutation({
     mutationFn: async () => {
       if (!gameId) throw new Error("No game joined");
-      await startGameFunction(supabase, gameId);
+      await startGameMutation.mutateAsync();
       return { gameId };
     },
     // don't invalidate the game query, as it will be done by the subscription

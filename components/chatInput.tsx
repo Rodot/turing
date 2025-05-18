@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { supabase } from "@/utils/supabase/client";
 import {
   Box,
   Button,
@@ -8,11 +7,11 @@ import {
   Theme,
   Typography,
 } from "@mui/material";
-import {
-  generateAnswersFunction,
-  postMessageFunction,
-} from "@/queries/functions/functions.query";
 import { VoteCountdown } from "./voteCountdown";
+import {
+  useGenerateAnswersMutation,
+  usePostMessageMutation,
+} from "@/hooks/useFunctionsQuery";
 import {
   cleanAnswer,
   getPlayersWithLeastMessages,
@@ -36,6 +35,9 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   const gameQuery = useGameQuery();
   const playersQuery = usePlayersQuery();
   const messagesQuery = useMessagesQuery();
+  const generateAnswersMutation = useGenerateAnswersMutation();
+  const postMessageMutation = usePostMessageMutation();
+
   const players = playersQuery.data || [];
   const messages = messagesQuery.data || [];
   if (!userQuery.data) return null;
@@ -55,12 +57,11 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
       let timeout = 3;
       while (!receivedAnswers?.length) {
         if (!timeout--) throw new Error("Answer generation timed out");
-        const req = await generateAnswersFunction(
-          supabase,
+        const req = await generateAnswersMutation.mutateAsync({
           gameId,
-          me.name,
-          gameQuery?.data?.lang ?? "en",
-        );
+          playerName: me.name,
+          lang: gameQuery?.data?.lang ?? "en",
+        });
         console.log(req);
         receivedAnswers = (req?.possibleNextMessages ?? []).map(cleanAnswer);
       }
@@ -84,7 +85,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
 
     try {
       setLoadingSend(true);
-      await postMessageFunction(supabase, {
+      await postMessageMutation.mutateAsync({
         game_id: gameId,
         user_id: userQuery.data.id,
         player_id: me.id,

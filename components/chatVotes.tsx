@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { Box, Button, SxProps, Theme, Typography } from "@mui/material";
-import { supabase } from "@/utils/supabase/client";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
-import { playerVoteFunction } from "@/queries/functions/functions.query";
 import { VoteResults } from "./voteResult";
 import { ProgressTimer } from "./progressTimer";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { usePlayersQuery } from "@/hooks/usePlayersQuery";
+import { usePlayerVoteMutation } from "@/hooks/useFunctionsQuery";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -19,6 +18,7 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   const playersQuery = usePlayersQuery();
   const players = playersQuery.data || [];
   const [loading, setLoading] = useState(false);
+  const playerVoteMutation = usePlayerVoteMutation();
 
   if (!players) return null;
   if (!gameQuery) return null;
@@ -51,7 +51,7 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
     if (!gameQuery.data?.id) return;
     try {
       setLoading(true);
-      await playerVoteFunction(supabase, {
+      await playerVoteMutation.mutateAsync({
         gameId: gameQuery.data.id,
         playerId: me.id,
         vote: playerId,
