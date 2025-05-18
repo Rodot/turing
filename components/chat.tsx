@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
 import {
@@ -9,18 +9,21 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import { PlayersContext, GameProfilesContext } from "./contextProvider";
 import { ChatVote } from "./chatVotes";
 import { ButtonLeaveGame } from "./buttonLeaveGame";
 import { ButtonCreateGame } from "./buttonCreateGame";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useJoinGameMutation, useGameQuery } from "@/hooks/useGameQuery";
+import { useProfilesQuery } from "@/hooks/useProfilesQuery";
+import { usePlayersQuery } from "@/hooks/usePlayersQuery";
 
 export const Chat: React.FC = () => {
   const userQuery = useUserQuery();
   const gameQuery = useGameQuery();
-  const gameProfiles = useContext(GameProfilesContext);
-  const players = useContext(PlayersContext);
+  const profilesQuery = useProfilesQuery();
+  const playersQuery = usePlayersQuery();
+  const gameProfiles = profilesQuery.data || [];
+  const players = playersQuery.data || [];
   const joinGameMutation = useJoinGameMutation();
 
   const host = gameProfiles?.[0];

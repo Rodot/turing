@@ -1,12 +1,16 @@
-import React, { useContext, useRef, useEffect } from "react";
-import { MessagesContext } from "./contextProvider";
+import React, { useRef, useEffect, useMemo } from "react";
 import { List } from "@mui/material";
 import { ChatMessage } from "./chatMessage";
 import { useUserQuery } from "@/hooks/useUserQuery";
+import { useMessagesQuery } from "@/hooks/useMessagesQuery";
 
 export const ChatHistory: React.FC = () => {
   const userQuery = useUserQuery();
-  const messages = useContext(MessagesContext);
+  const messagesQuery = useMessagesQuery();
+  const messages = useMemo(
+    () => messagesQuery.data || [],
+    [messagesQuery.data],
+  );
   const endOfMessagesRef = useRef<null | HTMLDivElement>(null);
 
   const scrollToBottom = () => {

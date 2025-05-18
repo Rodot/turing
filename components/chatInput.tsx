@@ -1,6 +1,5 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { supabase } from "@/utils/supabase/client";
-import { MessagesContext, PlayersContext } from "./contextProvider";
 import {
   Box,
   Button,
@@ -21,6 +20,8 @@ import {
 import { Send } from "@mui/icons-material";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
+import { usePlayersQuery } from "@/hooks/usePlayersQuery";
+import { useMessagesQuery } from "@/hooks/useMessagesQuery";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -33,8 +34,10 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   const [botAnswers, setBotAnswers] = useState<string[] | undefined>();
   const userQuery = useUserQuery();
   const gameQuery = useGameQuery();
-  const players = useContext(PlayersContext);
-  const messages = useContext(MessagesContext);
+  const playersQuery = usePlayersQuery();
+  const messagesQuery = useMessagesQuery();
+  const players = playersQuery.data || [];
+  const messages = messagesQuery.data || [];
   if (!userQuery.data) return null;
   const gameId = gameQuery?.data?.id;
   if (!gameId) return null;

@@ -1,14 +1,15 @@
-import React, { useContext } from "react";
-import { MessagesContext } from "./contextProvider";
+import React from "react";
 import { LinearProgress } from "@mui/material";
 import { isNotSystem } from "@/supabase/functions/_shared/utils";
 import { useGameQuery } from "@/hooks/useGameQuery";
+import { useMessagesQuery } from "@/hooks/useMessagesQuery";
 
 type Props = Record<string, never>;
 
 export const VoteCountdown: React.FC<Props> = () => {
   const gameQuery = useGameQuery();
-  const messages = useContext(MessagesContext);
+  const messagesQuery = useMessagesQuery();
+  const messages = messagesQuery.data || [];
 
   const numMessages = messages?.filter(isNotSystem)?.length ?? 0;
   const lastVote = gameQuery?.data?.last_vote ?? 0;

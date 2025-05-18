@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext } from "react";
+import React from "react";
 import {
   Box,
   Button,
@@ -9,7 +9,6 @@ import {
   Container,
   Typography,
 } from "@mui/material";
-import { GameProfilesContext } from "./contextProvider";
 import { ButtonShare } from "./buttonShare";
 import { QRShare } from "./qrShare";
 import { useUserQuery } from "@/hooks/useUserQuery";
@@ -18,11 +17,13 @@ import {
   useGameQuery,
   useStartGameMutation,
 } from "@/hooks/useGameQuery";
+import { useProfilesQuery } from "@/hooks/useProfilesQuery";
 
 export const Lobby: React.FC = () => {
   const userQuery = useUserQuery();
   const gameQuery = useGameQuery();
-  const gameProfiles = useContext(GameProfilesContext);
+  const profilesQuery = useProfilesQuery();
+  const gameProfiles = profilesQuery.data || [];
   const isHost = gameProfiles?.[0]?.id === userQuery.data?.id;
   const me = gameProfiles?.find((profile) => profile.id === userQuery.data?.id);
   const notEnoughPlayers = gameProfiles?.length < 3;

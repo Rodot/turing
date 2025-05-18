@@ -1,13 +1,14 @@
-import React, { useContext } from "react";
-import { PlayersContext } from "./contextProvider";
+import React from "react";
 import { Box, Chip, SxProps, Theme } from "@mui/material";
+import { usePlayersQuery } from "@/hooks/usePlayersQuery";
 
 type Props = {
   sx?: SxProps<Theme>;
 };
 
 export const VoteResults: React.FC<Props> = ({ sx }) => {
-  const players = useContext(PlayersContext);
+  const playersQuery = usePlayersQuery();
+  const players = playersQuery.data || [];
   const noBots =
     (players.filter((player) => !player.is_bot)?.length ?? 0) === 0;
 

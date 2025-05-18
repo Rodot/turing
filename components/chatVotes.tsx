@@ -1,5 +1,4 @@
-import React, { useContext, useState } from "react";
-import { PlayersContext } from "./contextProvider";
+import React, { useState } from "react";
 import { Box, Button, SxProps, Theme, Typography } from "@mui/material";
 import { supabase } from "@/utils/supabase/client";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
@@ -8,6 +7,7 @@ import { VoteResults } from "./voteResult";
 import { ProgressTimer } from "./progressTimer";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
+import { usePlayersQuery } from "@/hooks/usePlayersQuery";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -16,7 +16,8 @@ type Props = {
 export const ChatVote: React.FC<Props> = ({ sx }) => {
   const userQuery = useUserQuery();
   const gameQuery = useGameQuery();
-  const players = useContext(PlayersContext);
+  const playersQuery = usePlayersQuery();
+  const players = playersQuery.data || [];
   const [loading, setLoading] = useState(false);
 
   if (!players) return null;
