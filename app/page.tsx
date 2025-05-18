@@ -1,12 +1,12 @@
 "use client";
 import { BaseLayout } from "@/components/baseLayout";
-import { SignUp } from "@/components/signUp";
 import React from "react";
+import { GameRouter } from "@/components/gameRouter";
 
-export default function HomePage() {
+export default function GamePage() {
   return (
     <BaseLayout>
-      <SignUp />
+      <GameRouter />
     </BaseLayout>
   );
 }

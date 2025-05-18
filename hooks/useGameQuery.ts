@@ -81,7 +81,7 @@ export const useCreateGameMutation = () => {
         updateProfileGame(supabase, profile.id, gameId);
         // Invalidate profile query to trigger a refetch
         queryClient.invalidateQueries({ queryKey: ["profile", profile.id] });
-        router.push(`/game?game=${gameId}`);
+        router.push(`/?game=${gameId}`);
       }
     },
   });
@@ -102,7 +102,7 @@ export const useJoinGameMutation = () => {
     onSuccess: (data) => {
       // Invalidate profile query to trigger a refetch
       queryClient.invalidateQueries({ queryKey: ["profile", data.profileId] });
-      router.push(`/game?game=${data.gameId}`);
+      router.push(`/?game=${data.gameId}`);
     },
   });
 };

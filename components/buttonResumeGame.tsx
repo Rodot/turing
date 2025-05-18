@@ -8,7 +8,7 @@ export const ButtonResumeGame: React.FC = () => {
   const router = useRouter();
 
   const startNewGame = async () => {
-    router.push(`/game?game=${profileQuery.data?.game_id}`);
+    router.push(`/?game=${profileQuery.data?.game_id}`);
   };
 
   if (!profileQuery.data?.game_id) {
