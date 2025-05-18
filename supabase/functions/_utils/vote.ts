@@ -1,6 +1,6 @@
 import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2/dist/module/index.js";
 import { PlayerData } from "../_types/Database.type.ts";
-import { updatePlayer, updateRoomPlayers } from "../_queries/players.query.ts";
+import { updateGamePlayers, updatePlayer } from "../_queries/players.query.ts";
 
 export const setRandomPlayerAsBotAndResetVotes = async (
   supabase: SupabaseClient,
@@ -10,8 +10,8 @@ export const setRandomPlayerAsBotAndResetVotes = async (
   const previousHumans = players.filter((player) => !player.is_bot);
 
   // reset bots and votes
-  await updateRoomPlayers(supabase, {
-    room_id: players[0].room_id,
+  await updateGamePlayers(supabase, {
+    game_id: players[0].game_id,
     vote: null,
     vote_blank: false,
     is_bot: false,

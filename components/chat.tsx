@@ -9,32 +9,32 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import { PlayersContext, RoomProfilesContext } from "./contextProvider";
+import { PlayersContext, GameProfilesContext } from "./contextProvider";
 import { ChatVote } from "./chatVotes";
 import { ButtonLeaveGame } from "./buttonLeaveGame";
 import { ButtonCreateGame } from "./buttonCreateGame";
 import { useUserQuery } from "@/hooks/useUserQuery";
-import { useJoinRoomMutation, useRoomQuery } from "@/hooks/useRoomQuery";
+import { useJoinGameMutation, useGameQuery } from "@/hooks/useGameQuery";
 
 export const Chat: React.FC = () => {
   const userQuery = useUserQuery();
-  const roomQuery = useRoomQuery();
-  const roomProfiles = useContext(RoomProfilesContext);
+  const gameQuery = useGameQuery();
+  const gameProfiles = useContext(GameProfilesContext);
   const players = useContext(PlayersContext);
-  const joinRoomMutation = useJoinRoomMutation();
+  const joinGameMutation = useJoinGameMutation();
 
-  const host = roomProfiles?.[0];
-  const isHost = roomProfiles?.[0]?.id === userQuery.data?.id;
-  const isTalking = roomQuery?.data?.status === "talking";
-  const isVoting = roomQuery?.data?.status === "voting";
-  const isOver = roomQuery?.data?.status === "over";
+  const host = gameProfiles?.[0];
+  const isHost = gameProfiles?.[0]?.id === userQuery.data?.id;
+  const isTalking = gameQuery?.data?.status === "talking";
+  const isVoting = gameQuery?.data?.status === "voting";
+  const isOver = gameQuery?.data?.status === "over";
 
   useEffect(() => {
-    const nextRoomId = roomQuery?.data?.next_room_id;
-    if (nextRoomId) {
-      joinRoomMutation.mutate(nextRoomId);
+    const nextGameId = gameQuery?.data?.next_game_id;
+    if (nextGameId) {
+      joinGameMutation.mutate(nextGameId);
     }
-  }, [joinRoomMutation, roomQuery]);
+  }, [joinGameMutation, gameQuery]);
 
   return (
     <Container

@@ -8,10 +8,10 @@ export const ButtonResumeGame: React.FC = () => {
   const router = useRouter();
 
   const startNewGame = async () => {
-    router.push(`/game?room=${profileQuery.data?.room_id}`);
+    router.push(`/game?game=${profileQuery.data?.game_id}`);
   };
 
-  if (!profileQuery.data?.room_id) {
+  if (!profileQuery.data?.game_id) {
     return null;
   }
 

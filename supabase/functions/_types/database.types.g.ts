@@ -34,35 +34,98 @@ export type Database = {
   };
   public: {
     Tables: {
+      games: {
+        Row: {
+          created_at: string;
+          id: string;
+          lang: string | null;
+          last_vote: number | null;
+          next_game_id: string | null;
+          next_vote: number | null;
+          status: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          lang?: string | null;
+          last_vote?: number | null;
+          next_game_id?: string | null;
+          next_vote?: number | null;
+          status?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          lang?: string | null;
+          last_vote?: number | null;
+          next_game_id?: string | null;
+          next_vote?: number | null;
+          status?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "games_next_game_id_fkey";
+            columns: ["next_game_id"];
+            isOneToOne: false;
+            referencedRelation: "games";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      "keep-alive": {
+        Row: {
+          id: number;
+          name: string | null;
+          random: string | null;
+        };
+        Insert: {
+          id?: number;
+          name?: string | null;
+          random?: string | null;
+        };
+        Update: {
+          id?: number;
+          name?: string | null;
+          random?: string | null;
+        };
+        Relationships: [];
+      };
       messages: {
         Row: {
           author: string | null;
           content: string | null;
           created_at: string;
+          game_id: string;
           id: string;
           player_id: string | null;
-          room_id: string;
           user_id: string | null;
         };
         Insert: {
           author?: string | null;
           content?: string | null;
           created_at?: string;
+          game_id: string;
           id?: string;
           player_id?: string | null;
-          room_id: string;
           user_id?: string | null;
         };
         Update: {
           author?: string | null;
           content?: string | null;
           created_at?: string;
+          game_id?: string;
           id?: string;
           player_id?: string | null;
-          room_id?: string;
           user_id?: string | null;
         };
         Relationships: [
+          {
+            foreignKeyName: "messages_game_id_fkey";
+            columns: ["game_id"];
+            isOneToOne: false;
+            referencedRelation: "games";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "messages_player_id_fkey";
             columns: ["player_id"];
@@ -70,22 +133,15 @@ export type Database = {
             referencedRelation: "players";
             referencedColumns: ["id"];
           },
-          {
-            foreignKeyName: "messages_room_id_fkey";
-            columns: ["room_id"];
-            isOneToOne: false;
-            referencedRelation: "rooms";
-            referencedColumns: ["id"];
-          },
         ];
       };
       players: {
         Row: {
           created_at: string;
+          game_id: string;
           id: string;
           is_bot: boolean | null;
           name: string | null;
-          room_id: string;
           score: number | null;
           user_id: string | null;
           vote: string | null;
@@ -93,10 +149,10 @@ export type Database = {
         };
         Insert: {
           created_at?: string;
+          game_id: string;
           id?: string;
           is_bot?: boolean | null;
           name?: string | null;
-          room_id: string;
           score?: number | null;
           user_id?: string | null;
           vote?: string | null;
@@ -104,10 +160,10 @@ export type Database = {
         };
         Update: {
           created_at?: string;
+          game_id?: string;
           id?: string;
           is_bot?: boolean | null;
           name?: string | null;
-          room_id?: string;
           score?: number | null;
           user_id?: string | null;
           vote?: string | null;
@@ -115,10 +171,10 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: "players_room_id_fkey";
-            columns: ["room_id"];
+            foreignKeyName: "players_game_id_fkey";
+            columns: ["game_id"];
             isOneToOne: false;
-            referencedRelation: "rooms";
+            referencedRelation: "games";
             referencedColumns: ["id"];
           },
           {
@@ -133,66 +189,28 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string;
+          game_id: string | null;
           id: string;
           name: string | null;
-          room_id: string | null;
         };
         Insert: {
           created_at?: string;
+          game_id?: string | null;
           id: string;
           name?: string | null;
-          room_id?: string | null;
         };
         Update: {
           created_at?: string;
+          game_id?: string | null;
           id?: string;
           name?: string | null;
-          room_id?: string | null;
         };
         Relationships: [
           {
-            foreignKeyName: "profiles_room_id_fkey";
-            columns: ["room_id"];
+            foreignKeyName: "profiles_game_id_fkey";
+            columns: ["game_id"];
             isOneToOne: false;
-            referencedRelation: "rooms";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-      rooms: {
-        Row: {
-          created_at: string;
-          id: string;
-          lang: string | null;
-          last_vote: number | null;
-          next_room_id: string | null;
-          next_vote: number | null;
-          status: string | null;
-        };
-        Insert: {
-          created_at?: string;
-          id?: string;
-          lang?: string | null;
-          last_vote?: number | null;
-          next_room_id?: string | null;
-          next_vote?: number | null;
-          status?: string | null;
-        };
-        Update: {
-          created_at?: string;
-          id?: string;
-          lang?: string | null;
-          last_vote?: number | null;
-          next_room_id?: string | null;
-          next_vote?: number | null;
-          status?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "rooms_next_room_id_fkey";
-            columns: ["next_room_id"];
-            isOneToOne: false;
-            referencedRelation: "rooms";
+            referencedRelation: "games";
             referencedColumns: ["id"];
           },
         ];

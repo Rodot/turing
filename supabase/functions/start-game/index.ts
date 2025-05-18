@@ -5,8 +5,8 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
-import { fetchRoomProfiles } from "../_queries/profiles.query.ts";
-import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
+import { fetchGameProfiles } from "../_queries/profiles.query.ts";
+import { fetchGame, updateGame } from "../_queries/game.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { PlayerData } from "../_types/Database.type.ts";
@@ -21,19 +21,19 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { roomId }: { roomId: string } = await req.json();
-    if (!roomId) throw new Error("Missing roomId");
-    console.log("Starting game", roomId);
+    const { gameId }: { gameId: string } = await req.json();
+    if (!gameId) throw new Error("Missing gameId");
+    console.log("Starting game", gameId);
 
     const supabase = createSupabaseClient(req);
 
-    // fetch room
-    const room = await fetchRoom(supabase, roomId);
-    if (!room) throw new Error("Room not found");
+    // fetch game
+    const game = await fetchGame(supabase, gameId);
+    if (!game) throw new Error("Game not found");
 
     // fetch profiles
-    const profiles = await fetchRoomProfiles(supabase, roomId);
-    if (!profiles?.length) throw new Error("No profiles in room");
+    const profiles = await fetchGameProfiles(supabase, gameId);
+    if (!profiles?.length) throw new Error("No profiles in game");
 
     const players: Partial<PlayerData>[] = [];
 
@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
       players.push({
         user_id: profile.id,
         name: profile.name,
-        room_id: roomId,
+        game_id: gameId,
         vote: null,
         is_bot: profile.id === botProfile.id,
       });
@@ -53,14 +53,14 @@ Deno.serve(async (req) => {
     await insertPlayers(supabase, players);
 
     await insertMessage(supabase, {
-      room_id: roomId,
+      game_id: gameId,
       author: "intro",
-      content: "💡 " + pickRandom(iceBreakers[room.lang]),
+      content: "💡 " + pickRandom(iceBreakers[game.lang]),
     });
 
     // start the game
     const nextVote = nextVoteLength(players.length);
-    await updateRoom(supabase, roomId, {
+    await updateGame(supabase, gameId, {
       status: "talking",
       next_vote: nextVote,
     });

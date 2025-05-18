@@ -1,16 +1,16 @@
 import React from "react";
 import { Button } from "@mui/material";
-import { useCreateRoomMutation } from "@/hooks/useRoomQuery";
+import { useCreateGameMutation } from "@/hooks/useGameQuery";
 
 export const ButtonCreateGame: React.FC = () => {
-  const createRoomMutation = useCreateRoomMutation();
+  const createGameMutation = useCreateGameMutation();
 
   return (
     <Button
       color="secondary"
       variant="contained"
-      onClick={() => createRoomMutation.mutate()}
-      disabled={createRoomMutation.isPending}
+      onClick={() => createGameMutation.mutate()}
+      disabled={createGameMutation.isPending}
       aria-label="New Game"
     >
       Create New Game

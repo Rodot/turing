@@ -1,58 +1,58 @@
 "use client";
 
-import { RoomData } from "@/supabase/functions/_types/Database.type";
+import { GameData } from "@/supabase/functions/_types/Database.type";
 import { supabase } from "@/utils/supabase/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useProfileQuery } from "./useProfileQuery";
-import { fetchRoom } from "@/queries/db/room.query";
+import { fetchGame } from "@/queries/db/game.query";
 import {
-  createRoomFunction,
+  createGameFunction,
   startGameFunction,
 } from "@/queries/functions/functions.query";
 import {
-  removeProfileFromRoom,
-  updateProfileRoom,
+  removeProfileFromGame,
+  updateProfileGame,
 } from "@/queries/db/profile.query";
-import { updateRoom } from "@/queries/db/room.query";
+import { updateGame } from "@/queries/db/game.query";
 import { useRouter } from "next/navigation";
-import { useRoomId } from "./useRoomId";
+import { useGameId } from "./useGameId";
 import { useEffect } from "react";
 
-export const useRoomQuery = () => {
+export const useGameQuery = () => {
   const queryClient = useQueryClient();
-  const roomId = useRoomId();
+  const gameId = useGameId();
 
   const query = useQuery({
-    queryKey: ["room", roomId],
-    queryFn: async (): Promise<RoomData | undefined> => {
-      if (!roomId) return undefined;
-      const room = await fetchRoom(supabase, roomId);
-      console.log("roomQuery", room);
-      if (!room) {
-        throw new Error("Room not found");
+    queryKey: ["game", gameId],
+    queryFn: async (): Promise<GameData | undefined> => {
+      if (!gameId) return undefined;
+      const game = await fetchGame(supabase, gameId);
+      console.log("gameQuery", game);
+      if (!game) {
+        throw new Error("Game not found");
       }
-      return room;
+      return game;
     },
-    enabled: !!roomId,
+    enabled: !!gameId,
   });
 
   // Set up real-time subscription
   useEffect(() => {
-    if (!roomId) return;
+    if (!gameId) return;
 
     const channel = supabase
-      .channel(`room-${roomId}`)
+      .channel(`game-${gameId}`)
       .on(
         "postgres_changes",
         {
           event: "*",
           schema: "public",
-          table: "rooms",
-          filter: `id=eq.${roomId}`,
+          table: "games",
+          filter: `id=eq.${gameId}`,
         },
         () => {
           // Invalidate query when changes detected
-          queryClient.invalidateQueries({ queryKey: ["room", roomId] });
+          queryClient.invalidateQueries({ queryKey: ["game", gameId] });
         },
       )
       .subscribe();
@@ -60,12 +60,12 @@ export const useRoomQuery = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [roomId, queryClient]);
+  }, [gameId, queryClient]);
 
   return query;
 };
 
-export const useCreateRoomMutation = () => {
+export const useCreateGameMutation = () => {
   const queryClient = useQueryClient();
   const profileQuery = useProfileQuery();
   const profile = profileQuery.data;
@@ -73,41 +73,41 @@ export const useCreateRoomMutation = () => {
 
   return useMutation({
     mutationFn: async () => {
-      return await createRoomFunction(supabase);
+      return await createGameFunction(supabase);
     },
-    onSuccess: (roomId) => {
-      if (roomId && profile?.id) {
-        // Join the created room
-        updateProfileRoom(supabase, profile.id, roomId);
+    onSuccess: (gameId) => {
+      if (gameId && profile?.id) {
+        // Join the created game
+        updateProfileGame(supabase, profile.id, gameId);
         // Invalidate profile query to trigger a refetch
         queryClient.invalidateQueries({ queryKey: ["profile", profile.id] });
-        router.push(`/game?room=${roomId}`);
+        router.push(`/game?game=${gameId}`);
       }
     },
   });
 };
 
-export const useJoinRoomMutation = () => {
+export const useJoinGameMutation = () => {
   const queryClient = useQueryClient();
   const profileQuery = useProfileQuery();
   const profile = profileQuery.data;
   const router = useRouter();
 
   return useMutation({
-    mutationFn: async (roomId: string) => {
+    mutationFn: async (gameId: string) => {
       if (!profile?.id) throw new Error("User not authenticated");
-      await updateProfileRoom(supabase, profile.id, roomId);
-      return { profileId: profile.id, roomId };
+      await updateProfileGame(supabase, profile.id, gameId);
+      return { profileId: profile.id, gameId };
     },
     onSuccess: (data) => {
       // Invalidate profile query to trigger a refetch
       queryClient.invalidateQueries({ queryKey: ["profile", data.profileId] });
-      router.push(`/game?room=${data.roomId}`);
+      router.push(`/game?game=${data.gameId}`);
     },
   });
 };
 
-export const useLeaveRoomMutation = () => {
+export const useLeaveGameMutation = () => {
   const queryClient = useQueryClient();
   const profileQuery = useProfileQuery();
   const profile = profileQuery.data;
@@ -116,7 +116,7 @@ export const useLeaveRoomMutation = () => {
   return useMutation({
     mutationFn: async () => {
       if (!profile?.id) throw new Error("User not authenticated");
-      await removeProfileFromRoom(supabase, profile.id);
+      await removeProfileFromGame(supabase, profile.id);
       return { profileId: profile.id };
     },
     onSuccess: (data) => {
@@ -130,27 +130,27 @@ export const useLeaveRoomMutation = () => {
 export const useStartGameMutation = () => {
   const profileQuery = useProfileQuery();
   const profile = profileQuery.data;
-  const roomId = profile?.room_id;
+  const gameId = profile?.game_id;
 
   return useMutation({
     mutationFn: async () => {
-      if (!roomId) throw new Error("No room joined");
-      await startGameFunction(supabase, roomId);
-      return { roomId };
+      if (!gameId) throw new Error("No game joined");
+      await startGameFunction(supabase, gameId);
+      return { gameId };
     },
-    // don't invalidate the room query, as it will be done by the subscription
+    // don't invalidate the game query, as it will be done by the subscription
   });
 };
 
-export const useRoomLanguageMutation = () => {
-  const roomId = useRoomId();
+export const useGameLanguageMutation = () => {
+  const gameId = useGameId();
 
   return useMutation({
     mutationFn: async (lang: "en" | "fr") => {
-      if (!roomId) throw new Error("No room joined");
-      await updateRoom(supabase, roomId, { lang });
-      return { roomId };
+      if (!gameId) throw new Error("No game joined");
+      await updateGame(supabase, gameId, { lang });
+      return { gameId };
     },
-    // don't invalidate the room query, as it will be done by the subscription
+    // don't invalidate the game query, as it will be done by the subscription
   });
 };

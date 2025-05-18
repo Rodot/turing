@@ -7,7 +7,7 @@
 
 import { fetchMessages, insertMessage } from "../_queries/messages.query.ts";
 import { fetchPlayers, updatePlayer } from "../_queries/players.query.ts";
-import { fetchRoom, updateRoom } from "../_queries/room.query.ts";
+import { fetchGame, updateGame } from "../_queries/game.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { setRandomPlayerAsBotAndResetVotes } from "../_utils/vote.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
@@ -22,41 +22,41 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { roomId, playerId, vote } = (await req.json()) as {
-      roomId: string;
+    const { gameId, playerId, vote } = (await req.json()) as {
+      gameId: string;
       playerId: string;
       vote: string;
     };
-    if (!roomId) throw new Error("Missing roomId");
+    if (!gameId) throw new Error("Missing gameId");
     if (!playerId) throw new Error("Missing playerId");
     if (!vote) throw new Error("Missing vote");
 
     const supabase = createSupabaseClient(req);
-    console.log("Voting", { roomId, playerId });
+    console.log("Voting", { gameId, playerId });
 
     // Apply player vote
     if (vote === "blank") {
       await updatePlayer(supabase, {
         id: playerId,
-        room_id: roomId,
+        game_id: gameId,
         vote: null,
         vote_blank: true,
       });
     } else {
       await updatePlayer(supabase, {
         id: playerId,
-        room_id: roomId,
+        game_id: gameId,
         vote,
         vote_blank: false,
       });
     }
 
     // Gather all data needed to determine points
-    const votingData = await gatherVotingData(supabase, roomId);
+    const votingData = await gatherVotingData(supabase, gameId);
 
     // Process voting if all players have voted
     if (votingData.allVoted && votingData.players.length > 1) {
-      console.log("All players have voted", roomId);
+      console.log("All players have voted", gameId);
 
       // Give time to read results
       await new Promise((resolve) => setTimeout(resolve, 8000));
@@ -65,18 +65,18 @@ Deno.serve(async (req) => {
       const pointAllocations = determinePointsAllocation(votingData);
 
       // Update players who got points
-      await updatePlayerPoints(supabase, pointAllocations, roomId);
+      await updatePlayerPoints(supabase, pointAllocations, gameId);
 
       // Post messages about who got points and why
-      await postPointsMessages(supabase, pointAllocations, votingData, roomId);
+      await postPointsMessages(supabase, pointAllocations, votingData, gameId);
 
       // Get updated player data for end game check
-      const playersAfter = await fetchPlayers(supabase, roomId);
+      const playersAfter = await fetchPlayers(supabase, gameId);
       const maxScore = Math.max(...playersAfter.map((p) => p.score));
 
       if (maxScore >= 10) {
         // Game over
-        console.log("Game over", roomId);
+        console.log("Game over", gameId);
 
         // Announce winner
         const winners = playersAfter.filter((p) => p.score === maxScore);
@@ -85,18 +85,18 @@ Deno.serve(async (req) => {
           await insertMessage(supabase, {
             author: "system",
             content: message,
-            room_id: roomId,
+            game_id: gameId,
           });
         }
 
-        // Close the room
-        await updateRoom(supabase, roomId, { status: "over" });
+        // Close the game
+        await updateGame(supabase, gameId, { status: "over" });
       } else {
         // Next round
-        console.log("Next round", roomId);
+        console.log("Next round", gameId);
 
         // Set up next vote
-        const room = await fetchRoom(supabase, roomId);
+        const game = await fetchGame(supabase, gameId);
         const nextVote =
           votingData.messages.filter(isNotSystem).length +
           nextVoteLength(votingData.players.length);
@@ -104,15 +104,15 @@ Deno.serve(async (req) => {
         // Reset votes and set random player as bot
         await Promise.all([
           setRandomPlayerAsBotAndResetVotes(supabase, votingData.players),
-          updateRoom(supabase, roomId, {
+          updateGame(supabase, gameId, {
             status: "talking",
-            last_vote: room?.next_vote,
+            last_vote: game?.next_vote,
             next_vote: nextVote,
           }),
           insertMessage(supabase, {
-            room_id: roomId,
+            game_id: gameId,
             author: "intro",
-            content: "💡 " + pickRandom(iceBreakers[room?.lang ?? "en"]),
+            content: "💡 " + pickRandom(iceBreakers[game?.lang ?? "en"]),
           }),
         ]);
       }
@@ -154,12 +154,12 @@ type PointAllocation = {
 // STEP 1: Gather all the data needed to determine point allocation
 async function gatherVotingData(
   supabase: ReturnType<typeof createSupabaseClient>,
-  roomId: string,
+  gameId: string,
 ) {
   // Fetch players and messages data
   const [players, messages] = await Promise.all([
-    fetchPlayers(supabase, roomId),
-    fetchMessages(supabase, roomId),
+    fetchPlayers(supabase, gameId),
+    fetchMessages(supabase, gameId),
   ]);
 
   // Analyze player data
@@ -266,12 +266,12 @@ function determinePointsAllocation(votingData: VotingData): PointAllocation[] {
 async function updatePlayerPoints(
   supabase: ReturnType<typeof createSupabaseClient>,
   pointAllocations: PointAllocation[],
-  roomId: string,
+  gameId: string,
 ) {
   const updatePromises = pointAllocations.map((allocation) =>
     updatePlayer(supabase, {
       id: allocation.player.id,
-      room_id: roomId,
+      game_id: gameId,
       score: allocation.player.score + allocation.points,
     }),
   );
@@ -284,7 +284,7 @@ async function postPointsMessages(
   supabase: ReturnType<typeof createSupabaseClient>,
   pointAllocations: PointAllocation[],
   votingData: VotingData,
-  roomId: string,
+  gameId: string,
 ) {
   const { botPlayer, humanImposters } = votingData;
 
@@ -336,7 +336,7 @@ async function postPointsMessages(
     await insertMessage(supabase, {
       author: "system",
       content: mainMessage + additionalMessage,
-      room_id: roomId,
+      game_id: gameId,
     });
   }
 }

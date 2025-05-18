@@ -6,29 +6,29 @@ CREATE TABLE "keep-alive" (
   CONSTRAINT "keep-alive_pkey" PRIMARY key (id)
 );
 
--- rooms
-CREATE TABLE public.rooms(
+-- games
+CREATE TABLE public.games(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     created_at timestamp NOT NULL DEFAULT NOW(),
     lang text DEFAULT 'en' ::text,
     status text DEFAULT 'lobby' ::text,
     last_vote integer DEFAULT 0,
     next_vote integer DEFAULT 0,
-    next_room_id uuid REFERENCES public.rooms ON DELETE SET NULL
+    next_game_id uuid REFERENCES public.games ON DELETE SET NULL
 );
 
 ALTER publication supabase_realtime
-    ADD TABLE public.rooms;
+    ADD TABLE public.games;
 
 -- user profiles
 CREATE TABLE public.profiles(
     id uuid PRIMARY KEY NOT NULL REFERENCES auth.users ON DELETE CASCADE,
     created_at timestamp NOT NULL DEFAULT NOW(),
-    room_id uuid REFERENCES public.rooms ON DELETE SET NULL,
+    game_id uuid REFERENCES public.games ON DELETE SET NULL,
     name text
 );
 
-CREATE INDEX idx_players_profiles_id ON public.profiles(room_id);
+CREATE INDEX idx_players_profiles_id ON public.profiles(game_id);
 
 ALTER publication supabase_realtime
     ADD TABLE public.profiles;
@@ -37,7 +37,7 @@ ALTER publication supabase_realtime
 CREATE TABLE public.players(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     created_at timestamp NOT NULL DEFAULT NOW(),
-    room_id uuid NOT NULL REFERENCES public.rooms ON DELETE CASCADE,
+    game_id uuid NOT NULL REFERENCES public.games ON DELETE CASCADE,
     user_id uuid REFERENCES auth.users ON DELETE SET NULL,
     vote uuid REFERENCES public.players ON DELETE SET NULL,
     vote_blank boolean DEFAULT FALSE,
@@ -46,7 +46,7 @@ CREATE TABLE public.players(
     name text
 );
 
-CREATE INDEX idx_players_room_id ON public.players(room_id);
+CREATE INDEX idx_players_game_id ON public.players(game_id);
 
 ALTER publication supabase_realtime
     ADD TABLE public.players;
@@ -55,14 +55,14 @@ ALTER publication supabase_realtime
 CREATE TABLE public.messages(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     created_at timestamp NOT NULL DEFAULT NOW(),
-    room_id uuid NOT NULL REFERENCES public.rooms ON DELETE CASCADE,
+    game_id uuid NOT NULL REFERENCES public.games ON DELETE CASCADE,
     user_id uuid REFERENCES auth.users ON DELETE SET NULL,
     player_id uuid REFERENCES public.players ON DELETE SET NULL,
     author text,
     content text
 );
 
-CREATE INDEX idx_messages_room_id ON public.messages(room_id);
+CREATE INDEX idx_messages_game_id ON public.messages(game_id);
 
 ALTER publication supabase_realtime
     ADD TABLE public.messages;
@@ -75,8 +75,8 @@ CREATE FUNCTION public.handle_new_user()
     SET search_path = ''
     AS $$
 BEGIN
-    INSERT INTO public.profiles(id, name, room_id)
-        VALUES(NEW.id, COALESCE(NEW.raw_user_meta_data ->> 'name', NULL), COALESCE(NEW.raw_user_meta_data ->> 'room_id', NULL)::uuid);
+    INSERT INTO public.profiles(id, name, game_id)
+        VALUES(NEW.id, COALESCE(NEW.raw_user_meta_data ->> 'name', NULL), COALESCE(NEW.raw_user_meta_data ->> 'game_id', NULL)::uuid);
     RETURN new;
 END;
 $$;

@@ -3,12 +3,12 @@ import { PlayerData } from "../_types/Database.type.ts";
 
 export const fetchPlayers = async (
   supabase: SupabaseClient,
-  roomId: string,
+  gameId: string,
 ) => {
   const { data, error } = await supabase
     .from("players")
     .select("*")
-    .eq("room_id", roomId);
+    .eq("game_id", gameId);
 
   if (error) throw new Error("Error fetching players:" + error.message);
   return data as PlayerData[];
@@ -66,18 +66,18 @@ export const updatePlayer = async (
   }
 };
 
-export const updateRoomPlayers = async (
+export const updateGamePlayers = async (
   supabase: SupabaseClient,
   player: Partial<PlayerData>,
 ) => {
   const updateResponse = await supabase
     .from("players")
     .update(player)
-    .eq("room_id", player.room_id);
+    .eq("game_id", player.game_id);
 
   if (updateResponse.error) {
     throw new Error(
-      "Error updating room players: " + updateResponse.error.message,
+      "Error updating game players: " + updateResponse.error.message,
     );
   }
 };

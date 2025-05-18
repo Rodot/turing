@@ -7,7 +7,7 @@ import { playerVoteFunction } from "@/queries/functions/functions.query";
 import { VoteResults } from "./voteResult";
 import { ProgressTimer } from "./progressTimer";
 import { useUserQuery } from "@/hooks/useUserQuery";
-import { useRoomQuery } from "@/hooks/useRoomQuery";
+import { useGameQuery } from "@/hooks/useGameQuery";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -15,12 +15,12 @@ type Props = {
 
 export const ChatVote: React.FC<Props> = ({ sx }) => {
   const userQuery = useUserQuery();
-  const roomQuery = useRoomQuery();
+  const gameQuery = useGameQuery();
   const players = useContext(PlayersContext);
   const [loading, setLoading] = useState(false);
 
   if (!players) return null;
-  if (!roomQuery) return null;
+  if (!gameQuery) return null;
   if (!userQuery.data) return null;
 
   const didVote = (player: PlayerData) => player.vote || player.vote_blank;
@@ -41,17 +41,17 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
     if (me.is_bot) return false; //
     if (alreadyVoted) return false; // already voted
     if (player.id === me.id) return false; // can't vote for self
-    if (roomQuery.data?.status !== "voting") return false; // not voting
+    if (gameQuery.data?.status !== "voting") return false; // not voting
     return true;
   };
 
   const vote = async (playerId: string) => {
     if (!me) return;
-    if (!roomQuery.data?.id) return;
+    if (!gameQuery.data?.id) return;
     try {
       setLoading(true);
       await playerVoteFunction(supabase, {
-        roomId: roomQuery.data.id,
+        gameId: gameQuery.data.id,
         playerId: me.id,
         vote: playerId,
       });

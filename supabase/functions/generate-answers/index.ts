@@ -17,15 +17,15 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { roomId, playerName, lang } = await req.json();
-    if (!roomId) throw new Error("Missing roomId");
+    const { gameId, playerName, lang } = await req.json();
+    if (!gameId) throw new Error("Missing gameId");
     if (!playerName) throw new Error("Missing playerName");
     if (!lang) throw new Error("Missing lang");
     if (lang !== "fr" && lang !== "en") throw new Error("Invalid lang");
 
     const supabase = createSupabaseClient(req);
 
-    const messagesData = await fetchMessages(supabase, roomId);
+    const messagesData = await fetchMessages(supabase, gameId);
 
     const messages = promptForNextMessageSuggestions(
       playerName,

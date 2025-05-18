@@ -3,23 +3,23 @@ import { SupabaseClient } from "@supabase/supabase-js";
 
 export const startGameFunction = async (
   supabase: SupabaseClient,
-  roomId: string,
+  gameId: string,
 ) => {
-  if (!roomId) return;
+  if (!gameId) return;
   await supabase.functions.invoke("start-game", {
-    body: { roomId },
+    body: { gameId },
   });
 };
 
-export const createRoomFunction = async (supabase: SupabaseClient) => {
-  const response = await supabase.functions.invoke("create-room");
-  return response?.data?.room_id as string | undefined;
+export const createGameFunction = async (supabase: SupabaseClient) => {
+  const response = await supabase.functions.invoke("create-game");
+  return response?.data?.game_id as string | undefined;
 };
 
 export const playerVoteFunction = async (
   supabase: SupabaseClient,
   params: {
-    roomId: string;
+    gameId: string;
     playerId: string;
     vote: string;
   },
@@ -36,13 +36,13 @@ export const postMessageFunction = async (
 
 export const generateAnswersFunction = async (
   supabase: SupabaseClient,
-  roomId: string,
+  gameId: string,
   playerName: string,
   lang: "en" | "fr",
 ) => {
-  if (!roomId) return;
+  if (!gameId) return;
   const req = await supabase.functions.invoke("generate-answers", {
-    body: { roomId, playerName, lang },
+    body: { gameId, playerName, lang },
   });
   return req?.data;
 };

@@ -9,26 +9,26 @@ import {
   Container,
   Typography,
 } from "@mui/material";
-import { RoomProfilesContext } from "./contextProvider";
+import { GameProfilesContext } from "./contextProvider";
 import { ButtonShare } from "./buttonShare";
 import { QRShare } from "./qrShare";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import {
-  useRoomLanguageMutation,
-  useRoomQuery,
+  useGameLanguageMutation,
+  useGameQuery,
   useStartGameMutation,
-} from "@/hooks/useRoomQuery";
+} from "@/hooks/useGameQuery";
 
 export const Lobby: React.FC = () => {
   const userQuery = useUserQuery();
-  const roomQuery = useRoomQuery();
-  const roomProfiles = useContext(RoomProfilesContext);
-  const isHost = roomProfiles?.[0]?.id === userQuery.data?.id;
-  const me = roomProfiles?.find((profile) => profile.id === userQuery.data?.id);
-  const notEnoughPlayers = roomProfiles?.length < 3;
+  const gameQuery = useGameQuery();
+  const gameProfiles = useContext(GameProfilesContext);
+  const isHost = gameProfiles?.[0]?.id === userQuery.data?.id;
+  const me = gameProfiles?.find((profile) => profile.id === userQuery.data?.id);
+  const notEnoughPlayers = gameProfiles?.length < 3;
   const url = window.location.href;
   const startGameMutation = useStartGameMutation();
-  const roomLanguageMutation = useRoomLanguageMutation();
+  const gameLanguageMutation = useGameLanguageMutation();
 
   return (
     <Container
@@ -59,24 +59,24 @@ export const Lobby: React.FC = () => {
       <ButtonGroup>
         <Button
           component="button"
-          variant={roomQuery?.data?.lang === "en" ? "contained" : "text"}
-          onClick={() => roomLanguageMutation.mutate("en")}
-          disabled={roomLanguageMutation.isPending}
+          variant={gameQuery?.data?.lang === "en" ? "contained" : "text"}
+          onClick={() => gameLanguageMutation.mutate("en")}
+          disabled={gameLanguageMutation.isPending}
         >
           English
         </Button>
         <Button
           component="button"
-          variant={roomQuery?.data?.lang === "fr" ? "contained" : "text"}
-          onClick={() => roomLanguageMutation.mutate("fr")}
-          disabled={roomLanguageMutation.isPending}
+          variant={gameQuery?.data?.lang === "fr" ? "contained" : "text"}
+          onClick={() => gameLanguageMutation.mutate("fr")}
+          disabled={gameLanguageMutation.isPending}
         >
           French
         </Button>
       </ButtonGroup>
       <Box sx={{ mb: 6 }}></Box>
       <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
-        {roomProfiles.length} Players Connected
+        {gameProfiles.length} Players Connected
       </Typography>
       <Box
         sx={{
@@ -87,7 +87,7 @@ export const Lobby: React.FC = () => {
           justifyContent: "center",
         }}
       >
-        {roomProfiles?.map((profile) => (
+        {gameProfiles?.map((profile) => (
           <Chip
             key={profile.id}
             label={`${profile.name} ${profile.id === me?.id ? "(you)" : ""}`}
@@ -114,7 +114,7 @@ export const Lobby: React.FC = () => {
       )}
       {!isHost && (
         <Typography>
-          <strong>Waiting for {roomProfiles?.[0]?.name}</strong> to start the
+          <strong>Waiting for {gameProfiles?.[0]?.name}</strong> to start the
           game
         </Typography>
       )}

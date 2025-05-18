@@ -23,10 +23,10 @@ test("multi-user game flow", async ({ browser }) => {
 
   await host.getByText("Invite Link").waitFor();
 
-  const roomUrl = host.url();
+  const gameUrl = host.url();
 
   for (const guest of guests) {
-    await guest.goto(roomUrl);
+    await guest.goto(gameUrl);
     await guest.getByLabel("Your name").fill("GuestPlayerName");
     await guest.getByLabel("Submit").click();
     await guest.getByLabel("Join Game").waitFor();

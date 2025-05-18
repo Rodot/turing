@@ -11,13 +11,13 @@ import {
 } from "@/supabase/functions/_types/Database.type";
 import { useTable } from "@/hooks/useTable";
 import { supabase } from "@/utils/supabase/client";
-import { useRoomId } from "@/hooks/useRoomId";
+import { useGameId } from "@/hooks/useGameId";
 import { SnackbarProvider } from "./snackbarContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Create contexts
 export const MessagesContext = createContext<MessageData[]>([]);
-export const RoomProfilesContext = createContext<ProfileData[]>([]);
+export const GameProfilesContext = createContext<ProfileData[]>([]);
 export const PlayersContext = createContext<PlayerData[]>([]);
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } }, // 5 minutes
@@ -25,21 +25,21 @@ const queryClient = new QueryClient({
 
 // Create the wrapper component
 export function ContextProvider({ children }: React.PropsWithChildren) {
-  const roomId = useRoomId();
+  const gameId = useGameId();
   const profiles = useTable<ProfileData>(supabase, {
     tableName: "profiles",
-    filterColumn: "room_id",
-    filterValue: roomId,
+    filterColumn: "game_id",
+    filterValue: gameId,
   });
   const players = useTable<PlayerData>(supabase, {
     tableName: "players",
-    filterColumn: "room_id",
-    filterValue: roomId,
+    filterColumn: "game_id",
+    filterValue: gameId,
   });
   const messages = useTable<MessageData>(supabase, {
     tableName: "messages",
-    filterColumn: "room_id",
-    filterValue: roomId,
+    filterColumn: "game_id",
+    filterValue: gameId,
   });
 
   return (
@@ -47,13 +47,13 @@ export function ContextProvider({ children }: React.PropsWithChildren) {
       <AppRouterCacheProvider>
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
-            <RoomProfilesContext.Provider value={profiles}>
+            <GameProfilesContext.Provider value={profiles}>
               <PlayersContext.Provider value={players}>
                 <MessagesContext.Provider value={messages}>
                   {children}
                 </MessagesContext.Provider>
               </PlayersContext.Provider>
-            </RoomProfilesContext.Provider>
+            </GameProfilesContext.Provider>
           </SnackbarProvider>
         </ThemeProvider>
       </AppRouterCacheProvider>

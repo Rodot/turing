@@ -2,21 +2,21 @@
 import React from "react";
 import { Chat } from "./chat";
 import { Lobby } from "./lobby";
-import { useRoomQuery } from "@/hooks/useRoomQuery";
+import { useGameQuery } from "@/hooks/useGameQuery";
 import { SignUp } from "./signUp";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
 import { Typography } from "@mui/material";
 
 export const GameRouter = () => {
-  const roomQuery = useRoomQuery();
+  const gameQuery = useGameQuery();
   const profileQuery = useProfileQuery();
-  const notInRoom = roomQuery?.data?.id !== profileQuery?.data?.room_id;
+  const notInGame = gameQuery?.data?.id !== profileQuery?.data?.game_id;
 
-  if (!roomQuery?.data?.status || notInRoom) {
+  if (!gameQuery?.data?.status || notInGame) {
     return <SignUp />;
   }
 
-  if (roomQuery.data?.status === "lobby") {
+  if (gameQuery.data?.status === "lobby") {
     <Typography>lobby</Typography>;
     return <Lobby />;
   }

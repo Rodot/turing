@@ -3,12 +3,12 @@ import { SupabaseClient } from "@supabase/supabase-js";
 
 export const fetchMessages = async (
   supabase: SupabaseClient,
-  roomId: string,
+  gameId: string,
 ) => {
   const { data, error } = await supabase
     .from("messages")
     .select("*")
-    .eq("room_id", roomId);
+    .eq("game_id", gameId);
 
   if (error) {
     console.error("Error fetching messages:", error);

@@ -20,7 +20,7 @@ import {
 } from "@/supabase/functions/_shared/utils";
 import { Send } from "@mui/icons-material";
 import { useUserQuery } from "@/hooks/useUserQuery";
-import { useRoomQuery } from "@/hooks/useRoomQuery";
+import { useGameQuery } from "@/hooks/useGameQuery";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -32,12 +32,12 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   const [content, setContent] = useState("");
   const [botAnswers, setBotAnswers] = useState<string[] | undefined>();
   const userQuery = useUserQuery();
-  const roomQuery = useRoomQuery();
+  const gameQuery = useGameQuery();
   const players = useContext(PlayersContext);
   const messages = useContext(MessagesContext);
   if (!userQuery.data) return null;
-  const roomId = roomQuery?.data?.id;
-  if (!roomId) return null;
+  const gameId = gameQuery?.data?.id;
+  if (!gameId) return null;
   const me = players.find((player) => player.user_id === userQuery.data?.id);
   if (!me) return null;
 
@@ -54,9 +54,9 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
         if (!timeout--) throw new Error("Answer generation timed out");
         const req = await generateAnswersFunction(
           supabase,
-          roomId,
+          gameId,
           me.name,
-          roomQuery?.data?.lang ?? "en",
+          gameQuery?.data?.lang ?? "en",
         );
         console.log(req);
         receivedAnswers = (req?.possibleNextMessages ?? []).map(cleanAnswer);
@@ -82,7 +82,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
     try {
       setLoadingSend(true);
       await postMessageFunction(supabase, {
-        room_id: roomId,
+        game_id: gameId,
         user_id: userQuery.data.id,
         player_id: me.id,
         author: me.name,

@@ -1,13 +1,13 @@
 import React from "react";
 import { Button } from "@mui/material";
-import { useRoomId } from "../hooks/useRoomId";
-import { useJoinRoomMutation } from "@/hooks/useRoomQuery";
+import { useGameId } from "../hooks/useGameId";
+import { useJoinGameMutation } from "@/hooks/useGameQuery";
 
 export const ButtonJoinGame: React.FC = () => {
-  const roomId = useRoomId();
-  const joinRoomMutation = useJoinRoomMutation();
+  const gameId = useGameId();
+  const joinGameMutation = useJoinGameMutation();
 
-  if (!roomId?.length) {
+  if (!gameId?.length) {
     return null;
   }
 
@@ -15,8 +15,8 @@ export const ButtonJoinGame: React.FC = () => {
     <Button
       color="secondary"
       variant="contained"
-      onClick={() => joinRoomMutation.mutate(roomId)}
-      disabled={joinRoomMutation.isPending}
+      onClick={() => joinGameMutation.mutate(gameId)}
+      disabled={joinGameMutation.isPending}
       aria-label="Join Game"
     >
       Join Game

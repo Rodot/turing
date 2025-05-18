@@ -15,43 +15,43 @@ export const updateProfileName = async (
   }
 };
 
-export const updateProfileRoom = async (
+export const updateProfileGame = async (
   supabase: SupabaseClient,
   userId: string,
-  roomId: string,
+  gameId: string,
 ) => {
   const req = await supabase
     .from("profiles")
-    .update([{ room_id: roomId }])
+    .update([{ game_id: gameId }])
     .eq("id", userId);
   if (req.error) {
     throw new Error(req.error.message);
   }
 };
 
-export const removeProfileFromRoom = async (
+export const removeProfileFromGame = async (
   supabase: SupabaseClient,
   userId: string,
 ) => {
   const req = await supabase
     .from("profiles")
-    .update([{ room_id: null }])
+    .update([{ game_id: null }])
     .eq("id", userId);
   if (req.error) {
     throw new Error(req.error.message);
   }
 };
 
-export const fetchRoomProfiles = async (
+export const fetchGameProfiles = async (
   supabase: SupabaseClient,
-  roomId: string,
+  gameId: string,
 ): Promise<ProfileData[]> => {
-  const req = await supabase.from("profiles").select("*").eq("room_id", roomId);
+  const req = await supabase.from("profiles").select("*").eq("game_id", gameId);
   if (req.error) {
     throw new Error(req.error.message);
   } else {
-    const roomUsers = req?.data;
-    return roomUsers ?? [];
+    const gameUsers = req?.data;
+    return gameUsers ?? [];
   }
 };
 
