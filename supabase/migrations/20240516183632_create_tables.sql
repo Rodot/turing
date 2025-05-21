@@ -13,51 +13,35 @@ CREATE TABLE public.games(
     lang text DEFAULT 'en' ::text,
     status text DEFAULT 'lobby' ::text,
     last_vote integer DEFAULT 0,
-    next_vote integer DEFAULT 0,
-    next_game_id uuid REFERENCES public.games ON DELETE SET NULL
+    next_vote integer DEFAULT 0
 );
 
 ALTER publication supabase_realtime
     ADD TABLE public.games;
 
--- user profiles
+-- profiles
 CREATE TABLE public.profiles(
     id uuid PRIMARY KEY NOT NULL REFERENCES auth.users ON DELETE CASCADE,
     created_at timestamp NOT NULL DEFAULT NOW(),
     game_id uuid REFERENCES public.games ON DELETE SET NULL,
-    name text
+    name text,
+    vote uuid REFERENCES public.profiles ON DELETE SET NULL,
+    vote_blank boolean DEFAULT FALSE,
+    is_bot boolean DEFAULT FALSE,
+    score integer DEFAULT 0
 );
 
-CREATE INDEX idx_players_profiles_id ON public.profiles(game_id);
+CREATE INDEX idx_profiles_game_id ON public.profiles(game_id);
 
 ALTER publication supabase_realtime
     ADD TABLE public.profiles;
-
--- players
-CREATE TABLE public.players(
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    created_at timestamp NOT NULL DEFAULT NOW(),
-    game_id uuid NOT NULL REFERENCES public.games ON DELETE CASCADE,
-    user_id uuid REFERENCES auth.users ON DELETE SET NULL,
-    vote uuid REFERENCES public.players ON DELETE SET NULL,
-    vote_blank boolean DEFAULT FALSE,
-    is_bot boolean DEFAULT FALSE,
-    score integer DEFAULT 0,
-    name text
-);
-
-CREATE INDEX idx_players_game_id ON public.players(game_id);
-
-ALTER publication supabase_realtime
-    ADD TABLE public.players;
 
 -- messages
 CREATE TABLE public.messages(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     created_at timestamp NOT NULL DEFAULT NOW(),
     game_id uuid NOT NULL REFERENCES public.games ON DELETE CASCADE,
-    user_id uuid REFERENCES auth.users ON DELETE SET NULL,
-    player_id uuid REFERENCES public.players ON DELETE SET NULL,
+    profile_id uuid REFERENCES public.profiles ON DELETE SET NULL,
     author text,
     content text
 );
@@ -85,4 +69,3 @@ CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW
     EXECUTE PROCEDURE public.handle_new_user();
-

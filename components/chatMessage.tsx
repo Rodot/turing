@@ -13,7 +13,7 @@ export function ChatMessage({
   message: MessageData;
   user: User;
 }) {
-  const isMe = message.user_id === user.id;
+  const isMe = message.profile_id === user.id;
   const fromSystem = isSystem(message);
 
   const getBgColor = () => {

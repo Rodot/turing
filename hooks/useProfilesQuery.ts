@@ -4,7 +4,7 @@ import { ProfileData } from "@/supabase/functions/_types/Database.type";
 import { supabase } from "@/utils/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useGameIdFromUrl } from "./useGameIdFromUrl";
-import { fetchGameProfiles } from "@/queries/db/profile.query";
+import { fetchProfiles } from "@/queries/db/profile.query";
 import { useEffect } from "react";
 
 export const useProfilesQuery = () => {
@@ -15,8 +15,8 @@ export const useProfilesQuery = () => {
     queryKey: ["profiles", gameIdFromUrl],
     queryFn: async (): Promise<ProfileData[]> => {
       if (!gameIdFromUrl) return [];
-      const profiles = await fetchGameProfiles(supabase, gameIdFromUrl);
-      console.log("profilesQuery", profiles);
+      const profiles = await fetchProfiles(supabase, gameIdFromUrl);
+      console.log("profilesQuery:", profiles);
       return profiles;
     },
     enabled: !!gameIdFromUrl,

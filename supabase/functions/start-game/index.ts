@@ -5,13 +5,14 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
-import { fetchGameProfiles } from "../_queries/profiles.query.ts";
+import {
+  fetchGameProfiles,
+  updateProfile,
+} from "../_queries/profiles.query.ts";
 import { fetchGame, updateGame } from "../_queries/game.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
-import { PlayerData } from "../_types/Database.type.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
-import { insertPlayers } from "../_queries/players.query.ts";
 import { nextVoteLength, pickRandom } from "../_shared/utils.ts";
 import { iceBreakers } from "../_shared/lang.ts";
 
@@ -35,22 +36,19 @@ Deno.serve(async (req) => {
     const profiles = await fetchGameProfiles(supabase, gameId);
     if (!profiles?.length) throw new Error("No profiles in game");
 
-    const players: Partial<PlayerData>[] = [];
-
-    // human players
+    // Select random profile to be the bot
     const botProfile = pickRandom(profiles);
-    profiles.forEach((profile) => {
-      players.push({
-        user_id: profile.id,
-        name: profile.name,
-        game_id: gameId,
-        vote: null,
-        is_bot: profile.id === botProfile.id,
-      });
-    });
 
-    // insert players
-    await insertPlayers(supabase, players);
+    // Update each profile with initial game values
+    for (const profile of profiles) {
+      await updateProfile(supabase, {
+        id: profile.id,
+        vote: null,
+        vote_blank: false,
+        is_bot: profile.id === botProfile.id,
+        score: 0,
+      });
+    }
 
     await insertMessage(supabase, {
       game_id: gameId,
@@ -59,7 +57,7 @@ Deno.serve(async (req) => {
     });
 
     // start the game
-    const nextVote = nextVoteLength(players.length);
+    const nextVote = nextVoteLength(profiles.length);
     await updateGame(supabase, gameId, {
       status: "talking",
       next_vote: nextVote,

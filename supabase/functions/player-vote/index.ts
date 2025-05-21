@@ -6,14 +6,14 @@
 /// <reference types="https://esm.sh/@supabase/functions-js@2.4.4/src/edge-runtime.d.ts" />
 
 import { fetchMessages, insertMessage } from "../_queries/messages.query.ts";
-import { fetchPlayers, updatePlayer } from "../_queries/players.query.ts";
+import { fetchProfiles, updateProfile } from "../_queries/profiles.query.ts";
 import { fetchGame, updateGame } from "../_queries/game.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { setRandomPlayerAsBotAndResetVotes } from "../_utils/vote.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { isNotSystem, nextVoteLength, pickRandom } from "../_shared/utils.ts";
 import { iceBreakers } from "../_shared/lang.ts";
-import { PlayerData } from "../_types/Database.type.ts";
+import { ProfileData } from "../_types/Database.type.ts";
 import { MessageData } from "../_types/Database.type.ts";
 
 Deno.serve(async (req) => {
@@ -22,29 +22,29 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { gameId, playerId, vote } = (await req.json()) as {
+    const { gameId, profileId, vote } = (await req.json()) as {
       gameId: string;
-      playerId: string;
+      profileId: string;
       vote: string;
     };
     if (!gameId) throw new Error("Missing gameId");
-    if (!playerId) throw new Error("Missing playerId");
+    if (!profileId) throw new Error("Missing profileId");
     if (!vote) throw new Error("Missing vote");
 
     const supabase = createSupabaseClient(req);
-    console.log("Voting", { gameId, playerId });
+    console.log("Voting", { gameId, profileId });
 
-    // Apply player vote
+    // Apply profile vote
     if (vote === "blank") {
-      await updatePlayer(supabase, {
-        id: playerId,
+      await updateProfile(supabase, {
+        id: profileId,
         game_id: gameId,
         vote: null,
         vote_blank: true,
       });
     } else {
-      await updatePlayer(supabase, {
-        id: playerId,
+      await updateProfile(supabase, {
+        id: profileId,
         game_id: gameId,
         vote,
         vote_blank: false,
@@ -55,8 +55,8 @@ Deno.serve(async (req) => {
     const votingData = await gatherVotingData(supabase, gameId);
 
     // Process voting if all players have voted
-    if (votingData.allVoted && votingData.players.length > 1) {
-      console.log("All players have voted", gameId);
+    if (votingData.allVoted && votingData.profiles.length > 1) {
+      console.log("All profiles have voted", gameId);
 
       // Give time to read results
       await new Promise((resolve) => setTimeout(resolve, 8000));
@@ -64,22 +64,22 @@ Deno.serve(async (req) => {
       // Determine who got points and why
       const pointAllocations = determinePointsAllocation(votingData);
 
-      // Update players who got points
+      // Update profiles who got points
       await updatePlayerPoints(supabase, pointAllocations, gameId);
 
       // Post messages about who got points and why
       await postPointsMessages(supabase, pointAllocations, votingData, gameId);
 
-      // Get updated player data for end game check
-      const playersAfter = await fetchPlayers(supabase, gameId);
-      const maxScore = Math.max(...playersAfter.map((p) => p.score));
+      // Get updated profile data for end game check
+      const profilesAfter = await fetchProfiles(supabase, gameId);
+      const maxScore = Math.max(...profilesAfter.map((p) => p.score));
 
       if (maxScore >= 5) {
         // Game over
         console.log("Game over", gameId);
 
         // Announce winner
-        const winners = playersAfter.filter((p) => p.score === maxScore);
+        const winners = profilesAfter.filter((p) => p.score === maxScore);
         if (winners.length) {
           const message = `${winners.map((w) => w.name).join(" and ")} won! 🏆`;
           await insertMessage(supabase, {
@@ -99,11 +99,11 @@ Deno.serve(async (req) => {
         const game = await fetchGame(supabase, gameId);
         const nextVote =
           votingData.messages.filter(isNotSystem).length +
-          nextVoteLength(votingData.players.length);
+          nextVoteLength(votingData.profiles.length);
 
-        // Reset votes and set random player as bot
+        // Reset votes and set random profile as bot
         await Promise.all([
-          setRandomPlayerAsBotAndResetVotes(supabase, votingData.players),
+          setRandomPlayerAsBotAndResetVotes(supabase, votingData.profiles),
           updateGame(supabase, gameId, {
             status: "talking",
             last_vote: game?.next_vote,
@@ -129,20 +129,20 @@ Deno.serve(async (req) => {
 
 // Types for the voting data processing
 type VotingData = {
-  players: PlayerData[];
+  profiles: ProfileData[];
   messages: MessageData[];
   numHumans: number;
-  botPlayer: PlayerData | undefined;
-  botVoters: PlayerData[];
-  blankVoters: PlayerData[];
+  botProfile: ProfileData | undefined;
+  botVoters: ProfileData[];
+  blankVoters: ProfileData[];
   voteCounts: Record<string, number>;
   numVotes: number;
-  humanImposters: PlayerData[];
+  humanImposters: ProfileData[];
   allVoted: boolean;
 };
 
 type PointAllocation = {
-  player: PlayerData;
+  profile: ProfileData;
   points: number;
   reason:
     | "foundBot"
@@ -156,23 +156,25 @@ async function gatherVotingData(
   supabase: ReturnType<typeof createSupabaseClient>,
   gameId: string,
 ) {
-  // Fetch players and messages data
-  const [players, messages] = await Promise.all([
-    fetchPlayers(supabase, gameId),
+  // Fetch profiles and messages data
+  const [profiles, messages] = await Promise.all([
+    fetchProfiles(supabase, gameId),
     fetchMessages(supabase, gameId),
   ]);
 
-  // Analyze player data
-  const numHumans = players.filter((player) => !player.is_bot).length;
-  const botPlayer = players.find((player) => player.is_bot);
-  const botVoters = players.filter((player) => player.vote === botPlayer?.id);
-  const blankVoters = players.filter((player) => player.vote_blank === true);
+  // Analyze profile data
+  const numHumans = profiles.filter((profile) => !profile.is_bot).length;
+  const botProfile = profiles.find((profile) => profile.is_bot);
+  const botVoters = profiles.filter(
+    (profile) => profile.vote === botProfile?.id,
+  );
+  const blankVoters = profiles.filter((profile) => profile.vote_blank === true);
 
-  // Count votes for each player
-  const voteCounts = players.reduce(
-    (counts, player) => {
-      if (player.vote && !player.vote_blank) {
-        counts[player.vote] = (counts[player.vote] || 0) + 1;
+  // Count votes for each profile
+  const voteCounts = profiles.reduce(
+    (counts, profile) => {
+      if (profile.vote && !profile.vote_blank) {
+        counts[profile.vote] = (counts[profile.vote] || 0) + 1;
       }
       return counts;
     },
@@ -180,28 +182,28 @@ async function gatherVotingData(
   );
 
   // Calculate total votes
-  const numVotes = players.filter(
-    (player) => player.vote || player.vote_blank,
+  const numVotes = profiles.filter(
+    (profile) => profile.vote || profile.vote_blank,
   ).length;
 
-  // Find the maximum number of votes any player received
-  const maxVotes = botPlayer ? Math.max(...Object.values(voteCounts)) : 0;
+  // Find the maximum number of votes any profile received
+  const maxVotes = botProfile ? Math.max(...Object.values(voteCounts)) : 0;
 
   // Calculate human imposters (humans with more votes than bot AND have the most votes)
-  const humanImposters = botPlayer
-    ? players.filter(
-        (player) =>
-          !player.is_bot &&
-          (voteCounts[player.id] || 0) > (voteCounts[botPlayer.id] || 0) &&
-          (voteCounts[player.id] || 0) === maxVotes,
+  const humanImposters = botProfile
+    ? profiles.filter(
+        (profile) =>
+          !profile.is_bot &&
+          (voteCounts[profile.id] || 0) > (voteCounts[botProfile.id] || 0) &&
+          (voteCounts[profile.id] || 0) === maxVotes,
       )
     : [];
 
   return {
-    players,
+    profiles,
     messages,
     numHumans,
-    botPlayer,
+    botProfile,
     botVoters,
     blankVoters,
     voteCounts,
@@ -213,15 +215,15 @@ async function gatherVotingData(
 
 // STEP 2: Function to determine who gets points and why
 function determinePointsAllocation(votingData: VotingData): PointAllocation[] {
-  const { botPlayer, botVoters, blankVoters, humanImposters } = votingData;
+  const { botProfile, botVoters, blankVoters, humanImposters } = votingData;
 
   const pointAllocations: PointAllocation[] = [];
 
   // Points for bot voters
-  if (botPlayer && botVoters.length > 0) {
+  if (botProfile && botVoters.length > 0) {
     botVoters.forEach((voter) => {
       pointAllocations.push({
-        player: voter,
+        profile: voter,
         points: 1,
         reason: "foundBot",
       });
@@ -229,9 +231,9 @@ function determinePointsAllocation(votingData: VotingData): PointAllocation[] {
   }
 
   // Points for bot if nobody found it
-  if (botPlayer && botVoters.length === 0) {
+  if (botProfile && botVoters.length === 0) {
     pointAllocations.push({
-      player: botPlayer,
+      profile: botProfile,
       points: 1,
       reason: "botEscaped",
     });
@@ -241,7 +243,7 @@ function determinePointsAllocation(votingData: VotingData): PointAllocation[] {
   if (humanImposters.length > 0) {
     humanImposters.forEach((imposter) => {
       pointAllocations.push({
-        player: imposter,
+        profile: imposter,
         points: 1,
         reason: "moreConvincingThanBot",
       });
@@ -249,10 +251,10 @@ function determinePointsAllocation(votingData: VotingData): PointAllocation[] {
   }
 
   // Points for blank voters when no bot
-  if (!botPlayer && blankVoters.length > 0) {
+  if (!botProfile && blankVoters.length > 0) {
     blankVoters.forEach((voter) => {
       pointAllocations.push({
-        player: voter,
+        profile: voter,
         points: 1,
         reason: "correctlyGuessedNoBot",
       });
@@ -262,17 +264,17 @@ function determinePointsAllocation(votingData: VotingData): PointAllocation[] {
   return pointAllocations;
 }
 
-// STEP 3: Function to update players who got points
+// STEP 3: Function to update profiles who got points
 async function updatePlayerPoints(
   supabase: ReturnType<typeof createSupabaseClient>,
   pointAllocations: PointAllocation[],
   gameId: string,
 ) {
   const updatePromises = pointAllocations.map((allocation) =>
-    updatePlayer(supabase, {
-      id: allocation.player.id,
+    updateProfile(supabase, {
+      id: allocation.profile.id,
       game_id: gameId,
-      score: allocation.player.score + allocation.points,
+      score: allocation.profile.score + allocation.points,
     }),
   );
 
@@ -286,41 +288,41 @@ async function postPointsMessages(
   votingData: VotingData,
   gameId: string,
 ) {
-  const { botPlayer, humanImposters } = votingData;
+  const { botProfile, humanImposters } = votingData;
 
   let mainMessage = "";
   let additionalMessage = "";
 
-  // Group players by reason for better messaging
+  // Group profiles by reason for better messaging
   const foundBotPlayers = pointAllocations
     .filter((a) => a.reason === "foundBot")
-    .map((a) => a.player);
+    .map((a) => a.profile);
 
   const correctlyGuessedNoBotPlayers = pointAllocations
     .filter((a) => a.reason === "correctlyGuessedNoBot")
-    .map((a) => a.player);
+    .map((a) => a.profile);
 
   // Create message for bot voters
-  if (botPlayer && foundBotPlayers.length > 0) {
+  if (botProfile && foundBotPlayers.length > 0) {
     mainMessage = `+1 🧠 for ${foundBotPlayers
       .map((p) => p.name)
-      .join(" and ")} who guessed that ${botPlayer.name} was the AI 🤖`;
+      .join(" and ")} who guessed that ${botProfile.name} was the AI 🤖`;
   }
 
   // Create message for escaped bot
-  if (botPlayer && foundBotPlayers.length === 0) {
-    mainMessage = `+1 🧠 for ${botPlayer.name} for pretending to be human... as the AI 🤖`;
+  if (botProfile && foundBotPlayers.length === 0) {
+    mainMessage = `+1 🧠 for ${botProfile.name} for pretending to be human... as the AI 🤖`;
   }
 
   // Create message for correct blank voters
-  if (!botPlayer && correctlyGuessedNoBotPlayers.length > 0) {
+  if (!botProfile && correctlyGuessedNoBotPlayers.length > 0) {
     mainMessage = `+1 🧠 for ${correctlyGuessedNoBotPlayers
       .map((p) => p.name)
       .join(" and ")} who realized there was no AI ❌`;
   }
 
   // Create message when nobody guessed there was no bot
-  if (!botPlayer && correctlyGuessedNoBotPlayers.length === 0) {
+  if (!botProfile && correctlyGuessedNoBotPlayers.length === 0) {
     mainMessage = `Nobody guessed that there was no AI ❌`;
   }
 

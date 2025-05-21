@@ -43,7 +43,7 @@ export const usePlayerVoteMutation = () => {
   return useMutation({
     mutationFn: async (params: {
       gameId: string;
-      playerId: string;
+      profileId: string;
       vote: string;
     }) => {
       await supabase.functions.invoke("player-vote", { body: params });

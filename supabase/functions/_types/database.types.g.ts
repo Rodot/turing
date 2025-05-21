@@ -40,7 +40,6 @@ export type Database = {
           id: string;
           lang: string | null;
           last_vote: number | null;
-          next_game_id: string | null;
           next_vote: number | null;
           status: string | null;
         };
@@ -49,7 +48,6 @@ export type Database = {
           id?: string;
           lang?: string | null;
           last_vote?: number | null;
-          next_game_id?: string | null;
           next_vote?: number | null;
           status?: string | null;
         };
@@ -58,19 +56,10 @@ export type Database = {
           id?: string;
           lang?: string | null;
           last_vote?: number | null;
-          next_game_id?: string | null;
           next_vote?: number | null;
           status?: string | null;
         };
-        Relationships: [
-          {
-            foreignKeyName: "games_next_game_id_fkey";
-            columns: ["next_game_id"];
-            isOneToOne: false;
-            referencedRelation: "games";
-            referencedColumns: ["id"];
-          },
-        ];
+        Relationships: [];
       };
       "keep-alive": {
         Row: {
@@ -97,8 +86,7 @@ export type Database = {
           created_at: string;
           game_id: string;
           id: string;
-          player_id: string | null;
-          user_id: string | null;
+          profile_id: string | null;
         };
         Insert: {
           author?: string | null;
@@ -106,8 +94,7 @@ export type Database = {
           created_at?: string;
           game_id: string;
           id?: string;
-          player_id?: string | null;
-          user_id?: string | null;
+          profile_id?: string | null;
         };
         Update: {
           author?: string | null;
@@ -115,8 +102,7 @@ export type Database = {
           created_at?: string;
           game_id?: string;
           id?: string;
-          player_id?: string | null;
-          user_id?: string | null;
+          profile_id?: string | null;
         };
         Relationships: [
           {
@@ -127,61 +113,10 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "messages_player_id_fkey";
-            columns: ["player_id"];
+            foreignKeyName: "messages_profile_id_fkey";
+            columns: ["profile_id"];
             isOneToOne: false;
-            referencedRelation: "players";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-      players: {
-        Row: {
-          created_at: string;
-          game_id: string;
-          id: string;
-          is_bot: boolean | null;
-          name: string | null;
-          score: number | null;
-          user_id: string | null;
-          vote: string | null;
-          vote_blank: boolean | null;
-        };
-        Insert: {
-          created_at?: string;
-          game_id: string;
-          id?: string;
-          is_bot?: boolean | null;
-          name?: string | null;
-          score?: number | null;
-          user_id?: string | null;
-          vote?: string | null;
-          vote_blank?: boolean | null;
-        };
-        Update: {
-          created_at?: string;
-          game_id?: string;
-          id?: string;
-          is_bot?: boolean | null;
-          name?: string | null;
-          score?: number | null;
-          user_id?: string | null;
-          vote?: string | null;
-          vote_blank?: boolean | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "players_game_id_fkey";
-            columns: ["game_id"];
-            isOneToOne: false;
-            referencedRelation: "games";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "players_vote_fkey";
-            columns: ["vote"];
-            isOneToOne: false;
-            referencedRelation: "players";
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
         ];
@@ -191,19 +126,31 @@ export type Database = {
           created_at: string;
           game_id: string | null;
           id: string;
+          is_bot: boolean | null;
           name: string | null;
+          score: number | null;
+          vote: string | null;
+          vote_blank: boolean | null;
         };
         Insert: {
           created_at?: string;
           game_id?: string | null;
           id: string;
+          is_bot?: boolean | null;
           name?: string | null;
+          score?: number | null;
+          vote?: string | null;
+          vote_blank?: boolean | null;
         };
         Update: {
           created_at?: string;
           game_id?: string | null;
           id?: string;
+          is_bot?: boolean | null;
           name?: string | null;
+          score?: number | null;
+          vote?: string | null;
+          vote_blank?: boolean | null;
         };
         Relationships: [
           {
@@ -211,6 +158,13 @@ export type Database = {
             columns: ["game_id"];
             isOneToOne: false;
             referencedRelation: "games";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "profiles_vote_fkey";
+            columns: ["vote"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
         ];

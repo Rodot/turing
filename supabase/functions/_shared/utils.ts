@@ -1,4 +1,4 @@
-import { MessageData, PlayerData } from "../_types/Database.type.ts";
+import { MessageData, ProfileData } from "../_types/Database.type.ts";
 
 export const nextVoteLength = (numPlayers: number) => 3 * numPlayers;
 
@@ -12,7 +12,7 @@ export const isNotSystem = (message: MessageData) => {
   return !isSystem(message);
 };
 
-export const isHuman = (player: PlayerData) => !!player?.user_id;
+export const isHuman = (profile: ProfileData) => !!profile?.id;
 
 export const removeEmojis = (text: string) => {
   return text.replace(
@@ -70,20 +70,21 @@ export const cleanAnswer = (str: string) => {
   return str;
 };
 
-export const getPlayersWithLeastMessages = (
-  players: PlayerData[],
+export const getProfilesWithLeastMessages = (
+  profiles: ProfileData[],
   messages: MessageData[],
 ) => {
-  const messagesCountPerPlayer = players.map((player) => ({
-    player,
-    count: messages.filter((message) => message.player_id === player.id).length,
+  const messagesCountPerProfile = profiles.map((profile) => ({
+    profile,
+    count: messages.filter((message) => message.profile_id === profile.id)
+      .length,
   }));
 
-  const minMessages = Math.min(...messagesCountPerPlayer.map((p) => p.count));
+  const minMessages = Math.min(...messagesCountPerProfile.map((p) => p.count));
 
-  const playersWithLeastMesssages = messagesCountPerPlayer
-    .filter((p) => p.count <= (minMessages + 2))
-    .map((p) => p.player);
+  const profilesWithLeastMesssages = messagesCountPerProfile
+    .filter((p) => p.count <= minMessages + 2)
+    .map((p) => p.profile);
 
-  return playersWithLeastMesssages;
+  return profilesWithLeastMesssages;
 };

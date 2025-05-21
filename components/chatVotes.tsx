@@ -1,11 +1,11 @@
 import React from "react";
 import { Box, Button, SxProps, Theme, Typography } from "@mui/material";
-import { PlayerData } from "@/supabase/functions/_types/Database.type";
+import { ProfileData } from "@/supabase/functions/_types/Database.type";
 import { VoteResults } from "./voteResult";
 import { ProgressTimer } from "./progressTimer";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
-import { usePlayersQuery } from "@/hooks/usePlayersQuery";
+import { useProfilesQuery } from "@/hooks/useProfilesQuery";
 import { usePlayerVoteMutation } from "@/hooks/useFunctionsQuery";
 import { useIsLoading } from "@/hooks/useIsLoading";
 
@@ -16,22 +16,22 @@ type Props = {
 export const ChatVote: React.FC<Props> = ({ sx }) => {
   const userQuery = useUserQuery();
   const gameQuery = useGameQuery();
-  const playersQuery = usePlayersQuery();
-  const players = playersQuery.data || [];
+  const profilesQuery = useProfilesQuery();
+  const profiles = profilesQuery.data || [];
   const playerVoteMutation = usePlayerVoteMutation();
   const isLoading = useIsLoading();
 
-  if (!players) return null;
+  if (!profiles) return null;
   if (!gameQuery) return null;
   if (!userQuery.data) return null;
 
-  const didVote = (player: PlayerData) => player.vote || player.vote_blank;
+  const didVote = (profile: ProfileData) => profile.vote || profile.vote_blank;
 
-  const me = players.find((player) => player.user_id === userQuery.data?.id);
+  const me = profiles.find((profile) => profile.id === userQuery.data?.id);
   if (!me) return null;
-  const humans = players.filter((player) => !player.is_bot);
-  const otherPlayers = players.filter((player) => player.id !== me.id);
-  const humansDidntVote = humans.filter((player) => !didVote(player));
+  const humans = profiles.filter((profile) => !profile.is_bot);
+  const otherProfiles = profiles.filter((profile) => profile.id !== me.id);
+  const humansDidntVote = humans.filter((profile) => !didVote(profile));
   const humansDidntVoteString =
     humansDidntVote.length > 2
       ? "others"
@@ -39,29 +39,29 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   const everyoneVoted = humansDidntVote.length === 0;
   const alreadyVoted = me.vote || me.vote_blank;
 
-  const canVote = (player: { id: string; name: string }) => {
+  const canVote = (profile: { id: string; name: string }) => {
     if (me.is_bot) return false; //
     if (alreadyVoted) return false; // already voted
-    if (player.id === me.id) return false; // can't vote for self
+    if (profile.id === me.id) return false; // can't vote for self
     if (gameQuery.data?.status !== "voting") return false; // not voting
     return true;
   };
 
-  const vote = async (playerId: string) => {
+  const vote = async (profileId: string) => {
     if (!me) return;
     if (!gameQuery.data?.id) return;
     try {
       await playerVoteMutation.mutateAsync({
         gameId: gameQuery.data.id,
-        playerId: me.id,
-        vote: playerId,
+        profileId: me.id,
+        vote: profileId,
       });
     } catch (error) {
       console.error(error);
     }
   };
 
-  const voteOptions = [{ id: "blank", name: "Nobody" }, ...otherPlayers];
+  const voteOptions = [{ id: "blank", name: "Nobody" }, ...otherProfiles];
 
   const clueText = () => {
     if (!me.is_bot && !alreadyVoted) return <>Who was the AI? 🤖</>;

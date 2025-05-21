@@ -21,8 +21,7 @@ Deno.serve(async (req) => {
     const message = (await req.json()) as Partial<MessageData>;
 
     if (!message?.game_id) throw new Error("Game ID is required");
-    if (!message?.player_id) throw new Error("Player ID is required");
-    if (!message?.user_id) throw new Error("User ID is required");
+    if (!message?.profile_id) throw new Error("Profile ID is required");
     if (!message?.content) throw new Error("Content is required");
     if (!message?.author) throw new Error("Author is required");
 

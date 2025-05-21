@@ -1,4 +1,4 @@
-import { PlayerData } from "@/supabase/functions/_types/Database.type";
+import { ProfileData } from "@/supabase/functions/_types/Database.type";
 import { User } from "@supabase/supabase-js";
 
 export function shortenId(id: string | null | undefined): string {
@@ -11,9 +11,9 @@ export function formatUser(user: User | null | undefined): string {
 
 export function playerName(
   userId: string | undefined,
-  players: PlayerData[],
+  players: ProfileData[],
 ): string {
   if (!userId) return "...";
-  const player = players.find((player) => player.user_id === userId);
+  const player = players.find((player) => player.id === userId);
   return player?.name ?? shortenId(userId);
 }

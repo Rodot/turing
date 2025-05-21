@@ -1,10 +1,10 @@
 "use client";
 
-import { PlayerData } from "@/supabase/functions/_types/Database.type";
+import { ProfileData } from "@/supabase/functions/_types/Database.type";
 import { supabase } from "@/utils/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useGameIdFromUrl } from "./useGameIdFromUrl";
-import { fetchPlayers } from "@/queries/db/players.query";
+import { fetchProfiles } from "@/queries/db/profile.query";
 import { useEffect } from "react";
 
 export const usePlayersQuery = () => {
@@ -12,11 +12,11 @@ export const usePlayersQuery = () => {
   const gameIdFromUrl = useGameIdFromUrl();
 
   const query = useQuery({
-    queryKey: ["players", gameIdFromUrl],
-    queryFn: async (): Promise<PlayerData[]> => {
+    queryKey: ["profiles", gameIdFromUrl],
+    queryFn: async (): Promise<ProfileData[]> => {
       if (!gameIdFromUrl) return [];
-      const players = await fetchPlayers(supabase, gameIdFromUrl);
-      return players;
+      const profiles = await fetchProfiles(supabase, gameIdFromUrl);
+      return profiles;
     },
     enabled: !!gameIdFromUrl,
   });
@@ -26,19 +26,19 @@ export const usePlayersQuery = () => {
     if (!gameIdFromUrl) return;
 
     const channel = supabase
-      .channel(`players-${gameIdFromUrl}`)
+      .channel(`profiles-${gameIdFromUrl}`)
       .on(
         "postgres_changes",
         {
           event: "*",
           schema: "public",
-          table: "players",
+          table: "profiles",
           filter: `game_id=eq.${gameIdFromUrl}`,
         },
         () => {
           // Invalidate query when changes detected
           queryClient.invalidateQueries({
-            queryKey: ["players", gameIdFromUrl],
+            queryKey: ["profiles", gameIdFromUrl],
           });
         },
       )

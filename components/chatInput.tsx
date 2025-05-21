@@ -14,12 +14,12 @@ import {
 } from "@/hooks/useFunctionsQuery";
 import {
   cleanAnswer,
-  getPlayersWithLeastMessages,
+  getProfilesWithLeastMessages,
 } from "@/supabase/functions/_shared/utils";
 import { Send } from "@mui/icons-material";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
-import { usePlayersQuery } from "@/hooks/usePlayersQuery";
+import { useProfilesQuery } from "@/hooks/useProfilesQuery";
 import { useMessagesQuery } from "@/hooks/useMessagesQuery";
 import { useIsLoading } from "@/hooks/useIsLoading";
 
@@ -32,23 +32,32 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   const [botAnswers, setBotAnswers] = useState<string[] | undefined>();
   const userQuery = useUserQuery();
   const gameQuery = useGameQuery();
-  const playersQuery = usePlayersQuery();
+  const profilesQuery = useProfilesQuery();
   const messagesQuery = useMessagesQuery();
   const generateAnswersMutation = useGenerateAnswersMutation();
   const postMessageMutation = usePostMessageMutation();
   const isLoading = useIsLoading();
 
-  const players = playersQuery.data || [];
+  const profiles = profilesQuery.data || [];
   const messages = messagesQuery.data || [];
-  if (!userQuery.data) return null;
+  if (!userQuery.data) {
+    console.error("User data not available");
+    return null;
+  }
   const gameId = gameQuery?.data?.id;
-  if (!gameId) return null;
-  const me = players.find((player) => player.user_id === userQuery.data?.id);
-  if (!me) return null;
+  if (!gameId) {
+    console.error("Game ID not available");
+    return null;
+  }
+  const me = profiles.find((profile) => profile.id === userQuery.data?.id);
+  if (!me) {
+    console.error("Profile not found for user", userQuery.data?.id);
+    return null;
+  }
 
-  const talkingPlayers = getPlayersWithLeastMessages(players, messages);
-  const canTalk = talkingPlayers?.some((p) => p.id === me.id);
-  const isLate = canTalk && talkingPlayers.length <= 2;
+  const talkingProfiles = getProfilesWithLeastMessages(profiles, messages);
+  const canTalk = talkingProfiles?.some((p) => p.id === me.id);
+  const isLate = canTalk && talkingProfiles.length <= 2;
 
   const generateAnswers = async () => {
     try {
@@ -83,8 +92,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
     try {
       await postMessageMutation.mutateAsync({
         game_id: gameId,
-        user_id: userQuery.data.id,
-        player_id: me.id,
+        profile_id: me.id,
         author: me.name,
         content: cleanAnswer(text),
       });
@@ -121,14 +129,16 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
             <strong>⏰ Hurry up!</strong>
           </Typography>
         )}
-        {!canTalk && talkingPlayers?.length && (
+
+        {!canTalk && talkingProfiles?.length && (
           <Typography textAlign="center">
             Waiting for{" "}
-            {talkingPlayers.length > 2
+            {talkingProfiles.length > 2
               ? "others"
-              : talkingPlayers.map((p) => p.name).join(", ")}
+              : talkingProfiles.map((p) => p.name).join(", ")}
           </Typography>
         )}
+
         {/* bot input */}
         {me.is_bot && !botAnswers && (
           <Box sx={{ display: "flex", justifyContent: "center" }}>
