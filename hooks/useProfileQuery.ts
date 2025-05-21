@@ -26,7 +26,7 @@ export const useProfileQuery = () => {
       return profile;
     },
     enabled: !!userId,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 1000,
   });
 };
 
