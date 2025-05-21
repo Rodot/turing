@@ -73,10 +73,10 @@ export const SignUp: React.FC = () => {
           +1 🧠 for guessing <strong>who is the AI?</strong>
         </Typography>
         <Typography>
-          +1 🧠 for convincing players you are the AI, as a human.
+          +1 🧠 if players think you are the AI, as a human.
         </Typography>
         <Typography>
-          +1 🧠 for convincing players you are a human, as the AI.
+          +1 🧠 if players think you are a human, as the AI.
         </Typography>
         <Typography fontWeight={900} align="center" sx={{ my: 2 }}>
           Earn 5 🧠 to win
