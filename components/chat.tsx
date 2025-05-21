@@ -105,24 +105,6 @@ export const Chat: React.FC = () => {
       >
         {isTalking && <ChatInput />}
         {isVoting && <ChatVote />}
-        {isOver && (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 1,
-              my: 2,
-            }}
-          >
-            {isHost && <ButtonCreateGame />}
-            {!isHost && (
-              <Typography>
-                Waiting for {host?.name} to start the game
-              </Typography>
-            )}
-          </Box>
-        )}
       </Paper>
     </Container>
   );
