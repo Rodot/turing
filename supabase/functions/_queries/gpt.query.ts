@@ -12,7 +12,7 @@ export const fetchChatCompletionJson = async (
         Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
       },
       body: JSON.stringify({
-        model: "gpt-4.1-mini",
+        model: "o4-mini",
         response_format: { type: "json_object" },
         temperature: 1.0,
         messages,
