@@ -36,8 +36,6 @@ export const Chat: React.FC = () => {
     <Container
       sx={{
         maxWidth: "720px!important",
-        display: "flex",
-        flexDirection: "column",
         height: "100dvh",
         p: 0,
       }}
@@ -46,13 +44,15 @@ export const Chat: React.FC = () => {
         sx={{
           display: "flex",
           flexDirection: "row",
+          flexWrap: "wrap",
           alignContent: "center",
           justifyContent: "center",
           p: 1,
           gap: 1,
           borderRadius: 0,
           zIndex: 2,
-          flexWrap: "wrap",
+          position: "sticky",
+          top: 0,
         }}
       >
         {players
@@ -67,7 +67,6 @@ export const Chat: React.FC = () => {
 
       <Box
         sx={{
-          flexGrow: 1,
           overflowY: "auto",
           overflowX: "hidden",
         }}
@@ -75,7 +74,10 @@ export const Chat: React.FC = () => {
         <ChatHistory />
       </Box>
 
-      <Paper elevation={8} sx={{ borderRadius: 0, zIndex: 2 }}>
+      <Paper
+        elevation={8}
+        sx={{ borderRadius: 0, zIndex: 2, postition: "sticky", bottom: 0 }}
+      >
         {isTalking && <ChatInput />}
         {isVoting && <ChatVote />}
         {isOver && (
