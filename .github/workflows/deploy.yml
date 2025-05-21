@@ -67,5 +67,5 @@ jobs:
         with:
           version: latest
 
-      # - run: echo 'y' | npx -y supabase@beta db reset --db-url $SUPABASE_DB_URL
+      - run: echo 'y' | npx -y supabase@beta db reset --db-url $SUPABASE_DB_URL
       - run: supabase functions deploy --project-ref $SUPABASE_PROJECT_ID
