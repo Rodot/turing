@@ -215,7 +215,14 @@ async function gatherVotingData(
 
 // STEP 2: Function to determine who gets points and why
 function determinePointsAllocation(votingData: VotingData): PointAllocation[] {
-  const { botProfile, botVoters, blankVoters, humanImposters } = votingData;
+  const {
+    botProfile,
+    botVoters,
+    blankVoters,
+    humanImposters,
+    profiles,
+    voteCounts,
+  } = votingData;
 
   const pointAllocations: PointAllocation[] = [];
 
@@ -250,6 +257,22 @@ function determinePointsAllocation(votingData: VotingData): PointAllocation[] {
     });
   }
 
+  // Points for players with most votes when there's no bot (similar to human imposters)
+  if (!botProfile && Object.keys(voteCounts).length > 0) {
+    const maxVotes = Math.max(...Object.values(voteCounts));
+    const mostVotedProfiles = profiles.filter(
+      (profile) => (voteCounts[profile.id] || 0) === maxVotes && maxVotes > 0,
+    );
+
+    mostVotedProfiles.forEach((profile) => {
+      pointAllocations.push({
+        profile,
+        points: 1,
+        reason: "moreConvincingThanBot",
+      });
+    });
+  }
+
   // Points for blank voters when no bot
   if (!botProfile && blankVoters.length > 0) {
     blankVoters.forEach((voter) => {
@@ -270,12 +293,29 @@ async function updatePlayerPoints(
   pointAllocations: PointAllocation[],
   gameId: string,
 ) {
-  const updatePromises = pointAllocations.map((allocation) =>
-    updateProfile(supabase, {
-      id: allocation.profile.id,
-      game_id: gameId,
-      score: allocation.profile.score + allocation.points,
-    }),
+  // Reduce to calculate total points per player
+  const pointsByPlayer = pointAllocations.reduce<
+    Record<string, { profile: ProfileData; totalPoints: number }>
+  >((acc, allocation) => {
+    const { profile, points } = allocation;
+    const profileId = profile.id;
+
+    if (!acc[profileId]) {
+      acc[profileId] = { profile, totalPoints: 0 };
+    }
+
+    acc[profileId].totalPoints += points;
+    return acc;
+  }, {});
+
+  // Update each player with their total points
+  const updatePromises = Object.values(pointsByPlayer).map(
+    ({ profile, totalPoints }) =>
+      updateProfile(supabase, {
+        id: profile.id,
+        game_id: gameId,
+        score: profile.score + totalPoints,
+      }),
   );
 
   await Promise.all(updatePromises);
@@ -290,9 +330,6 @@ async function postPointsMessages(
 ) {
   const { botProfile, humanImposters } = votingData;
 
-  let mainMessage = "";
-  let additionalMessage = "";
-
   // Group profiles by reason for better messaging
   const foundBotPlayers = pointAllocations
     .filter((a) => a.reason === "foundBot")
@@ -302,42 +339,64 @@ async function postPointsMessages(
     .filter((a) => a.reason === "correctlyGuessedNoBot")
     .map((a) => a.profile);
 
+  const mostVotedNoBotPlayers = pointAllocations
+    .filter((a) => a.reason === "moreConvincingThanBot" && !botProfile)
+    .map((a) => a.profile);
+
+  // Messages to post
+  const messages: string[] = [];
+
   // Create message for bot voters
   if (botProfile && foundBotPlayers.length > 0) {
-    mainMessage = `+1 🧠 for ${foundBotPlayers
-      .map((p) => p.name)
-      .join(" and ")} who guessed that ${botProfile.name} was the AI 🤖`;
+    messages.push(
+      `+1 🧠 for ${foundBotPlayers
+        .map((p) => p.name)
+        .join(" and ")} who guessed that ${botProfile.name} was the AI 🤖`,
+    );
   }
 
   // Create message for escaped bot
   if (botProfile && foundBotPlayers.length === 0) {
-    mainMessage = `+1 🧠 for ${botProfile.name} for pretending to be human... as the AI 🤖`;
+    messages.push(`+1 🧠 for ${botProfile.name} for pretending to be human 🤖`);
   }
 
   // Create message for correct blank voters
   if (!botProfile && correctlyGuessedNoBotPlayers.length > 0) {
-    mainMessage = `+1 🧠 for ${correctlyGuessedNoBotPlayers
-      .map((p) => p.name)
-      .join(" and ")} who realized there was no AI ❌`;
+    messages.push(
+      `+1 🧠 for ${correctlyGuessedNoBotPlayers
+        .map((p) => p.name)
+        .join(" and ")} who realized there was no AI ❌`,
+    );
   }
 
   // Create message when nobody guessed there was no bot
   if (!botProfile && correctlyGuessedNoBotPlayers.length === 0) {
-    mainMessage = `Nobody guessed that there was no AI ❌`;
+    messages.push(`Nobody guessed that there was no AI ❌`);
   }
 
   // Add message for humans who got more votes than the bot
   if (humanImposters.length > 0) {
-    additionalMessage = `\n+1 🧠 for ${humanImposters
-      .map((p) => p.name)
-      .join(" and ")} for pretending to be the AI... as a human 👤`;
+    messages.push(
+      `+1 🧠 for ${humanImposters
+        .map((p) => p.name)
+        .join(" and ")} for pretending to be the AI 👤`,
+    );
   }
 
-  // Post the message
-  if (mainMessage || additionalMessage) {
+  // Add message for most voted players when there's no bot
+  if (!botProfile && mostVotedNoBotPlayers.length > 0) {
+    messages.push(
+      `+1 🧠 for ${mostVotedNoBotPlayers
+        .map((p) => p.name)
+        .join(" and ")} for pretending to be the AI 👤`,
+    );
+  }
+
+  // Post all messages sequentially
+  for (const message of messages) {
     await insertMessage(supabase, {
       author: "system",
-      content: mainMessage + additionalMessage,
+      content: message,
       game_id: gameId,
     });
   }
