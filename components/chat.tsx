@@ -36,7 +36,7 @@ export const Chat: React.FC = () => {
     <Container
       sx={{
         maxWidth: "720px!important",
-        height: "100dvh",
+        minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
         p: 0,
