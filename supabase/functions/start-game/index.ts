@@ -37,7 +37,9 @@ Deno.serve(async (req) => {
     if (!profiles?.length) throw new Error("No profiles in game");
 
     // Select random profile to be the bot
-    const botProfile = pickRandom(profiles);
+
+    const noBotThisRound = Math.random() <= 1 / (profiles.length + 1);
+    const botProfile = noBotThisRound ? undefined : pickRandom(profiles);
 
     // Update each profile with initial game values
     for (const profile of profiles) {
@@ -45,7 +47,7 @@ Deno.serve(async (req) => {
         id: profile.id,
         vote: null,
         vote_blank: false,
-        is_bot: profile.id === botProfile.id,
+        is_bot: profile.id === botProfile?.id,
         score: 0,
       });
     }
