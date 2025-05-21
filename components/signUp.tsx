@@ -11,7 +11,6 @@ import {
   useProfileQuery,
 } from "@/hooks/useProfileQuery";
 import { useIsFetching, useIsMutating } from "@tanstack/react-query";
-import { Spinner } from "./spinner";
 
 export const SignUp: React.FC = () => {
   const profileQuery = useProfileQuery();
