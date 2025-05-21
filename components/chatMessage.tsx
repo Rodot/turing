@@ -55,7 +55,13 @@ export function ChatMessage({
             {message.author}
           </Typography>
         )}
-        <Typography sx={{ textAlign: getTextAlign() }}>
+        <Typography
+          sx={{
+            textAlign: getTextAlign(),
+            wordWrap: "break-word",
+            overflowWrap: "break-word",
+          }}
+        >
           {message.content}
         </Typography>
       </Box>
