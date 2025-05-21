@@ -58,7 +58,6 @@ export const SignUp: React.FC = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: 2,
         p: 2,
       }}
     >
@@ -72,21 +71,26 @@ export const SignUp: React.FC = () => {
         </Typography>
       </Box>
 
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-        <Typography fontWeight={900} align="center" sx={{ my: 2 }}>
-          In a group chat, an AI controls one of your friends.
+      <Box sx={{ my: 4 }}>
+        <Typography fontWeight={900} align="center">
+          An AI controls someone in the chat.
         </Typography>
-        <Box sx={{ alignSelf: "center" }}>
-          <Typography>
-            +1 🧠 Guessing <strong>who is the AI?</strong>
-          </Typography>
-          <Typography>+1 🧠 Being mistaken for AI (if human).</Typography>
-          <Typography>+1 🧠 Passing as human (if AI).</Typography>
-          <Typography fontWeight={900} align="center" sx={{ my: 2 }}>
-            Earn 5 🧠 to win
-          </Typography>
-        </Box>
+        <Typography align="center" sx={{ fontStyle: "italic" }}>
+          Can you tell your friends from the AI?
+        </Typography>
       </Box>
+
+      <Box sx={{ alignSelf: "center" }}>
+        <Typography>
+          +1 🧠 Guess <strong>who is the AI?</strong>
+        </Typography>
+        <Typography>+1 🧠 Be mistaken for an AI (if human).</Typography>
+        <Typography>+1 🧠 Pass as human (if AI).</Typography>
+      </Box>
+
+      <Typography fontWeight={900} align="center" sx={{ my: 4 }}>
+        Earn 5 🧠 to win
+      </Typography>
 
       {!isLoading && !isNameSet && (
         <form onSubmit={onSubmit} style={{ width: "100%" }}>
