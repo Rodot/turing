@@ -77,8 +77,6 @@ export const SignUp: React.FC = () => {
         </Typography>
       </Box>
 
-      {isLoading && <Spinner />}
-
       {!isLoading && !isNameSet && (
         <form onSubmit={onSubmit} style={{ width: "100%" }}>
           <Box
