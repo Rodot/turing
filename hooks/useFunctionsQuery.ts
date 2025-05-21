@@ -13,9 +13,12 @@ export const useStartGameMutation = () => {
   return useMutation({
     mutationFn: async () => {
       if (!gameIdFromUrl) throw new Error("No game joined");
-      await supabase.functions.invoke("start-game", {
+      const response = await supabase.functions.invoke("start-game", {
         body: { gameId: gameIdFromUrl },
       });
+      if (response.error) {
+        throw new Error("Error while starting game");
+      }
       return { gameId: gameIdFromUrl };
     },
   });
@@ -29,6 +32,9 @@ export const useCreateGameMutation = () => {
   return useMutation({
     mutationFn: async () => {
       const response = await supabase.functions.invoke("create-game");
+      if (response.error) {
+        throw new Error("Error while creating game");
+      }
       return response?.data?.game_id as string | undefined;
     },
     onSuccess: (gameId) => {
@@ -46,7 +52,12 @@ export const usePlayerVoteMutation = () => {
       profileId: string;
       vote: string;
     }) => {
-      await supabase.functions.invoke("player-vote", { body: params });
+      const response = await supabase.functions.invoke("player-vote", {
+        body: params,
+      });
+      if (response.error) {
+        throw new Error("Error while voting");
+      }
       return params;
     },
   });
@@ -55,7 +66,12 @@ export const usePlayerVoteMutation = () => {
 export const usePostMessageMutation = () => {
   return useMutation({
     mutationFn: async (message: Partial<MessageData>) => {
-      await supabase.functions.invoke("post-message", { body: message });
+      const response = await supabase.functions.invoke("post-message", {
+        body: message,
+      });
+      if (response.error) {
+        throw new Error("Error while posting message");
+      }
       return message;
     },
   });
@@ -68,7 +84,12 @@ export const useEndGameMutation = () => {
 
   return useMutation({
     mutationFn: async (gameId: string) => {
-      await supabase.functions.invoke("end-game", { body: { gameId } });
+      const response = await supabase.functions.invoke("end-game", {
+        body: { gameId },
+      });
+      if (response.error) {
+        throw new Error("Error while ending game");
+      }
     },
     onSuccess: () => {
       // Invalidate profile query to trigger a refetch
@@ -88,10 +109,13 @@ export const useGenerateAnswersMutation = () => {
     }) => {
       const { gameId, playerName, lang } = params;
       if (!gameId) throw new Error("No game joined");
-      const req = await supabase.functions.invoke("generate-answers", {
+      const response = await supabase.functions.invoke("generate-answers", {
         body: { gameId, playerName, lang },
       });
-      return req?.data;
+      if (response.error) {
+        throw new Error("Error while generating answers");
+      }
+      return response?.data;
     },
   });
 };
