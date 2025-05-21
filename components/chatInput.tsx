@@ -60,23 +60,19 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   const isLate = canTalk && talkingProfiles.length <= 2;
 
   const generateAnswers = async () => {
-    try {
-      let receivedAnswers: string[] = [];
-      let timeout = 3;
-      while (!receivedAnswers?.length) {
-        if (!timeout--) throw new Error("Answer generation timed out");
-        const req = await generateAnswersMutation.mutateAsync({
-          gameId,
-          playerName: me.name,
-          lang: gameQuery?.data?.lang ?? "en",
-        });
-        console.log(req);
-        receivedAnswers = (req?.possibleNextMessages ?? []).map(cleanAnswer);
-      }
-      setBotAnswers(receivedAnswers);
-    } catch (error) {
-      console.error(error);
+    let receivedAnswers: string[] = [];
+    let timeout = 3;
+    while (!receivedAnswers?.length) {
+      if (!timeout--) throw new Error("Answer generation timed out");
+      const req = await generateAnswersMutation.mutateAsync({
+        gameId,
+        playerName: me.name,
+        lang: gameQuery?.data?.lang ?? "en",
+      });
+      console.log(req);
+      receivedAnswers = (req?.possibleNextMessages ?? []).map(cleanAnswer);
     }
+    setBotAnswers(receivedAnswers);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,16 +85,12 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
       return;
     }
 
-    try {
-      await postMessageMutation.mutateAsync({
-        game_id: gameId,
-        profile_id: me.id,
-        author: me.name,
-        content: cleanAnswer(text),
-      });
-    } catch (error) {
-      console.error(error);
-    }
+    await postMessageMutation.mutateAsync({
+      game_id: gameId,
+      profile_id: me.id,
+      author: me.name,
+      content: cleanAnswer(text),
+    });
   };
 
   const sendMessageFromInput = async () => {
