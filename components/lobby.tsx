@@ -79,6 +79,18 @@ export const Lobby: React.FC = () => {
           game.
         </Typography>
       )}
+      {enoughPlayers && isHost && (
+        <Button
+          component="button"
+          color="secondary"
+          variant="contained"
+          onClick={() => startGameMutation.mutate()}
+          disabled={isLoading || !enoughPlayers}
+          aria-label="Start Game"
+        >
+          Start Game
+        </Button>
+      )}
 
       <Box sx={{ mb: 4 }}></Box>
 
@@ -122,21 +134,6 @@ export const Lobby: React.FC = () => {
             </Button>
           </ButtonGroup>
         </>
-      )}
-
-      <Box sx={{ mb: 4 }}></Box>
-
-      {isHost && (
-        <Button
-          component="button"
-          color="secondary"
-          variant="contained"
-          onClick={() => startGameMutation.mutate()}
-          disabled={isLoading || !enoughPlayers}
-          aria-label="Start Game"
-        >
-          Start Game
-        </Button>
       )}
     </Container>
   );
