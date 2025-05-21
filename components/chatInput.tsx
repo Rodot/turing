@@ -123,7 +123,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
         )}
         {!canTalk && talkingPlayers?.length && (
           <Typography textAlign="center">
-            Waiting for messages from{" "}
+            Waiting for{" "}
             {talkingPlayers.length > 2
               ? "others"
               : talkingPlayers.map((p) => p.name).join(", ")}
@@ -178,18 +178,19 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
               <TextField
                 type="text"
                 autoComplete="off"
+                size="small"
                 value={content}
                 onChange={handleInputChange}
-                label={`Send a message as ${me.name}`}
+                label="Send message"
                 sx={{ flexGrow: 1, mr: 1 }}
-                aria-label="Message Input"
+                aria-label="Message input"
               />
               <Button
                 type="submit"
                 variant="contained"
                 color="secondary"
                 disabled={!canTalk || isLoading}
-                aria-label="Send message"
+                aria-label="Send message button"
               >
                 <Send />
               </Button>

@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Chip,
-  Container,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Container, TextField, Typography } from "@mui/material";
 import { ButtonCreateGame } from "./buttonCreateGame";
 import { Send } from "@mui/icons-material";
 import { ButtonJoinGame } from "./buttonJoinGame";
@@ -31,8 +24,8 @@ export const SignUp: React.FC = () => {
 
   const profileGameId = profileQuery.data?.game_id ?? undefined;
 
-  const isResumeGameVisible = !!profileGameId;
-  const isLeaveGameVisible = !!profileGameId;
+  const isResumeGameVisible = !!profileGameId && !urlGameId;
+  const isLeaveGameVisible = !!profileGameId && !urlGameId;
   const isJoinGameVisible = !!urlGameId;
   const isCreateGameVisible = !profileGameId && !urlGameId;
 

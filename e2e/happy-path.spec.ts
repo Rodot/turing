@@ -33,11 +33,10 @@ test("multi-user game flow", async ({ browser }) => {
     await guest.getByLabel("Join Game").click();
   }
 
-  await expect(host.getByText("HostPlayerName (you)")).toHaveCount(1);
+  await expect(host.getByText("HostPlayerName")).toHaveCount(1);
   await expect(host.getByText("GuestPlayerName")).toHaveCount(guests.length);
 
   for (const guest of guests) {
-    await expect(guest.getByText("GuestPlayerName (you)")).toHaveCount(1);
     await expect(guest.getByText("GuestPlayerName")).toHaveCount(guests.length);
     await expect(guest.getByText("HostPlayerName")).toHaveCount(2);
   }
@@ -45,7 +44,7 @@ test("multi-user game flow", async ({ browser }) => {
   await host.getByLabel("Start Game").waitFor();
   await host.getByLabel("Start Game").click();
 
-  await host.waitForTimeout(2000);
+  await host.waitForTimeout(1000);
 
   // Separate humans from ais
 
@@ -53,7 +52,7 @@ test("multi-user game flow", async ({ browser }) => {
   const ais = [] as Page[];
   for (const player of players) {
     try {
-      if (await player.getByLabel("Message Input").isVisible()) {
+      if (await player.getByLabel("Message input").isVisible()) {
         console.log("Found human");
         humans.push(player);
       }
@@ -72,20 +71,20 @@ test("multi-user game flow", async ({ browser }) => {
   // Send human messages
 
   await humans[0]
-    ?.getByLabel("Message Input")
+    ?.getByLabel("Message input")
     .getByRole("textbox")
     .fill("Hello");
-  await humans[0]?.getByLabel("Send message").click();
+  await humans[0]?.getByLabel("Send message button").click();
 
   for (const player of players) {
     await player.getByText("Hello").waitFor();
   }
 
   await humans[1]
-    ?.getByLabel("Message Input")
+    ?.getByLabel("Message input")
     .getByRole("textbox")
     .fill("How are you?");
-  await humans[1]?.getByLabel("Send message").click();
+  await humans[1]?.getByLabel("Send message button").click();
 
   for (const player of players) {
     await player.getByText("How are you?").waitFor();

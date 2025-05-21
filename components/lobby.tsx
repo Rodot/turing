@@ -7,6 +7,7 @@ import {
   ButtonGroup,
   Chip,
   Container,
+  Paper,
   Typography,
 } from "@mui/material";
 import { ButtonShare } from "./buttonShare";
@@ -27,8 +28,7 @@ export const Lobby: React.FC = () => {
   const profilesQuery = useProfilesQuery();
   const gameProfiles = profilesQuery.data || [];
   const isHost = gameProfiles?.[0]?.id === userQuery.data?.id;
-  const me = gameProfiles?.find((profile) => profile.id === userQuery.data?.id);
-  const notEnoughPlayers = gameProfiles?.length < 3;
+  const enoughPlayers = gameProfiles?.length >= 3;
   const url = window.location.href;
   const startGameMutation = useStartGameMutation();
   const gameLanguageMutation = useGameLanguageMutation();
@@ -36,93 +36,107 @@ export const Lobby: React.FC = () => {
 
   return (
     <Container
-      maxWidth="sm"
       sx={{
+        maxWidth: "720px!important",
+        minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: 1,
-        p: 2,
+        p: 0,
       }}
     >
-      <Box sx={{ alignSelf: "flex-start" }}>
+      <Paper
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          position: "sticky",
+          top: 0,
+          zIndex: 2,
+          p: 0,
+          pl: 2,
+          borderRadius: 0,
+          width: "100%",
+          gap: 1,
+        }}
+      >
         <ButtonGoHome />
-      </Box>
+        {gameProfiles?.map((profile) => (
+          <Chip key={profile.id} label={profile.name} />
+        ))}
+      </Paper>
+
+      <Box sx={{ mb: 4 }}></Box>
+
+      {!enoughPlayers && (
+        <Typography>
+          <strong>3+ players required</strong>, invite people!
+        </Typography>
+      )}
+      {enoughPlayers && !isHost && (
+        <Typography>
+          <strong>Waiting for {gameProfiles?.[0]?.name}</strong> to start the
+          game.
+        </Typography>
+      )}
+
+      <Box sx={{ mb: 4 }}></Box>
+
       <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
-        Game Invite Link
+        Invite Link
       </Typography>
       <Box>
         <ButtonShare url={url} />
       </Box>
-      <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
-        Scan to join 👇
-      </Typography>
+
+      <Box sx={{ mb: 2 }}></Box>
+
       <QRShare url={url} />
-      <Box sx={{ mb: 6 }}></Box>
       <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
-        Group Chat Language
+        Scan to join 👆
       </Typography>
-      <ButtonGroup>
-        <Button
-          component="button"
-          variant={gameQuery?.data?.lang === "en" ? "contained" : "text"}
-          onClick={() => gameLanguageMutation.mutate("en")}
-          disabled={gameLanguageMutation.isPending}
-        >
-          English
-        </Button>
-        <Button
-          component="button"
-          variant={gameQuery?.data?.lang === "fr" ? "contained" : "text"}
-          onClick={() => gameLanguageMutation.mutate("fr")}
-          disabled={gameLanguageMutation.isPending}
-        >
-          French
-        </Button>
-      </ButtonGroup>
-      <Box sx={{ mb: 6 }}></Box>
-      <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
-        {gameProfiles.length} Players Connected
-      </Typography>
-      <Box
-        sx={{
-          display: "flex",
-          gap: 1,
-          flexDirection: "row",
-          flexWrap: "wrap",
-          justifyContent: "center",
-        }}
-      >
-        {gameProfiles?.map((profile) => (
-          <Chip
-            key={profile.id}
-            label={`${profile.name} ${profile.id === me?.id ? "(you)" : ""}`}
-          />
-        ))}
-      </Box>
-      <Box sx={{ mb: 6 }}></Box>
+
+      {isHost && (
+        <>
+          <Box sx={{ mb: 4 }}></Box>
+
+          <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
+            Conversation Language
+          </Typography>
+          <ButtonGroup>
+            <Button
+              component="button"
+              variant={gameQuery?.data?.lang === "en" ? "contained" : "text"}
+              onClick={() => gameLanguageMutation.mutate("en")}
+              disabled={gameLanguageMutation.isPending}
+            >
+              English
+            </Button>
+            <Button
+              component="button"
+              variant={gameQuery?.data?.lang === "fr" ? "contained" : "text"}
+              onClick={() => gameLanguageMutation.mutate("fr")}
+              disabled={gameLanguageMutation.isPending}
+            >
+              French
+            </Button>
+          </ButtonGroup>
+        </>
+      )}
+
+      <Box sx={{ mb: 4 }}></Box>
+
       {isHost && (
         <Button
           component="button"
           color="secondary"
           variant="contained"
           onClick={() => startGameMutation.mutate()}
-          disabled={isLoading || notEnoughPlayers}
+          disabled={isLoading || !enoughPlayers}
           aria-label="Start Game"
         >
           Start Game
         </Button>
-      )}
-      {notEnoughPlayers && (
-        <Typography>
-          <strong>3+ players required</strong>, invite people to start!
-        </Typography>
-      )}
-      {!isHost && (
-        <Typography>
-          <strong>Waiting for {gameProfiles?.[0]?.name}</strong> to start the
-          game
-        </Typography>
       )}
     </Container>
   );
