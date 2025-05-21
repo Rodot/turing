@@ -5,7 +5,7 @@ import { useSnackbar } from "./snackbarContext";
 
 export function QueryErrorReporter() {
   const queryClient = useQueryClient();
-  const { showSnackbar } = useSnackbar();
+  const { show: showSnackbar } = useSnackbar();
 
   useEffect(() => {
     const queryCache = queryClient.getQueryCache();

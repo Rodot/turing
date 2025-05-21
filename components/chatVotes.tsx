@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, Button, SxProps, Theme, Typography } from "@mui/material";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
 import { VoteResults } from "./voteResult";
@@ -7,6 +7,7 @@ import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { usePlayersQuery } from "@/hooks/usePlayersQuery";
 import { usePlayerVoteMutation } from "@/hooks/useFunctionsQuery";
+import { useIsLoading } from "@/hooks/useIsLoading";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -17,8 +18,8 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   const gameQuery = useGameQuery();
   const playersQuery = usePlayersQuery();
   const players = playersQuery.data || [];
-  const [loading, setLoading] = useState(false);
   const playerVoteMutation = usePlayerVoteMutation();
+  const isLoading = useIsLoading();
 
   if (!players) return null;
   if (!gameQuery) return null;
@@ -50,7 +51,6 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
     if (!me) return;
     if (!gameQuery.data?.id) return;
     try {
-      setLoading(true);
       await playerVoteMutation.mutateAsync({
         gameId: gameQuery.data.id,
         playerId: me.id,
@@ -58,8 +58,6 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
       });
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -111,7 +109,7 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
               color={option.id === "blank" ? "primary" : "secondary"}
               sx={{ ml: 1 }}
               onClick={() => vote(option.id)}
-              disabled={!canVote(option) || loading}
+              disabled={!canVote(option) || isLoading}
             >
               {option.id === "blank" && "❌ "}
               {option.name}

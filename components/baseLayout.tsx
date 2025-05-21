@@ -10,9 +10,7 @@ import { theme } from "../theme";
 import { SnackbarProvider } from "./snackbarContext";
 
 // Create QueryClient instance
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } }, // 5 minutes
-});
+const queryClient = new QueryClient({});
 
 export function BaseLayout({ children }: React.PropsWithChildren) {
   return (

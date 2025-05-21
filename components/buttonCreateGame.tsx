@@ -13,7 +13,7 @@ export const ButtonCreateGame: React.FC = () => {
       disabled={createGameMutation.isPending}
       aria-label="New Game"
     >
-      Create New Game
+      New Game
     </Button>
   );
 };

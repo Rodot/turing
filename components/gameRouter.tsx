@@ -4,20 +4,20 @@ import { Chat } from "./chat";
 import { Lobby } from "./lobby";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { SignUp } from "./signUp";
+import { useGameIdFromUrl } from "@/hooks/useGameIdFromUrl";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
-import { Typography } from "@mui/material";
 
 export const GameRouter = () => {
+  const gameIdFromUrl = useGameIdFromUrl();
   const gameQuery = useGameQuery();
-  const profileQuery = useProfileQuery();
-  const notInGame = gameQuery?.data?.id !== profileQuery?.data?.game_id;
+  const profile = useProfileQuery();
+  const isInGameFromUrl = gameIdFromUrl === profile.data?.game_id;
 
-  if (!gameQuery?.data?.status || notInGame) {
+  if (!gameIdFromUrl || !isInGameFromUrl) {
     return <SignUp />;
   }
 
   if (gameQuery.data?.status === "lobby") {
-    <Typography>lobby</Typography>;
     return <Lobby />;
   }
 

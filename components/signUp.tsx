@@ -10,17 +10,24 @@ import {
   useProfileNameMutation,
   useProfileQuery,
 } from "@/hooks/useProfileQuery";
-import { useIsFetching, useIsMutating } from "@tanstack/react-query";
+import { ButtonEndGame } from "./buttonEndGame";
+import { useGameIdFromUrl } from "@/hooks/useGameIdFromUrl";
+import { useIsLoading } from "@/hooks/useIsLoading";
 
 export const SignUp: React.FC = () => {
   const profileQuery = useProfileQuery();
   const profileNameMutation = useProfileNameMutation();
   const [name, setName] = useState("");
   const isNameSet = (profileQuery?.data?.name?.length ?? 0) > 1;
-  const isFetching = useIsFetching();
-  const isMutating = useIsMutating();
-  const isLoading =
-    isFetching > 0 || isMutating > 0 || profileQuery.data?.id === undefined;
+  const urlGameId = useGameIdFromUrl();
+  const isLoading = useIsLoading();
+
+  const profileGameId = profileQuery.data?.game_id ?? undefined;
+
+  const isResumeGameVisible = !!profileGameId;
+  const isLeaveGameVisible = !!profileGameId;
+  const isJoinGameVisible = !!urlGameId;
+  const isCreateGameVisible = !profileGameId && !urlGameId;
 
   useEffect(() => {
     if (profileQuery.data?.name) {
@@ -111,9 +118,10 @@ export const SignUp: React.FC = () => {
       )}
       {!isLoading && isNameSet && (
         <>
-          <ButtonResumeGame />
-          <ButtonJoinGame />
-          <ButtonCreateGame />
+          {isResumeGameVisible && <ButtonResumeGame />}
+          {isLeaveGameVisible && <ButtonEndGame />}
+          {isJoinGameVisible && <ButtonJoinGame />}
+          {isCreateGameVisible && <ButtonCreateGame />}
         </>
       )}
     </Container>

@@ -3,8 +3,8 @@ import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
 import { Box, Chip, Container, Paper, Typography } from "@mui/material";
 import { ChatVote } from "./chatVotes";
-import { ButtonLeaveGame } from "./buttonLeaveGame";
 import { ButtonCreateGame } from "./buttonCreateGame";
+import { ButtonGoHome } from "./buttonGoHome";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useJoinGameMutation, useGameQuery } from "@/hooks/useGameQuery";
 import { useProfilesQuery } from "@/hooks/useProfilesQuery";
@@ -47,43 +47,51 @@ export const Chat: React.FC = () => {
           display: "flex",
           flexDirection: "row",
           alignContent: "center",
-          justifyContent: "flex-start",
-          overflowX: "auto",
           position: "sticky",
           top: 0,
           zIndex: 2,
-          p: 2,
-          gap: 1,
+          p: 0,
+          pl: 2,
           borderRadius: 0,
         }}
       >
-        {players
-          .sort((a, b) => b.score - a.score)
-          .map((player) => (
-            <Box
-              key={player.id}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <Typography
-                variant="body2"
+        <ButtonGoHome />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            alignContent: "center",
+            overflowX: "auto",
+          }}
+        >
+          {players
+            .sort((a, b) => b.score - a.score)
+            .map((player) => (
+              <Box
+                key={player.id}
                 sx={{
-                  fontWeight: "medium",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  mr: 0.5,
+                  display: "flex",
+                  alignItems: "center",
                 }}
               >
-                {player.name}
-              </Typography>
-              {!player.score ? null : (
-                <Chip size="small" label={player.score + " 🧠"} />
-              )}
-            </Box>
-          ))}
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: "medium",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    mr: 0.5,
+                  }}
+                >
+                  {player.name}
+                </Typography>
+                {!player.score ? null : (
+                  <Chip size="small" label={player.score + " 🧠"} />
+                )}
+              </Box>
+            ))}
+        </Box>
       </Paper>
 
       <Box
@@ -123,7 +131,6 @@ export const Chat: React.FC = () => {
                 Waiting for {host?.name} to start the game
               </Typography>
             )}
-            {<ButtonLeaveGame />}
           </Box>
         )}
       </Paper>

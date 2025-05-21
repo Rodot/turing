@@ -2,13 +2,10 @@
 
 import React from "react";
 import { LinearProgress } from "@mui/material";
-import { useIsFetching, useIsMutating } from "@tanstack/react-query";
+import { useIsLoading } from "@/hooks/useIsLoading";
 
 export const QueryLoadingBar: React.FC = () => {
-  const isFetching = useIsFetching();
-  const isMutating = useIsMutating();
-
-  const isLoading = isFetching > 0 || isMutating > 0;
+  const isLoading = useIsLoading();
 
   if (!isLoading) return null;
 

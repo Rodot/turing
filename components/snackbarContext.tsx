@@ -16,7 +16,7 @@ interface SnackbarMessage {
 }
 
 interface SnackbarContextType {
-  showSnackbar: (message: string, type?: SnackbarType) => void;
+  show: (message: string, type?: SnackbarType) => void;
 }
 
 const SnackbarContext = createContext<SnackbarContextType | undefined>(
@@ -68,7 +68,7 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <SnackbarContext.Provider value={{ showSnackbar }}>
+    <SnackbarContext.Provider value={{ show: showSnackbar }}>
       {children}
       {currentMessage && (
         <Snackbar

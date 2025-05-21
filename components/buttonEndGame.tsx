@@ -1,26 +1,24 @@
 import React from "react";
+import { Close } from "@mui/icons-material";
 import { Button } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { useEndGameMutation } from "@/hooks/useFunctionsQuery";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
 import { useIsLoading } from "@/hooks/useIsLoading";
 
-export const ButtonResumeGame: React.FC = () => {
+export const ButtonEndGame: React.FC = () => {
+  const endGameMutation = useEndGameMutation();
   const profileQuery = useProfileQuery();
-  const router = useRouter();
   const isLoading = useIsLoading();
-
-  const startNewGame = async () => {
-    router.push(`/?game=${profileQuery.data?.game_id}`);
-  };
+  const gameId = profileQuery.data?.game_id ?? "";
 
   return (
     <Button
       color="secondary"
-      variant="contained"
-      onClick={startNewGame}
+      onClick={() => endGameMutation.mutate(gameId)}
       disabled={isLoading}
     >
-      Resume
+      <Close />
+      End Game
     </Button>
   );
 };

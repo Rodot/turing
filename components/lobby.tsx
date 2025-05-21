@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { ButtonShare } from "./buttonShare";
+import { ButtonGoHome } from "./buttonGoHome";
 import { QRShare } from "./qrShare";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import {
@@ -18,6 +19,7 @@ import {
   useStartGameMutation,
 } from "@/hooks/useGameQuery";
 import { useProfilesQuery } from "@/hooks/useProfilesQuery";
+import { useIsLoading } from "@/hooks/useIsLoading";
 
 export const Lobby: React.FC = () => {
   const userQuery = useUserQuery();
@@ -30,6 +32,7 @@ export const Lobby: React.FC = () => {
   const url = window.location.href;
   const startGameMutation = useStartGameMutation();
   const gameLanguageMutation = useGameLanguageMutation();
+  const isLoading = useIsLoading();
 
   return (
     <Container
@@ -42,7 +45,9 @@ export const Lobby: React.FC = () => {
         p: 2,
       }}
     >
-      <Box sx={{ mb: 6 }}></Box>
+      <Box sx={{ alignSelf: "flex-start" }}>
+        <ButtonGoHome />
+      </Box>
       <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
         Game Invite Link
       </Typography>
@@ -102,7 +107,7 @@ export const Lobby: React.FC = () => {
           color="secondary"
           variant="contained"
           onClick={() => startGameMutation.mutate()}
-          disabled={startGameMutation.isPending || notEnoughPlayers}
+          disabled={isLoading || notEnoughPlayers}
           aria-label="Start Game"
         >
           Start Game

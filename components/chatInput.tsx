@@ -21,14 +21,13 @@ import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { usePlayersQuery } from "@/hooks/usePlayersQuery";
 import { useMessagesQuery } from "@/hooks/useMessagesQuery";
+import { useIsLoading } from "@/hooks/useIsLoading";
 
 type Props = {
   sx?: SxProps<Theme>;
 };
 
 export const ChatInput: React.FC<Props> = ({ sx }) => {
-  const [loadingGeneration, setGenerationLoading] = useState(false);
-  const [loadingSend, setLoadingSend] = useState(false);
   const [content, setContent] = useState("");
   const [botAnswers, setBotAnswers] = useState<string[] | undefined>();
   const userQuery = useUserQuery();
@@ -37,6 +36,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   const messagesQuery = useMessagesQuery();
   const generateAnswersMutation = useGenerateAnswersMutation();
   const postMessageMutation = usePostMessageMutation();
+  const isLoading = useIsLoading();
 
   const players = playersQuery.data || [];
   const messages = messagesQuery.data || [];
@@ -52,7 +52,6 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
 
   const generateAnswers = async () => {
     try {
-      setGenerationLoading(true);
       let receivedAnswers: string[] = [];
       let timeout = 3;
       while (!receivedAnswers?.length) {
@@ -68,8 +67,6 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
       setBotAnswers(receivedAnswers);
     } catch (error) {
       console.error(error);
-    } finally {
-      setGenerationLoading(false);
     }
   };
 
@@ -84,7 +81,6 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
     }
 
     try {
-      setLoadingSend(true);
       await postMessageMutation.mutateAsync({
         game_id: gameId,
         user_id: userQuery.data.id,
@@ -94,8 +90,6 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
       });
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoadingSend(false);
     }
   };
 
@@ -143,7 +137,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
               color="secondary"
               sx={{ flexShrink: 1, flexGrow: 0 }}
               onClick={generateAnswers}
-              disabled={loadingGeneration || !canTalk}
+              disabled={isLoading || !canTalk}
               aria-label="AI Answers"
             >
               Generate AI Answers 🤖
@@ -162,7 +156,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
                   color="secondary"
                   key="answer"
                   onClick={() => sendMessageFromBot(answer)}
-                  disabled={loadingSend || !canTalk}
+                  disabled={isLoading || !canTalk}
                 >
                   <Send />
                 </Button>
@@ -194,7 +188,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
                 type="submit"
                 variant="contained"
                 color="secondary"
-                disabled={!canTalk || loadingSend}
+                disabled={!canTalk || isLoading}
                 aria-label="Send message"
               >
                 <Send />

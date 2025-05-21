@@ -3,41 +3,44 @@
 import { MessageData } from "@/supabase/functions/_types/Database.type";
 import { supabase } from "@/utils/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useGameId } from "./useGameId";
+import { useGameIdFromUrl } from "./useGameIdFromUrl";
 import { fetchMessages } from "@/queries/db/messages.query";
 import { useEffect } from "react";
 
 export const useMessagesQuery = () => {
   const queryClient = useQueryClient();
-  const gameId = useGameId();
+  const gameIdFromUrl = useGameIdFromUrl();
 
   const query = useQuery({
-    queryKey: ["messages", gameId],
+    queryKey: ["messages", gameIdFromUrl],
     queryFn: async (): Promise<MessageData[]> => {
-      if (!gameId) return [];
-      const messages = await fetchMessages(supabase, gameId);
+      if (!gameIdFromUrl) return [];
+      const messages = await fetchMessages(supabase, gameIdFromUrl);
+      console.log("messagesQuery", messages);
       return messages;
     },
-    enabled: !!gameId,
+    enabled: !!gameIdFromUrl,
   });
 
   // Set up real-time subscription
   useEffect(() => {
-    if (!gameId) return;
+    if (!gameIdFromUrl) return;
 
     const channel = supabase
-      .channel(`messages-${gameId}`)
+      .channel(`messages-${gameIdFromUrl}`)
       .on(
         "postgres_changes",
         {
           event: "*",
           schema: "public",
           table: "messages",
-          filter: `game_id=eq.${gameId}`,
+          filter: `game_id=eq.${gameIdFromUrl}`,
         },
         () => {
           // Invalidate query when changes detected
-          queryClient.invalidateQueries({ queryKey: ["messages", gameId] });
+          queryClient.invalidateQueries({
+            queryKey: ["messages", gameIdFromUrl],
+          });
         },
       )
       .subscribe();
@@ -45,7 +48,7 @@ export const useMessagesQuery = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [gameId, queryClient]);
+  }, [gameIdFromUrl, queryClient]);
 
   return query;
 };

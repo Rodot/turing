@@ -3,41 +3,43 @@
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
 import { supabase } from "@/utils/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useGameId } from "./useGameId";
+import { useGameIdFromUrl } from "./useGameIdFromUrl";
 import { fetchPlayers } from "@/queries/db/players.query";
 import { useEffect } from "react";
 
 export const usePlayersQuery = () => {
   const queryClient = useQueryClient();
-  const gameId = useGameId();
+  const gameIdFromUrl = useGameIdFromUrl();
 
   const query = useQuery({
-    queryKey: ["players", gameId],
+    queryKey: ["players", gameIdFromUrl],
     queryFn: async (): Promise<PlayerData[]> => {
-      if (!gameId) return [];
-      const players = await fetchPlayers(supabase, gameId);
+      if (!gameIdFromUrl) return [];
+      const players = await fetchPlayers(supabase, gameIdFromUrl);
       return players;
     },
-    enabled: !!gameId,
+    enabled: !!gameIdFromUrl,
   });
 
   // Set up real-time subscription
   useEffect(() => {
-    if (!gameId) return;
+    if (!gameIdFromUrl) return;
 
     const channel = supabase
-      .channel(`players-${gameId}`)
+      .channel(`players-${gameIdFromUrl}`)
       .on(
         "postgres_changes",
         {
           event: "*",
           schema: "public",
           table: "players",
-          filter: `game_id=eq.${gameId}`,
+          filter: `game_id=eq.${gameIdFromUrl}`,
         },
         () => {
           // Invalidate query when changes detected
-          queryClient.invalidateQueries({ queryKey: ["players", gameId] });
+          queryClient.invalidateQueries({
+            queryKey: ["players", gameIdFromUrl],
+          });
         },
       )
       .subscribe();
@@ -45,7 +47,7 @@ export const usePlayersQuery = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [gameId, queryClient]);
+  }, [gameIdFromUrl, queryClient]);
 
   return query;
 };

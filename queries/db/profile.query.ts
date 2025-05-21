@@ -29,19 +29,6 @@ export const updateProfileGame = async (
   }
 };
 
-export const removeProfileFromGame = async (
-  supabase: SupabaseClient,
-  userId: string,
-) => {
-  const req = await supabase
-    .from("profiles")
-    .update([{ game_id: null }])
-    .eq("id", userId);
-  if (req.error) {
-    throw new Error(req.error.message);
-  }
-};
-
 export const fetchGameProfiles = async (
   supabase: SupabaseClient,
   gameId: string,

@@ -2,21 +2,21 @@
 
 import { MessageData } from "@/supabase/functions/_types/Database.type";
 import { supabase } from "@/utils/supabase/client";
-import { useMutation } from "@tanstack/react-query";
-import { useGameId } from "./useGameId";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useGameIdFromUrl } from "./useGameIdFromUrl";
 import { useProfileQuery } from "./useProfileQuery";
 import { useRouter } from "next/navigation";
 
 export const useStartGameMutation = () => {
-  const gameId = useGameId();
+  const gameIdFromUrl = useGameIdFromUrl();
 
   return useMutation({
     mutationFn: async () => {
-      if (!gameId) throw new Error("No game joined");
+      if (!gameIdFromUrl) throw new Error("No game joined");
       await supabase.functions.invoke("start-game", {
-        body: { gameId },
+        body: { gameId: gameIdFromUrl },
       });
-      return { gameId };
+      return { gameId: gameIdFromUrl };
     },
   });
 };
@@ -57,6 +57,24 @@ export const usePostMessageMutation = () => {
     mutationFn: async (message: Partial<MessageData>) => {
       await supabase.functions.invoke("post-message", { body: message });
       return message;
+    },
+  });
+};
+
+export const useEndGameMutation = () => {
+  const queryClient = useQueryClient();
+  const profileQuery = useProfileQuery();
+  const userId = profileQuery.data?.id;
+
+  return useMutation({
+    mutationFn: async (gameId: string) => {
+      await supabase.functions.invoke("end-game", { body: { gameId } });
+    },
+    onSuccess: () => {
+      // Invalidate profile query to trigger a refetch
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: ["profile", userId] });
+      }
     },
   });
 };

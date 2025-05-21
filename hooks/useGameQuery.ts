@@ -9,50 +9,53 @@ import {
   useCreateGameMutation as useCreateGameFunctionMutation,
   useStartGameMutation as useStartGameFunctionMutation,
 } from "@/hooks/useFunctionsQuery";
-import {
-  removeProfileFromGame,
-  updateProfileGame,
-} from "@/queries/db/profile.query";
+import { updateProfileGame } from "@/queries/db/profile.query";
 import { updateGame } from "@/queries/db/game.query";
 import { useRouter } from "next/navigation";
-import { useGameId } from "./useGameId";
+import { useGameIdFromUrl } from "./useGameIdFromUrl";
 import { useEffect } from "react";
 
 export const useGameQuery = () => {
   const queryClient = useQueryClient();
-  const gameId = useGameId();
+  const gameIdFromUrl = useGameIdFromUrl();
+  const router = useRouter();
 
   const query = useQuery({
-    queryKey: ["game", gameId],
+    queryKey: ["game", gameIdFromUrl],
     queryFn: async (): Promise<GameData | undefined> => {
-      if (!gameId) return undefined;
-      const game = await fetchGame(supabase, gameId);
-      console.log("gameQuery", game);
-      if (!game) {
+      if (!gameIdFromUrl) return undefined;
+      try {
+        const game = await fetchGame(supabase, gameIdFromUrl);
+        console.log("gameQuery", game);
+        if (!game) {
+          throw new Error("Game not found");
+        }
+        return game;
+      } catch (error) {
+        router.push("/");
         throw new Error("Game not found");
       }
-      return game;
     },
-    enabled: !!gameId,
+    enabled: !!gameIdFromUrl,
   });
 
   // Set up real-time subscription
   useEffect(() => {
-    if (!gameId) return;
+    if (!gameIdFromUrl) return;
 
     const channel = supabase
-      .channel(`game-${gameId}`)
+      .channel(`game-${gameIdFromUrl}`)
       .on(
         "postgres_changes",
         {
           event: "*",
           schema: "public",
           table: "games",
-          filter: `id=eq.${gameId}`,
+          filter: `id=eq.${gameIdFromUrl}`,
         },
         () => {
           // Invalidate query when changes detected
-          queryClient.invalidateQueries({ queryKey: ["game", gameId] });
+          queryClient.invalidateQueries({ queryKey: ["game", gameIdFromUrl] });
         },
       )
       .subscribe();
@@ -60,7 +63,7 @@ export const useGameQuery = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [gameId, queryClient]);
+  }, [gameIdFromUrl, queryClient]);
 
   return query;
 };
@@ -106,26 +109,6 @@ export const useJoinGameMutation = () => {
   });
 };
 
-export const useLeaveGameMutation = () => {
-  const queryClient = useQueryClient();
-  const profileQuery = useProfileQuery();
-  const profile = profileQuery.data;
-  const router = useRouter();
-
-  return useMutation({
-    mutationFn: async () => {
-      if (!profile?.id) throw new Error("User not authenticated");
-      await removeProfileFromGame(supabase, profile.id);
-      return { profileId: profile.id };
-    },
-    onSuccess: (data) => {
-      // Invalidate profile query to trigger a refetch
-      queryClient.invalidateQueries({ queryKey: ["profile", data.profileId] });
-      router.push(`/`);
-    },
-  });
-};
-
 export const useStartGameMutation = () => {
   const startGameMutation = useStartGameFunctionMutation();
   const profileQuery = useProfileQuery();
@@ -143,7 +126,7 @@ export const useStartGameMutation = () => {
 };
 
 export const useGameLanguageMutation = () => {
-  const gameId = useGameId();
+  const gameId = useGameIdFromUrl();
 
   return useMutation({
     mutationFn: async (lang: "en" | "fr") => {
