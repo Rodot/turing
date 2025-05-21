@@ -16,8 +16,8 @@ export const QueryLoadingBar: React.FC = () => {
     <LinearProgress
       color="secondary"
       sx={{
-        position: "fixed",
-        top: "64px", // Below AppBar
+        position: "absolute",
+        top: 0,
         left: 0,
         right: 0,
         zIndex: 1100,

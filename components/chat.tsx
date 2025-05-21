@@ -1,14 +1,7 @@
 import React, { useEffect } from "react";
 import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
-import {
-  Box,
-  Chip,
-  Container,
-  Paper,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { Box, Chip, Container, Paper, Typography } from "@mui/material";
 import { ChatVote } from "./chatVotes";
 import { ButtonLeaveGame } from "./buttonLeaveGame";
 import { ButtonCreateGame } from "./buttonCreateGame";
@@ -45,11 +38,10 @@ export const Chat: React.FC = () => {
         maxWidth: "720px!important",
         display: "flex",
         flexDirection: "column",
-        height: "100vh",
+        height: "100dvh",
         p: 0,
       }}
     >
-      <Toolbar /> {/* empty toolbar to avoid covering page content */}
       <Paper
         sx={{
           display: "flex",
@@ -72,6 +64,7 @@ export const Chat: React.FC = () => {
             />
           ))}
       </Paper>
+
       <Box
         sx={{
           flexGrow: 1,
@@ -81,6 +74,7 @@ export const Chat: React.FC = () => {
       >
         <ChatHistory />
       </Box>
+
       <Paper elevation={8} sx={{ borderRadius: 0, zIndex: 2 }}>
         {isTalking && <ChatInput />}
         {isVoting && <ChatVote />}

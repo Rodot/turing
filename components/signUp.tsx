@@ -49,6 +49,16 @@ export const SignUp: React.FC = () => {
         p: 2,
       }}
     >
+      <Box sx={{ bgcolor: "primary.main", width: "100%", py: 2 }}>
+        <Typography
+          sx={{ fontWeight: "900", color: "white" }}
+          variant="h4"
+          align="center"
+        >
+          The Turing <strong>Trial</strong>
+        </Typography>
+      </Box>
+
       <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 2 }}>
         <Typography fontWeight={900} align="center" sx={{ my: 2 }}>
           In a group chat, an AI controls one of your friends.
