@@ -69,7 +69,7 @@ export const SignUp: React.FC = () => {
           An AI controls someone in the chat.
         </Typography>
         <Typography align="center" sx={{ fontStyle: "italic" }}>
-          Can you tell your friends from the AI?
+          Will you tell your friends from the AI?
         </Typography>
       </Box>
 
@@ -77,8 +77,8 @@ export const SignUp: React.FC = () => {
         <Typography>
           +1 🧠 Guess <strong>who is the AI?</strong>
         </Typography>
-        <Typography>+1 🧠 Be mistaken for an AI (if human).</Typography>
-        <Typography>+1 🧠 Pass as human (if AI).</Typography>
+        <Typography>+1 🧠 Be mistaken for the AI (if human)</Typography>
+        <Typography>+1 🧠 Pass as human (if AI)</Typography>
       </Box>
 
       <Typography fontWeight={900} align="center" sx={{ my: 4 }}>
