@@ -62,6 +62,7 @@ export const Chat: React.FC = () => {
             flexDirection: "row",
             alignContent: "center",
             overflowX: "auto",
+            gap: 1,
           }}
         >
           {players
@@ -74,21 +75,10 @@ export const Chat: React.FC = () => {
                   alignItems: "center",
                 }}
               >
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontWeight: "medium",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    mr: 0.5,
-                  }}
-                >
-                  {player.name}
-                </Typography>
-                {!player.score ? null : (
-                  <Chip size="small" label={player.score + " 🧠"} />
-                )}
+                <Chip
+                  size="small"
+                  label={player.name + " " + player.score + " 🧠"}
+                />
               </Box>
             ))}
         </Box>
