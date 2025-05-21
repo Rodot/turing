@@ -9,6 +9,8 @@
 - +1 🧠 Pass as human (if AI)
 - Earn 5 🧠 to win
 
+[**👉 CLICK HERE TO PLAY**](https://turing.betalab.fr)
+
 ## Development
 
 Setup by running `npm install`
