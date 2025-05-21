@@ -22,7 +22,7 @@ export const VoteResults: React.FC<Props> = ({ sx }) => {
           gap: 1,
         }}
       >
-        <Chip label={"❌ Nobody"} color="primary" />
+        <Chip label={"Nobody ❌"} color="primary" />
         {noBots && <Chip label="🤖" color="primary" />}
         {profiles
           .filter((other) => other.vote_blank)
@@ -40,8 +40,10 @@ export const VoteResults: React.FC<Props> = ({ sx }) => {
             gap: 1,
           }}
         >
-          <Chip label={profile.name} color="secondary" />
-          {profile.is_bot && <Chip label="🤖" color="primary" />}
+          <Chip
+            label={profile.name + (profile.is_bot ? " 🤖" : "")}
+            color="secondary"
+          />
           {profiles
             .filter((other) => other.vote === profile.id)
             .map((other) => (

@@ -61,7 +61,7 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
     }
   };
 
-  const voteOptions = [{ id: "blank", name: "Nobody" }, ...otherProfiles];
+  const voteOptions = [{ id: "blank", name: "Nobody ❌" }, ...otherProfiles];
 
   const clueText = () => {
     if (!me.is_bot && !alreadyVoted) return <>Who was the AI? 🤖</>;
@@ -111,7 +111,7 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
               onClick={() => vote(option.id)}
               disabled={!canVote(option) || isLoading}
             >
-              {option.id === "blank" && "❌ "}
+              {option.id === "blank"}
               {option.name}
             </Button>
           ))}
