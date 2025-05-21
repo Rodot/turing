@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  Container,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { ButtonCreateGame } from "./buttonCreateGame";
 import { Send } from "@mui/icons-material";
 import { ButtonJoinGame } from "./buttonJoinGame";
@@ -65,22 +72,20 @@ export const SignUp: React.FC = () => {
         </Typography>
       </Box>
 
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 2 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
         <Typography fontWeight={900} align="center" sx={{ my: 2 }}>
           In a group chat, an AI controls one of your friends.
         </Typography>
-        <Typography>
-          +1 🧠 for guessing <strong>who is the AI?</strong>
-        </Typography>
-        <Typography>
-          +1 🧠 if players think you are the AI, as a human.
-        </Typography>
-        <Typography>
-          +1 🧠 if players think you are a human, as the AI.
-        </Typography>
-        <Typography fontWeight={900} align="center" sx={{ my: 2 }}>
-          Earn 5 🧠 to win
-        </Typography>
+        <Box sx={{ alignSelf: "center" }}>
+          <Typography>
+            +1 🧠 Guessing <strong>who is the AI?</strong>
+          </Typography>
+          <Typography>+1 🧠 Being mistaken for AI (if human).</Typography>
+          <Typography>+1 🧠 Passing as human (if AI).</Typography>
+          <Typography fontWeight={900} align="center" sx={{ my: 2 }}>
+            Earn 5 🧠 to win
+          </Typography>
+        </Box>
       </Box>
 
       {!isLoading && !isNameSet && (
