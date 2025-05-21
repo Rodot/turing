@@ -93,7 +93,6 @@ export const useJoinGameMutation = () => {
   const queryClient = useQueryClient();
   const profileQuery = useProfileQuery();
   const profile = profileQuery.data;
-  const router = useRouter();
 
   return useMutation({
     mutationFn: async (gameId: string) => {
@@ -104,7 +103,6 @@ export const useJoinGameMutation = () => {
     onSuccess: (data) => {
       // Invalidate profile query to trigger a refetch
       queryClient.invalidateQueries({ queryKey: ["profile", data.profileId] });
-      router.push(`/?game=${data.gameId}`);
     },
   });
 };

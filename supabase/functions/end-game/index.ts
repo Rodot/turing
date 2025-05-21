@@ -25,13 +25,15 @@ Deno.serve(async (req) => {
     });
 
     // Remove all players from the game
-    const { error: removePlayersError } = await supabase
+    const { error: removeProfilesError } = await supabase
       .from("profiles")
       .update({ game_id: null })
       .eq("game_id", gameId);
 
-    if (removePlayersError) {
-      throw new Error("Error removing players: " + removePlayersError.message);
+    if (removeProfilesError) {
+      throw new Error(
+        "Error removing profiles: " + removeProfilesError.message,
+      );
     }
 
     // Set the game status to "over"
