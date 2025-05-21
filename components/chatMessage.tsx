@@ -18,7 +18,6 @@ export function ChatMessage({
 
   const getBgColor = () => {
     if (isMe) return "primary.main";
-    if (fromSystem) return "white";
     return "background.default";
   };
 
@@ -46,7 +45,7 @@ export function ChatMessage({
         bgcolor={getBgColor()}
         color={getColor()}
         borderRadius={4}
-        p={fromSystem ? 4 : 1}
+        p={1}
         m={1}
         maxWidth={fromSystem ? "100%" : "80%"}
       >
