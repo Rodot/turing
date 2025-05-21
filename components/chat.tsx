@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
-import { Box, Chip, Container, Paper, Typography } from "@mui/material";
+import { Box, Card, Chip, Container, Paper, Typography } from "@mui/material";
 import { ChatVote } from "./chatVotes";
 import { ButtonLeaveGame } from "./buttonLeaveGame";
 import { ButtonCreateGame } from "./buttonCreateGame";
@@ -63,10 +63,29 @@ export const Chat: React.FC = () => {
         {players
           .sort((a, b) => b.score - a.score)
           .map((player) => (
-            <Chip
+            <Box
               key={player.id}
-              label={player.name + " " + "🧠".repeat(player.score)}
-            />
+              sx={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: "medium",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  mr: 0.5,
+                }}
+              >
+                {player.name}
+              </Typography>
+              {!player.score ? null : (
+                <Chip size="small" label={player.score + " 🧠"} />
+              )}
+            </Box>
           ))}
       </Paper>
 
