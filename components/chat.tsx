@@ -37,6 +37,8 @@ export const Chat: React.FC = () => {
       sx={{
         maxWidth: "720px!important",
         height: "100dvh",
+        display: "flex",
+        flexDirection: "column",
         p: 0,
       }}
     >
@@ -69,6 +71,7 @@ export const Chat: React.FC = () => {
         sx={{
           overflowY: "auto",
           overflowX: "hidden",
+          flexGrow: 1,
         }}
       >
         <ChatHistory />
