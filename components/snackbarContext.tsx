@@ -61,6 +61,10 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     setOpen(false);
+    // Reset the current message after the close animation
+    setTimeout(() => {
+      setCurrentMessage(null);
+    }, 300);
   };
 
   return (
