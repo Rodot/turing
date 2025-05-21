@@ -40,6 +40,7 @@ export const Chat: React.FC = () => {
         display: "flex",
         flexDirection: "column",
         p: 0,
+        pt: 6,
       }}
     >
       <Paper
@@ -53,6 +54,10 @@ export const Chat: React.FC = () => {
           gap: 1,
           borderRadius: 0,
           zIndex: 2,
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
         }}
       >
         {players
@@ -75,7 +80,15 @@ export const Chat: React.FC = () => {
         <ChatHistory />
       </Box>
 
-      <Paper elevation={8} sx={{ borderRadius: 0, zIndex: 2 }}>
+      <Paper
+        elevation={8}
+        sx={{
+          borderRadius: 0,
+          zIndex: 2,
+          position: "sticky",
+          bottom: 0,
+        }}
+      >
         {isTalking && <ChatInput />}
         {isVoting && <ChatVote />}
         {isOver && (
