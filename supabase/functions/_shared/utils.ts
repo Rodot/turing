@@ -82,7 +82,7 @@ export const getPlayersWithLeastMessages = (
   const minMessages = Math.min(...messagesCountPerPlayer.map((p) => p.count));
 
   const playersWithLeastMesssages = messagesCountPerPlayer
-    .filter((p) => p.count === minMessages)
+    .filter((p) => p.count <= (minMessages + 2))
     .map((p) => p.player);
 
   return playersWithLeastMesssages;
