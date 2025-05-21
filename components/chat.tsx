@@ -40,7 +40,6 @@ export const Chat: React.FC = () => {
         display: "flex",
         flexDirection: "column",
         p: 0,
-        pt: 5,
       }}
     >
       <Paper
@@ -49,15 +48,13 @@ export const Chat: React.FC = () => {
           flexDirection: "row",
           alignContent: "center",
           justifyContent: "flex-start",
-          p: 1,
+          overflowX: "auto",
+          position: "sticky",
+          top: 0,
+          zIndex: 2,
+          p: 2,
           gap: 1,
           borderRadius: 0,
-          zIndex: 2,
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          overflowX: "auto",
         }}
       >
         {players
