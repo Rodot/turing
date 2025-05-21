@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
-import { Box, Card, Chip, Container, Paper, Typography } from "@mui/material";
+import { Box, Chip, Container, Paper, Typography } from "@mui/material";
 import { ChatVote } from "./chatVotes";
 import { ButtonLeaveGame } from "./buttonLeaveGame";
 import { ButtonCreateGame } from "./buttonCreateGame";
@@ -40,16 +40,15 @@ export const Chat: React.FC = () => {
         display: "flex",
         flexDirection: "column",
         p: 0,
-        pt: 6,
+        pt: 5,
       }}
     >
       <Paper
         sx={{
           display: "flex",
           flexDirection: "row",
-          flexWrap: "wrap",
           alignContent: "center",
-          justifyContent: "center",
+          justifyContent: "flex-start",
           p: 1,
           gap: 1,
           borderRadius: 0,
@@ -58,6 +57,7 @@ export const Chat: React.FC = () => {
           top: 0,
           left: 0,
           right: 0,
+          overflowX: "auto",
         }}
       >
         {players
