@@ -2,7 +2,7 @@
 
 **An AI controls someone in the chat.**
 
-*Will you tell your friends from the AI?*
+_Will you tell your friends from the AI?_
 
 - +1 🧠 Guess **who is the AI?**
 - +1 🧠 Be mistaken for the AI (if human)
