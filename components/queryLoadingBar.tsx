@@ -13,11 +13,11 @@ export const QueryLoadingBar: React.FC = () => {
     <LinearProgress
       color="secondary"
       sx={{
-        position: "absolute",
+        position: "fixed",
         top: 0,
         left: 0,
         right: 0,
-        zIndex: 1100,
+        zIndex: 10,
       }}
     />
   );
