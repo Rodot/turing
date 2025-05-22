@@ -10,6 +10,12 @@ export const metadata = {
     "Can you distinguish your friend from AIs? Online party game, no account nor download required, 3-6 players.",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  interactiveWidget: "resizes-content",
+};
+
 export default function RootLayout({
   children,
 }: {
