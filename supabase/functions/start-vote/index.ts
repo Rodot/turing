@@ -1,5 +1,6 @@
 import { updateGame } from "../_queries/game.query.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
+import { fetchProfile } from "../_queries/profiles.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 
@@ -13,16 +14,24 @@ Deno.serve(async (req) => {
       gameId: string;
     };
     if (!gameId) throw new Error("Missing gameId");
+    console.log("Starting vote", { gameId });
 
     const supabase = createSupabaseClient(req);
-    console.log("Starting vote", { gameId });
+    const userResponse = await supabase.auth.getUser();
+    if (userResponse.error) {
+      throw new Error(userResponse.error.message);
+    }
+    const user = userResponse.data.user;
+    const profile = await fetchProfile(supabase, user.id);
 
     // Post a message
     await insertMessage(supabase, {
       author: "system",
-      content: "🗳️ Voting has started",
+      content: `🗳️ ${profile.name} started a vote`,
       game_id: gameId,
     });
+
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     // Set the game status to "voting"
     await updateGame(supabase, gameId, { status: "voting" });
