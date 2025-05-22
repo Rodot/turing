@@ -62,7 +62,7 @@ export const Lobby: React.FC = () => {
       >
         <ButtonGoHome />
         {gameProfiles?.map((profile) => (
-          <Chip key={profile.id} label={profile.name} />
+          <Chip key={profile.id} label={profile.name} size="small" />
         ))}
       </Paper>
 

@@ -25,18 +25,9 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   if (!gameQuery) return null;
   if (!userQuery.data) return null;
 
-  const didVote = (profile: ProfileData) => profile.vote || profile.vote_blank;
-
   const me = profiles.find((profile) => profile.id === userQuery.data?.id);
   if (!me) return null;
-  const humans = profiles.filter((profile) => !profile.is_bot);
   const otherProfiles = profiles.filter((profile) => profile.id !== me.id);
-  const humansDidntVote = humans.filter((profile) => !didVote(profile));
-  const humansDidntVoteString =
-    humansDidntVote.length > 2
-      ? "others"
-      : humansDidntVote.map((p) => p.name).join(", ");
-  const everyoneVoted = humansDidntVote.length === 0;
   const alreadyVoted = me.vote || me.vote_blank;
 
   const canVote = (profile: { id: string; name: string }) => {
@@ -61,12 +52,11 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
     }
   };
 
-  const voteOptions = [{ id: "blank", name: "Nobody ❌" }, ...otherProfiles];
+  const voteOptions = [...otherProfiles, { id: "blank", name: "Nobody❌" }];
 
-  const clueText = () => {
-    if (!me.is_bot && !alreadyVoted) return <>Who was the AI? 🤖</>;
-    return <>Waiting for {humansDidntVoteString} to vote</>;
-  };
+  if (alreadyVoted || me.is_bot) {
+    return null;
+  }
 
   return (
     <Box
@@ -80,14 +70,10 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
         p: 1,
       }}
     >
-      {/* results timer */}
-      {everyoneVoted && <ProgressTimer duration={5} />}
       {/* clue */}
-      {!everyoneVoted && (
-        <Typography sx={{ textAlign: "center" }}>{clueText()}</Typography>
+      {!me.is_bot && (
+        <Typography sx={{ textAlign: "center" }}>Who was the AI? 🤖</Typography>
       )}
-      {/* vote results */}
-      {(alreadyVoted || me.is_bot) && <VoteResults />}
       {/* vote buttons */}
       <Box
         sx={{
@@ -97,21 +83,18 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
           alignContent: "center",
           flexWrap: "wrap",
           gap: 1,
-          pb: 1,
         }}
       >
         {!me.is_bot &&
-          !alreadyVoted &&
           voteOptions.map((option) => (
             <Button
               key={option.id}
               variant="contained"
               color={option.id === "blank" ? "primary" : "secondary"}
-              sx={{ ml: 1 }}
               onClick={() => vote(option.id)}
               disabled={!canVote(option) || isLoading}
+              size="small"
             >
-              {option.id === "blank"}
               {option.name}
             </Button>
           ))}

@@ -7,14 +7,22 @@ import { ButtonGoHome } from "./buttonGoHome";
 import { ButtonStartVote } from "./buttonStartVote";
 import { useProfilesQuery } from "@/hooks/useProfilesQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
+import { VoteResults } from "./voteResult";
+import { useUserQuery } from "@/hooks/useUserQuery";
 
 export const Chat: React.FC = () => {
   const gameQuery = useGameQuery();
   const profilesQuery = useProfilesQuery();
   const profiles = profilesQuery.data || [];
+  const userQuery = useUserQuery();
 
-  const isTalking = gameQuery?.data?.status === "talking";
-  const isVoting = gameQuery?.data?.status === "voting";
+  const player = profiles.find((profile) => profile.id === userQuery.data?.id);
+
+  const isTalkingPhase = gameQuery?.data?.status === "talking";
+  const isVotingPhase = gameQuery?.data?.status === "voting";
+
+  const playerVoted = player?.vote || player?.vote_blank;
+  const isVoteResultsVisible = isVotingPhase && (player?.is_bot || playerVoted);
 
   return (
     <Container
@@ -38,6 +46,7 @@ export const Chat: React.FC = () => {
           borderRadius: 0,
         }}
       >
+        {/* back and vote line */}
         <Paper
           sx={{
             display: "flex",
@@ -51,7 +60,7 @@ export const Chat: React.FC = () => {
         >
           <ButtonGoHome />
 
-          {isTalking && (
+          {isTalkingPhase && (
             <>
               <Typography sx={{ color: "primary.contrastText" }}>
                 Know who is the AI?
@@ -61,34 +70,45 @@ export const Chat: React.FC = () => {
           )}
         </Paper>
 
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            alignContent: "center",
-            overflowX: "auto",
-            gap: 1,
-            p: 1,
-            width: "100%",
-          }}
-        >
-          {profiles
-            .sort((a, b) => b.score - a.score)
-            .map((profile) => (
-              <Box
-                key={profile.id}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <Chip
-                  size="small"
-                  label={profile.name + " " + profile.score + " 🧠"}
-                />
-              </Box>
-            ))}
-        </Box>
+        {/* profiles line */}
+        {!isVoteResultsVisible && (
+          <Paper
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignContent: "center",
+              overflowX: "auto",
+              gap: 1,
+              p: 1,
+              width: "100%",
+              borderRadius: 0,
+            }}
+          >
+            {profiles
+              .sort((a, b) => b.score - a.score)
+              .map((profile) => (
+                <Box
+                  key={profile.id}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Chip
+                    size="small"
+                    label={profile.name + " " + profile.score + " 🧠"}
+                  />
+                </Box>
+              ))}
+          </Paper>
+        )}
+
+        {/* vote results line */}
+        {isVoteResultsVisible && (
+          <Box sx={{ p: 1 }}>
+            <VoteResults />
+          </Box>
+        )}
       </Paper>
 
       <Box
@@ -110,8 +130,8 @@ export const Chat: React.FC = () => {
           bottom: 0,
         }}
       >
-        {isTalking && <ChatInput />}
-        {isVoting && <ChatVote />}
+        {isTalkingPhase && <ChatInput />}
+        {isVotingPhase && <ChatVote />}
       </Paper>
     </Container>
   );
