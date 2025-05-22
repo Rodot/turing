@@ -10,7 +10,6 @@ export const setRandomPlayerAsBotAndResetVotes = async (
   profiles: ProfileData[],
 ) => {
   if (!profiles?.length) throw new Error("No profiles to pick from");
-  const previousHumans = profiles.filter((profile) => !profile.is_bot);
 
   // reset bots and votes
   await updateGameProfiles(supabase, {
@@ -26,8 +25,9 @@ export const setRandomPlayerAsBotAndResetVotes = async (
   if (previousBot && noBotThisRound) return;
 
   // set random profile as bot
+  const previousHumans = profiles.filter((profile) => !profile.is_bot);
   const randomProfile =
-    previousHumans[Math.floor(Math.random() * profiles.length)];
+    previousHumans[Math.floor(Math.random() * previousHumans.length)];
   await updateProfile(supabase, {
     id: randomProfile.id,
     is_bot: true,
