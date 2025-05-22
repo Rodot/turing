@@ -5,7 +5,7 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 /// <reference types="https://esm.sh/@supabase/functions-js@2.4.4/src/edge-runtime.d.ts" />
 
-import { fetchMessages, insertMessage } from "../_queries/messages.query.ts";
+import { insertMessage } from "../_queries/messages.query.ts";
 import { fetchProfiles, updateProfile } from "../_queries/profiles.query.ts";
 import { fetchGame, updateGame } from "../_queries/game.query.ts";
 import { headers } from "../_utils/cors.ts";
@@ -14,7 +14,6 @@ import { createSupabaseClient } from "../_utils/supabase.ts";
 import { pickRandom } from "../_shared/utils.ts";
 import { iceBreakers } from "../_shared/lang.ts";
 import { ProfileData } from "../_types/Database.type.ts";
-import { MessageData } from "../_types/Database.type.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -58,17 +57,14 @@ Deno.serve(async (req) => {
     if (votingData.allVoted && votingData.profiles.length > 1) {
       console.log("All profiles have voted", gameId);
 
-      // Give time to read results
-      await new Promise((resolve) => setTimeout(resolve, 8000));
-
       // Determine who got points and why
       const pointAllocations = determinePointsAllocation(votingData);
 
-      // Update profiles who got points
-      await updatePlayerPoints(supabase, pointAllocations, gameId);
-
       // Post messages about who got points and why
       await postPointsMessages(supabase, pointAllocations, votingData, gameId);
+
+      // Update profiles who got points
+      await updatePlayerPoints(supabase, pointAllocations, gameId);
 
       // Get updated profile data for end game check
       const profilesAfter = await fetchProfiles(supabase, gameId);
@@ -91,6 +87,12 @@ Deno.serve(async (req) => {
 
         // Close the game
         await updateGame(supabase, gameId, { status: "over" });
+
+        // Remove all players from the game
+        await supabase
+          .from("profiles")
+          .update({ game_id: null })
+          .eq("game_id", gameId);
       } else {
         // Next round
         console.log("Next round", gameId);
@@ -125,7 +127,6 @@ Deno.serve(async (req) => {
 // Types for the voting data processing
 type VotingData = {
   profiles: ProfileData[];
-  messages: MessageData[];
   numHumans: number;
   botProfile: ProfileData | undefined;
   botVoters: ProfileData[];
@@ -151,11 +152,8 @@ async function gatherVotingData(
   supabase: ReturnType<typeof createSupabaseClient>,
   gameId: string,
 ) {
-  // Fetch profiles and messages data
-  const [profiles, messages] = await Promise.all([
-    fetchProfiles(supabase, gameId),
-    fetchMessages(supabase, gameId),
-  ]);
+  // Fetch profiles data
+  const profiles = await fetchProfiles(supabase, gameId);
 
   // Analyze profile data
   const numHumans = profiles.filter((profile) => !profile.is_bot).length;
@@ -196,7 +194,6 @@ async function gatherVotingData(
 
   return {
     profiles,
-    messages,
     numHumans,
     botProfile,
     botVoters,
@@ -341,49 +338,54 @@ async function postPointsMessages(
   // Messages to post
   const messages: string[] = [];
 
-  // Create message for bot voters
-  if (botProfile && foundBotPlayers.length > 0) {
-    messages.push(
-      `+1 🧠 for ${foundBotPlayers
-        .map((p) => p.name)
-        .join(" and ")} who guessed that ${botProfile.name} was the AI 🤖`,
-    );
+  messages.push("😱 Results are in!");
+  messages.push("🥁 And the AI was...");
+
+  // Create message to reveal the bot
+  if (botProfile) {
+    messages.push(`🤖 ${botProfile.name}`);
+  } else {
+    messages.push(`❌ Nobody`);
   }
 
   // Create message for escaped bot
   if (botProfile && foundBotPlayers.length === 0) {
-    messages.push(`+1 🧠 for ${botProfile.name} for pretending to be human 🤖`);
-  }
-
-  // Create message for correct blank voters
-  if (!botProfile && correctlyGuessedNoBotPlayers.length > 0) {
-    messages.push(
-      `+1 🧠 for ${correctlyGuessedNoBotPlayers
-        .map((p) => p.name)
-        .join(" and ")} who realized there was no AI ❌`,
-    );
-  }
-
-  // Create message when nobody guessed there was no bot
-  if (!botProfile && correctlyGuessedNoBotPlayers.length === 0) {
-    messages.push(`Nobody guessed that there was no AI ❌`);
+    messages.push(`+1 🧠 to ${botProfile.name} for pretending to be human`);
   }
 
   // Add message for humans who got more votes than the bot
   if (humanImposters.length > 0) {
     messages.push(
-      `+1 🧠 for ${humanImposters
+      `+1 🧠 to ${humanImposters
         .map((p) => p.name)
-        .join(" and ")} for pretending to be the AI 👤`,
+        .join(" and ")} for pretending to be the AI`,
     );
   }
 
   // Add message for most voted players when there's no bot
   if (!botProfile && mostVotedNoBotPlayers.length > 0) {
     messages.push(
-      `+1 🧠 for ${mostVotedNoBotPlayers
+      `+1 🧠 to ${mostVotedNoBotPlayers
         .map((p) => p.name)
-        .join(" and ")} for pretending to be the AI 👤`,
+        .join(" and ")} for pretending to be the AI`,
+    );
+  }
+
+  // Create message for bot voters
+  if (botProfile && foundBotPlayers.length > 0) {
+    messages.push(
+      `+1 🧠 to ${foundBotPlayers
+        .map((p) => p.name)
+        .join(" and ")} for finding the AI`,
+    );
+  }
+
+  // Create message for correct blank voters
+  if (!botProfile && correctlyGuessedNoBotPlayers.length > 0) {
+    messages.push(
+      `+1 🧠 to ${correctlyGuessedNoBotPlayers
+        .map((p) => p.name)
+        .join(" and ")} who knew there was no AI`,
     );
   }
 
@@ -394,5 +396,6 @@ async function postPointsMessages(
       content: message,
       game_id: gameId,
     });
+    await new Promise((resolve) => setTimeout(resolve, 3000));
   }
 }
