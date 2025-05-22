@@ -69,9 +69,6 @@ export const VoteResults: React.FC<Props> = ({ sx }) => {
           Waiting for {humansDidntVoteString} to vote
         </Typography>
       )}
-
-      {/* results timer */}
-      {everyoneVoted && <ProgressTimer duration={5} />}
     </Box>
   );
 };
