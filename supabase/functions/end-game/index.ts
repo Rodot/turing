@@ -1,5 +1,6 @@
 import { updateGame } from "../_queries/game.query.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
+import { fetchProfile } from "../_queries/profiles.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 
@@ -13,14 +14,21 @@ Deno.serve(async (req) => {
       gameId: string;
     };
     if (!gameId) throw new Error("Missing gameId");
+    console.log("Ending game", { gameId });
 
     const supabase = createSupabaseClient(req);
-    console.log("Ending game", { gameId });
+
+    const userResponse = await supabase.auth.getUser();
+    if (userResponse.error) {
+      throw new Error(userResponse.error.message);
+    }
+    const user = userResponse.data.user;
+    const profile = await fetchProfile(supabase, user.id);
 
     // Post a message
     await insertMessage(supabase, {
       author: "system",
-      content: "❌ Game ended by a player",
+      content: `❌ ${profile.name} ended the game`,
       game_id: gameId,
     });
 
