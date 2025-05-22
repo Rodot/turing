@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {
   Box,
   Button,
+  IconButton,
   SxProps,
   TextField,
   Theme,
@@ -103,7 +104,12 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   return (
     <>
       <Box
-        sx={{ ...sx, display: "flex", flexDirection: "column", gap: 1, p: 1 }}
+        sx={{
+          ...sx,
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+        }}
       >
         {/* bot input */}
         {me.is_bot && !botAnswers && (
@@ -124,19 +130,30 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
         {me.is_bot && botAnswers && (
           <>
             {botAnswers.map((answer) => (
-              <Box key={answer} sx={{ display: "flex", flexDirection: "row" }}>
-                <Typography sx={{ textAlign: "center", flexGrow: 1, mr: 1 }}>
+              <Box
+                key={answer}
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{ textAlign: "center", flexGrow: 1, mr: 1 }}
+                >
                   {answer.toLowerCase()}
                 </Typography>
-                <Button
-                  variant="contained"
+                <IconButton
                   color="secondary"
                   key="answer"
+                  size="small"
                   onClick={() => sendMessageFromBot(answer)}
                   disabled={isLoading}
+                  aria-label="Send message"
                 >
                   <Send />
-                </Button>
+                </IconButton>
               </Box>
             ))}
           </>
@@ -155,13 +172,13 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
               <TextField
                 type="text"
                 autoComplete="off"
-                size="small"
                 value={content}
                 onChange={handleInputChange}
                 label="Send message"
                 sx={{ flexGrow: 1, mr: 1 }}
                 aria-label="Message input"
               />
+
               <Button
                 type="submit"
                 variant="contained"
