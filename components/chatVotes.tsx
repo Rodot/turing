@@ -5,6 +5,7 @@ import { useGameQuery } from "@/hooks/useGameQuery";
 import { useProfilesQuery } from "@/hooks/useProfilesQuery";
 import { usePlayerVoteMutation } from "@/hooks/useFunctionsQuery";
 import { useIsLoading } from "@/hooks/useIsLoading";
+import { ProfileData } from "@/supabase/functions/_types/Database.type";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -17,6 +18,14 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   const profiles = profilesQuery.data || [];
   const playerVoteMutation = usePlayerVoteMutation();
   const isLoading = useIsLoading();
+
+  const didVote = (profile: ProfileData) => profile.vote || profile.vote_blank;
+  const humans = profiles.filter((profile) => !profile.is_bot);
+  const humansDidntVote = humans.filter((profile) => !didVote(profile));
+  const humansDidntVoteString =
+    humansDidntVote.length > 2
+      ? "others"
+      : humansDidntVote.map((p) => p.name).join(", ");
 
   if (!profiles) return null;
   if (!gameQuery) return null;
@@ -51,8 +60,16 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
 
   const voteOptions = [...otherProfiles, { id: "blank", name: "Nobody❌" }];
 
-  if (alreadyVoted || me.is_bot) {
+  if (humansDidntVote.length === 0) {
     return null;
+  }
+
+  if (alreadyVoted || me.is_bot) {
+    return (
+      <Typography align="center">
+        <strong>Waiting for {humansDidntVoteString}</strong> to vote
+      </Typography>
+    );
   }
 
   return (
