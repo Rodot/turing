@@ -19,7 +19,7 @@ export const ButtonStartVote: React.FC = () => {
       disabled={isLoading}
     >
       <HowToVote sx={{ mr: 0.5 }} />
-      Vote
+      Start Vote
     </Button>
   );
 };
