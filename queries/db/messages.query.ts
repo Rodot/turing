@@ -8,7 +8,8 @@ export const fetchMessages = async (
   const { data, error } = await supabase
     .from("messages")
     .select("*")
-    .eq("game_id", gameId);
+    .eq("game_id", gameId)
+    .order("created_at", { ascending: true });
 
   if (error) {
     console.error("Error fetching messages:", error);

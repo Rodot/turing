@@ -10,7 +10,7 @@ export const ChatHistory: React.FC = () => {
   const messagesQuery = useMessagesQuery();
   const messages = useMemo(
     () => messagesQuery.data || [],
-    [messagesQuery.data]
+    [messagesQuery.data],
   );
   const gameQuery = useGameQuery();
   const endOfMessagesRef = useRef<null | HTMLDivElement>(null);

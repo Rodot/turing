@@ -17,7 +17,7 @@ export const useProfilesQuery = () => {
       if (!gameIdFromUrl) return [];
       const profiles = await fetchProfiles(supabase, gameIdFromUrl);
       console.log("profilesQuery:", profiles);
-      return profiles.sort((a, b) => a.id.localeCompare(b.id));
+      return profiles;
     },
     enabled: !!gameIdFromUrl,
   });

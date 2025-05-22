@@ -33,12 +33,20 @@ test("multi-user game flow", async ({ browser }) => {
     await guest.getByLabel("Join Game").click();
   }
 
-  await expect(host.getByText("HostPlayerName")).toHaveCount(1);
-  await expect(host.getByText("GuestPlayerName")).toHaveCount(guests.length);
+  await expect(host.getByText("HostPlayerName", { exact: true })).toHaveCount(
+    1,
+  );
+  await expect(host.getByText("GuestPlayerName", { exact: true })).toHaveCount(
+    guests.length,
+  );
 
   for (const guest of guests) {
-    await expect(guest.getByText("GuestPlayerName")).toHaveCount(guests.length);
-    await expect(guest.getByText("HostPlayerName")).toHaveCount(2);
+    await expect(
+      guest.getByText("GuestPlayerName", { exact: true }),
+    ).toHaveCount(guests.length);
+    await expect(
+      guest.getByText("HostPlayerName", { exact: true }),
+    ).toHaveCount(1);
   }
 
   await host.getByLabel("Start Game").waitFor();

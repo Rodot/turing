@@ -2,7 +2,6 @@ import React from "react";
 import { Box, Chip, SxProps, Theme, Typography } from "@mui/material";
 import { useProfilesQuery } from "@/hooks/useProfilesQuery";
 import { ProfileData } from "@/supabase/functions/_types/Database.type";
-import { ProgressTimer } from "./progressTimer";
 
 type Props = {
   sx?: SxProps<Theme>;

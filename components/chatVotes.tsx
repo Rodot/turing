@@ -1,8 +1,5 @@
 import React from "react";
 import { Box, Button, SxProps, Theme, Typography } from "@mui/material";
-import { ProfileData } from "@/supabase/functions/_types/Database.type";
-import { VoteResults } from "./voteResult";
-import { ProgressTimer } from "./progressTimer";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { useProfilesQuery } from "@/hooks/useProfilesQuery";

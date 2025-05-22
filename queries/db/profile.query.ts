@@ -63,7 +63,8 @@ export const fetchProfiles = async (
   const { data, error } = await supabase
     .from("profiles")
     .select("*")
-    .eq("game_id", gameId);
+    .eq("game_id", gameId)
+    .order("created_at", { ascending: true });
 
   if (error) throw new Error("Error fetching profiles:" + error.message);
   return data as ProfileData[];
