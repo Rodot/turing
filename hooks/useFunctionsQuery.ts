@@ -100,6 +100,19 @@ export const useEndGameMutation = () => {
   });
 };
 
+export const useStartVoteMutation = () => {
+  return useMutation({
+    mutationFn: async (gameId: string) => {
+      const response = await supabase.functions.invoke("start-vote", {
+        body: { gameId },
+      });
+      if (response.error) {
+        throw new Error("Error while starting vote");
+      }
+    },
+  });
+};
+
 export const useGenerateAnswersMutation = () => {
   return useMutation({
     mutationFn: async (params: {

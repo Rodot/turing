@@ -1,9 +1,10 @@
 import React from "react";
 import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
-import { Box, Chip, Container, Paper } from "@mui/material";
+import { Box, Chip, Container, Paper, Typography } from "@mui/material";
 import { ChatVote } from "./chatVotes";
 import { ButtonGoHome } from "./buttonGoHome";
+import { ButtonStartVote } from "./buttonStartVote";
 import { useProfilesQuery } from "@/hooks/useProfilesQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
 
@@ -28,17 +29,38 @@ export const Chat: React.FC = () => {
       <Paper
         sx={{
           display: "flex",
-          flexDirection: "row",
+          flexDirection: "column",
           alignContent: "center",
           position: "sticky",
           top: 0,
           zIndex: 2,
           p: 0,
-          pl: 2,
           borderRadius: 0,
         }}
       >
-        <ButtonGoHome />
+        <Paper
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            px: 1,
+            borderRadius: 0,
+            backgroundColor: "primary.main",
+          }}
+        >
+          <ButtonGoHome />
+
+          {isTalking && (
+            <>
+              <Typography sx={{ color: "primary.contrastText" }}>
+                Know who is the AI?
+              </Typography>
+              <ButtonStartVote />
+            </>
+          )}
+        </Paper>
+
         <Box
           sx={{
             display: "flex",
@@ -46,6 +68,8 @@ export const Chat: React.FC = () => {
             alignContent: "center",
             overflowX: "auto",
             gap: 1,
+            p: 1,
+            width: "100%",
           }}
         >
           {profiles

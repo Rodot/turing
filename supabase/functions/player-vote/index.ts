@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
           }),
           insertMessage(supabase, {
             game_id: gameId,
-            author: "intro",
+            author: "icebreaker",
             content: "💡 " + pickRandom(iceBreakers[game?.lang ?? "en"]),
           }),
         ]);
@@ -187,11 +187,11 @@ async function gatherVotingData(
   // Calculate human imposters (humans with more votes than bot AND have the most votes)
   const humanImposters = botProfile
     ? profiles.filter(
-        (profile) =>
-          !profile.is_bot &&
-          (voteCounts[profile.id] || 0) > (voteCounts[botProfile.id] || 0) &&
-          (voteCounts[profile.id] || 0) === maxVotes,
-      )
+      (profile) =>
+        !profile.is_bot &&
+        (voteCounts[profile.id] || 0) > (voteCounts[botProfile.id] || 0) &&
+        (voteCounts[profile.id] || 0) === maxVotes,
+    )
     : [];
 
   return {
@@ -344,9 +344,11 @@ async function postPointsMessages(
   // Create message for bot voters
   if (botProfile && foundBotPlayers.length > 0) {
     messages.push(
-      `+1 🧠 for ${foundBotPlayers
-        .map((p) => p.name)
-        .join(" and ")} who guessed that ${botProfile.name} was the AI 🤖`,
+      `+1 🧠 for ${
+        foundBotPlayers
+          .map((p) => p.name)
+          .join(" and ")
+      } who guessed that ${botProfile.name} was the AI 🤖`,
     );
   }
 
@@ -358,9 +360,11 @@ async function postPointsMessages(
   // Create message for correct blank voters
   if (!botProfile && correctlyGuessedNoBotPlayers.length > 0) {
     messages.push(
-      `+1 🧠 for ${correctlyGuessedNoBotPlayers
-        .map((p) => p.name)
-        .join(" and ")} who realized there was no AI ❌`,
+      `+1 🧠 for ${
+        correctlyGuessedNoBotPlayers
+          .map((p) => p.name)
+          .join(" and ")
+      } who realized there was no AI ❌`,
     );
   }
 
@@ -372,18 +376,22 @@ async function postPointsMessages(
   // Add message for humans who got more votes than the bot
   if (humanImposters.length > 0) {
     messages.push(
-      `+1 🧠 for ${humanImposters
-        .map((p) => p.name)
-        .join(" and ")} for pretending to be the AI 👤`,
+      `+1 🧠 for ${
+        humanImposters
+          .map((p) => p.name)
+          .join(" and ")
+      } for pretending to be the AI 👤`,
     );
   }
 
   // Add message for most voted players when there's no bot
   if (!botProfile && mostVotedNoBotPlayers.length > 0) {
     messages.push(
-      `+1 🧠 for ${mostVotedNoBotPlayers
-        .map((p) => p.name)
-        .join(" and ")} for pretending to be the AI 👤`,
+      `+1 🧠 for ${
+        mostVotedNoBotPlayers
+          .map((p) => p.name)
+          .join(" and ")
+      } for pretending to be the AI 👤`,
     );
   }
 

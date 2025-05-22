@@ -54,7 +54,7 @@ Deno.serve(async (req) => {
 
     await insertMessage(supabase, {
       game_id: gameId,
-      author: "intro",
+      author: "icebreaker",
       content: "💡 " + pickRandom(iceBreakers[game.lang]),
     });
 
