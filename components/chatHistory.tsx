@@ -10,7 +10,7 @@ export const ChatHistory: React.FC = () => {
   const messagesQuery = useMessagesQuery();
   const messages = useMemo(
     () => messagesQuery.data || [],
-    [messagesQuery.data],
+    [messagesQuery.data]
   );
   const gameQuery = useGameQuery();
   const endOfMessagesRef = useRef<null | HTMLDivElement>(null);
@@ -22,6 +22,18 @@ export const ChatHistory: React.FC = () => {
   useEffect(() => {
     setTimeout(scrollToBottom, 100);
   }, [messages, gameQuery?.data]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      scrollToBottom();
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   if (!userQuery.data) return null;
 
