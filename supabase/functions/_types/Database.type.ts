@@ -20,6 +20,4 @@ export type GameData = {
   id: string;
   lang: "en" | "fr";
   status: "lobby" | "talking" | "voting" | "over";
-  last_vote: number;
-  next_vote: number;
 };

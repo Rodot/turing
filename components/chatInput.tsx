@@ -7,7 +7,6 @@ import {
   Theme,
   Typography,
 } from "@mui/material";
-import { VoteCountdown } from "./voteCountdown";
 import {
   useGenerateAnswersMutation,
   usePostMessageMutation,
@@ -103,7 +102,6 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
 
   return (
     <>
-      <VoteCountdown />
       <Box
         sx={{ ...sx, display: "flex", flexDirection: "column", gap: 1, p: 1 }}
       >

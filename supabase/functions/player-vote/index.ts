@@ -11,7 +11,7 @@ import { fetchGame, updateGame } from "../_queries/game.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { setRandomPlayerAsBotAndResetVotes } from "../_utils/vote.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
-import { isNotSystem, nextVoteLength, pickRandom } from "../_shared/utils.ts";
+import { pickRandom } from "../_shared/utils.ts";
 import { iceBreakers } from "../_shared/lang.ts";
 import { ProfileData } from "../_types/Database.type.ts";
 import { MessageData } from "../_types/Database.type.ts";
@@ -97,17 +97,12 @@ Deno.serve(async (req) => {
 
         // Set up next vote
         const game = await fetchGame(supabase, gameId);
-        const nextVote =
-          votingData.messages.filter(isNotSystem).length +
-          nextVoteLength(votingData.profiles.length);
 
         // Reset votes and set random profile as bot
         await Promise.all([
           setRandomPlayerAsBotAndResetVotes(supabase, votingData.profiles),
           updateGame(supabase, gameId, {
             status: "talking",
-            last_vote: game?.next_vote,
-            next_vote: nextVote,
           }),
           insertMessage(supabase, {
             game_id: gameId,

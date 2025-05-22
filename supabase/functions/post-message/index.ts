@@ -9,8 +9,7 @@ import { fetchMessages, insertMessage } from "../_queries/messages.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { MessageData } from "../_types/Database.type.ts";
-import { fetchGame, updateGame } from "../_queries/game.query.ts";
-import { isNotSystem } from "../_shared/utils.ts";
+import { fetchGame } from "../_queries/game.query.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -35,14 +34,6 @@ Deno.serve(async (req) => {
     if (!messages) throw new Error("No messages found");
     if (!game) throw new Error("No game found");
     if (game.status !== "talking") throw new Error("Game not talking");
-
-    // trigger vote
-    const numMessages = messages.filter(isNotSystem).length + 1;
-    if (numMessages >= game.next_vote) {
-      await updateGame(supabase, game.id, {
-        status: "voting",
-      });
-    }
 
     await insertMessage(supabase, message);
 

@@ -13,7 +13,7 @@ import { fetchGame, updateGame } from "../_queries/game.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
-import { nextVoteLength, pickRandom } from "../_shared/utils.ts";
+import { pickRandom } from "../_shared/utils.ts";
 import { iceBreakers } from "../_shared/lang.ts";
 
 Deno.serve(async (req) => {
@@ -59,10 +59,8 @@ Deno.serve(async (req) => {
     });
 
     // start the game
-    const nextVote = nextVoteLength(profiles.length);
     await updateGame(supabase, gameId, {
       status: "talking",
-      next_vote: nextVote,
     });
 
     const data = JSON.stringify({});

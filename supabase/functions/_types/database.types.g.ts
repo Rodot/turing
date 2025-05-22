@@ -39,24 +39,18 @@ export type Database = {
           created_at: string;
           id: string;
           lang: string | null;
-          last_vote: number | null;
-          next_vote: number | null;
           status: string | null;
         };
         Insert: {
           created_at?: string;
           id?: string;
           lang?: string | null;
-          last_vote?: number | null;
-          next_vote?: number | null;
           status?: string | null;
         };
         Update: {
           created_at?: string;
           id?: string;
           lang?: string | null;
-          last_vote?: number | null;
-          next_vote?: number | null;
           status?: string | null;
         };
         Relationships: [];
