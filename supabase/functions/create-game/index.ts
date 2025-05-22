@@ -9,7 +9,7 @@ import {
   addProfileToGame,
   fetchUserProfile,
 } from "../_queries/profiles.query.ts";
-import { insertGame, updateGame } from "../_queries/game.query.ts";
+import { insertGame } from "../_queries/game.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 
@@ -27,15 +27,10 @@ Deno.serve(async (req) => {
     const user = userResponse.data.user;
 
     // create new game
-    const [game, profile] = await Promise.all([
+    const [game] = await Promise.all([
       insertGame(supabase),
       fetchUserProfile(supabase, user?.id),
     ]);
-
-    // add redirect to old rom
-    if (profile?.game_id) {
-      await updateGame(supabase, profile.game_id, { next_game_id: game.id });
-    }
 
     // join game
     await addProfileToGame(supabase, user?.id, game.id);
