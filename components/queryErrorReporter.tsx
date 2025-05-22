@@ -11,28 +11,28 @@ export function QueryErrorReporter() {
     const queryCache = queryClient.getQueryCache();
     const mutationCache = queryClient.getMutationCache();
 
-    // Handle query errors
-    const unsubscribeQuery = queryCache.subscribe(() => {
-      queryCache.getAll().forEach((query) => {
-        if (query.state.error) {
-          console.error("Query error:", query.queryKey, query.state.error);
-          showSnackbar(`${query.state.error}`, "error");
-        }
-      });
+    // Handle query errors - only on error events
+    const unsubscribeQuery = queryCache.subscribe((event) => {
+      if (event.type === "updated" && event.query.state.error) {
+        console.error(
+          "Query error:",
+          event.query.queryKey,
+          event.query.state.error
+        );
+        showSnackbar(`${event.query.state.error}`, "error");
+      }
     });
 
-    // Handle mutation errors
-    const unsubscribeMutation = mutationCache.subscribe(() => {
-      mutationCache.getAll().forEach((mutation) => {
-        if (mutation.state.error) {
-          console.error(
-            "Mutation error:",
-            mutation.options.mutationKey,
-            mutation.state.error,
-          );
-          showSnackbar(`${mutation.state.error}`, "error");
-        }
-      });
+    // Handle mutation errors - only on error events
+    const unsubscribeMutation = mutationCache.subscribe((event) => {
+      if (event.type === "updated" && event.mutation.state.error) {
+        console.error(
+          "Mutation error:",
+          event.mutation.options.mutationKey,
+          event.mutation.state.error
+        );
+        showSnackbar(`${event.mutation.state.error}`, "error");
+      }
     });
 
     return () => {
