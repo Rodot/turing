@@ -12,15 +12,11 @@ import {
   useGenerateAnswersMutation,
   usePostMessageMutation,
 } from "@/hooks/useFunctionsQuery";
-import {
-  cleanAnswer,
-  getProfilesWithLeastMessages,
-} from "@/supabase/functions/_shared/utils";
+import { cleanAnswer } from "@/supabase/functions/_shared/utils";
 import { Send } from "@mui/icons-material";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { useProfilesQuery } from "@/hooks/useProfilesQuery";
-import { useMessagesQuery } from "@/hooks/useMessagesQuery";
 import { useIsLoading } from "@/hooks/useIsLoading";
 
 type Props = {
@@ -33,13 +29,11 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   const userQuery = useUserQuery();
   const gameQuery = useGameQuery();
   const profilesQuery = useProfilesQuery();
-  const messagesQuery = useMessagesQuery();
   const generateAnswersMutation = useGenerateAnswersMutation();
   const postMessageMutation = usePostMessageMutation();
   const isLoading = useIsLoading();
 
   const profiles = profilesQuery.data || [];
-  const messages = messagesQuery.data || [];
   if (!userQuery.data) {
     console.error("User data not available");
     return null;
@@ -54,10 +48,6 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
     console.error("Profile not found for user", userQuery.data?.id);
     return null;
   }
-
-  const talkingProfiles = getProfilesWithLeastMessages(profiles, messages);
-  const canTalk = talkingProfiles?.some((p) => p.id === me.id);
-  const isLate = canTalk && talkingProfiles.length <= 2;
 
   const generateAnswers = async () => {
     let receivedAnswers: string[] = [];
@@ -116,21 +106,6 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
       <Box
         sx={{ ...sx, display: "flex", flexDirection: "column", gap: 1, p: 1 }}
       >
-        {isLate && (
-          <Typography textAlign="center">
-            <strong>⏰ Hurry up!</strong>
-          </Typography>
-        )}
-
-        {!canTalk && talkingProfiles?.length && (
-          <Typography textAlign="center">
-            Waiting for{" "}
-            {talkingProfiles.length > 2
-              ? "others"
-              : talkingProfiles.map((p) => p.name).join(", ")}
-          </Typography>
-        )}
-
         {/* bot input */}
         {me.is_bot && !botAnswers && (
           <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -139,7 +114,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
               color="secondary"
               sx={{ flexShrink: 1, flexGrow: 0 }}
               onClick={generateAnswers}
-              disabled={isLoading || !canTalk}
+              disabled={isLoading}
               aria-label="AI Answers"
             >
               Generate AI Answers 🤖
@@ -158,7 +133,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
                   color="secondary"
                   key="answer"
                   onClick={() => sendMessageFromBot(answer)}
-                  disabled={isLoading || !canTalk}
+                  disabled={isLoading}
                 >
                   <Send />
                 </Button>
@@ -191,7 +166,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
                 type="submit"
                 variant="contained"
                 color="secondary"
-                disabled={!canTalk || isLoading}
+                disabled={isLoading}
                 aria-label="Send message button"
               >
                 <Send />
