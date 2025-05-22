@@ -18,6 +18,7 @@ import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { useProfilesQuery } from "@/hooks/useProfilesQuery";
 import { useIsLoading } from "@/hooks/useIsLoading";
+import { Spinner } from "./spinner";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -118,6 +119,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
               aria-label="AI Answers"
             >
               Generate AI Answers 🤖
+              {isLoading && <Spinner />}
             </Button>
           </Box>
         )}
