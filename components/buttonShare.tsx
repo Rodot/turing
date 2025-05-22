@@ -22,9 +22,6 @@ export const ButtonShare: React.FC<Props> = ({ url: urlToCopy }) => {
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <TextField
           value={urlToCopy}
-          InputProps={{
-            readOnly: true,
-          }}
           disabled
           size="small"
           variant="outlined"

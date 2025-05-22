@@ -92,22 +92,6 @@ export const Lobby: React.FC = () => {
         </Button>
       )}
 
-      <Box sx={{ mb: 4 }}></Box>
-
-      <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
-        Invite Link
-      </Typography>
-      <Box>
-        <ButtonShare url={url} />
-      </Box>
-
-      <Box sx={{ mb: 2 }}></Box>
-
-      <QRShare url={url} />
-      <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
-        Scan to join 👆
-      </Typography>
-
       {isHost && (
         <>
           <Box sx={{ mb: 4 }}></Box>
@@ -135,6 +119,22 @@ export const Lobby: React.FC = () => {
           </ButtonGroup>
         </>
       )}
+
+      <Box sx={{ mb: 4 }}></Box>
+
+      <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
+        Invite Link
+      </Typography>
+      <Box>
+        <ButtonShare url={url} />
+      </Box>
+
+      <Box sx={{ mb: 2 }}></Box>
+
+      <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
+        Scan to join
+      </Typography>
+      <QRShare url={url} />
     </Container>
   );
 };
