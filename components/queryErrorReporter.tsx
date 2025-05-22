@@ -17,7 +17,7 @@ export function QueryErrorReporter() {
         console.error(
           "Query error:",
           event.query.queryKey,
-          event.query.state.error
+          event.query.state.error,
         );
         showSnackbar(`${event.query.state.error}`, "error");
       }
@@ -29,7 +29,7 @@ export function QueryErrorReporter() {
         console.error(
           "Mutation error:",
           event.mutation.options.mutationKey,
-          event.mutation.state.error
+          event.mutation.state.error,
         );
         showSnackbar(`${event.mutation.state.error}`, "error");
       }
