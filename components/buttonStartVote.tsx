@@ -1,7 +1,7 @@
 import React from "react";
 import { HowToVote } from "@mui/icons-material";
 import { Button } from "@mui/material";
-import { useStartVoteMutation } from "@/hooks/useFunctionsQuery";
+import { useStartVoteMutation } from "@/hooks/useFunctionsMutation";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
 import { useIsLoading } from "@/hooks/useIsLoading";
 

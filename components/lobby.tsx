@@ -14,11 +14,11 @@ import { ButtonShare } from "./buttonShare";
 import { ButtonGoHome } from "./buttonGoHome";
 import { QRShare } from "./qrShare";
 import { useUserQuery } from "@/hooks/useUserQuery";
+import { useGameQuery } from "@/hooks/useGameQuery";
 import {
   useGameLanguageMutation,
-  useGameQuery,
   useStartGameMutation,
-} from "@/hooks/useGameQuery";
+} from "@/hooks/useGameMutation";
 import { useProfilesQuery } from "@/hooks/useProfilesQuery";
 import { useIsLoading } from "@/hooks/useIsLoading";
 

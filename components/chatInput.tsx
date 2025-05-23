@@ -11,7 +11,7 @@ import {
 import {
   useGenerateAnswersMutation,
   usePostMessageMutation,
-} from "@/hooks/useFunctionsQuery";
+} from "@/hooks/useFunctionsMutation";
 import { cleanAnswer } from "@/supabase/functions/_shared/utils";
 import { Send } from "@mui/icons-material";
 import { useUserQuery } from "@/hooks/useUserQuery";

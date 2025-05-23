@@ -6,10 +6,8 @@ import { ButtonCreateGame } from "./buttonCreateGame";
 import { Send } from "@mui/icons-material";
 import { ButtonJoinGame } from "./buttonJoinGame";
 import { ButtonResumeGame } from "./buttonResumeGame";
-import {
-  useProfileNameMutation,
-  useProfileQuery,
-} from "@/hooks/useProfileQuery";
+import { useProfileQuery } from "@/hooks/useProfileQuery";
+import { useProfileNameMutation } from "@/hooks/useProfileMutation";
 import { ButtonEndGame } from "./buttonEndGame";
 import { useGameIdFromUrl } from "@/hooks/useGameIdFromUrl";
 import { useIsLoading } from "@/hooks/useIsLoading";

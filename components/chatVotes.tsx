@@ -3,7 +3,7 @@ import { Box, Button, SxProps, Theme, Typography } from "@mui/material";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { useProfilesQuery } from "@/hooks/useProfilesQuery";
-import { usePlayerVoteMutation } from "@/hooks/useFunctionsQuery";
+import { usePlayerVoteMutation } from "@/hooks/useFunctionsMutation";
 import { useIsLoading } from "@/hooks/useIsLoading";
 import { ProfileData } from "@/supabase/functions/_types/Database.type";
 

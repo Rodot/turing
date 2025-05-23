@@ -1,7 +1,7 @@
 import React from "react";
 import { Close } from "@mui/icons-material";
 import { Button } from "@mui/material";
-import { useEndGameMutation } from "@/hooks/useFunctionsQuery";
+import { useEndGameMutation } from "@/hooks/useFunctionsMutation";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
 import { useIsLoading } from "@/hooks/useIsLoading";
 
