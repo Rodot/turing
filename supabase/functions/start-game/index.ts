@@ -6,7 +6,7 @@
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
 import {
-  fetchGame,
+  fetchGameAndCheckStatus,
   updateAllPlayersInGame,
   updateGameWithStatusTransition,
   updatePlayerInGame,
@@ -28,11 +28,11 @@ Deno.serve(async (req) => {
     const supabase = createSupabaseClient(req);
 
     console.log("Starting game", gameId);
-    await updateGameWithStatusTransition(supabase, gameId, "talking");
 
-    // fetch game
-    const game = await fetchGame(supabase, gameId);
-    if (!game) throw new Error("Game not found");
+    // fetch game and check it's in lobby status before starting
+    const game = await fetchGameAndCheckStatus(supabase, gameId, "lobby");
+
+    await updateGameWithStatusTransition(supabase, gameId, "talking");
 
     if (!game.players?.length) throw new Error("No players in game");
 

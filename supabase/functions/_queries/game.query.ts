@@ -123,3 +123,22 @@ export const updateAllPlayersInGame = async (
   game.players = game.players.map((player) => ({ ...player, ...updates }));
   await updateGame(supabase, gameId, { players: game.players });
 };
+
+export const fetchGameAndCheckStatus = async (
+  supabase: SupabaseClient,
+  gameId: string,
+  expectedStatus: GameStatus,
+) => {
+  const game = await fetchGame(supabase, gameId);
+  if (!game) {
+    throw new Error("Game not found");
+  }
+
+  if (game.status !== expectedStatus) {
+    throw new Error(
+      `Game status must be "${expectedStatus}" but is "${game.status}"`,
+    );
+  }
+
+  return game;
+};

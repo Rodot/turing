@@ -9,7 +9,7 @@ import { fetchMessages, insertMessage } from "../_queries/messages.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { MessageData } from "../_types/Database.type.ts";
-import { fetchGame } from "../_queries/game.query.ts";
+import { fetchGameAndCheckStatus } from "../_queries/game.query.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -26,14 +26,12 @@ Deno.serve(async (req) => {
 
     const supabase = createSupabaseClient(req);
 
-    const [messages, game] = await Promise.all([
+    const [messages] = await Promise.all([
       fetchMessages(supabase, message?.game_id),
-      fetchGame(supabase, message?.game_id),
+      fetchGameAndCheckStatus(supabase, message?.game_id, "talking"),
     ]);
 
     if (!messages) throw new Error("No messages found");
-    if (!game) throw new Error("No game found");
-    if (game.status !== "talking") throw new Error("Game not talking");
 
     await insertMessage(supabase, message);
 

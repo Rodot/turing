@@ -1,6 +1,9 @@
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
-import { addPlayerToGame } from "../_queries/game.query.ts";
+import {
+  addPlayerToGame,
+  fetchGameAndCheckStatus,
+} from "../_queries/game.query.ts";
 import {
   fetchProfile,
   updateProfileGameId,
@@ -19,6 +22,9 @@ Deno.serve(async (req) => {
     console.log("Joining game", { gameId });
 
     const supabase = createSupabaseClient(req);
+
+    // Check that game exists and is in lobby status
+    await fetchGameAndCheckStatus(supabase, gameId, "lobby");
 
     const userResponse = await supabase.auth.getUser();
     if (userResponse.error) {

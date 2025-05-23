@@ -1,5 +1,5 @@
 import {
-  fetchGame,
+  fetchGameAndCheckStatus,
   updateGameWithStatusTransition,
 } from "../_queries/game.query.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
@@ -26,9 +26,8 @@ Deno.serve(async (req) => {
     }
     const user = userResponse.data.user;
 
-    // Get game to find the player name
-    const game = await fetchGame(supabase, gameId);
-    if (!game) throw new Error("Game not found");
+    // Get game to find the player name and check status
+    const game = await fetchGameAndCheckStatus(supabase, gameId, "talking");
 
     const player = getPlayerFromGame(game, user.id);
     if (!player) throw new Error("Player not found in game");

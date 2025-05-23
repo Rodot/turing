@@ -8,6 +8,7 @@
 import { insertMessage } from "../_queries/messages.query.ts";
 import {
   fetchGame,
+  fetchGameAndCheckStatus,
   updateGameWithStatusTransition,
   updatePlayerInGame,
 } from "../_queries/game.query.ts";
@@ -36,6 +37,9 @@ Deno.serve(async (req) => {
 
     const supabase = createSupabaseClient(req);
     console.log("Voting", { gameId, profileId });
+
+    // Check that game is in voting status
+    await fetchGameAndCheckStatus(supabase, gameId, "voting");
 
     // Apply player vote
     if (vote === "blank") {
