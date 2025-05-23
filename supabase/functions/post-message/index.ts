@@ -47,6 +47,9 @@ Deno.serve(async (req) => {
 
     // Check if we need to transition from talking_warmup to talking_hunt
     if (game.status === "talking_warmup") {
+      console.log(
+        `Checking if we can transition to talking_hunt for game ${game.id}`,
+      );
       await checkAndTransitionToHunt(supabase, game, messages, message);
     }
 
@@ -96,9 +99,17 @@ const checkAndTransitionToHunt = async (
     messageCountsByPlayer.set(player.id, playerMessages.length);
   }
 
+  console.log(
+    `Message counts since warmup for game ${game.id}:`,
+    Array.from(messageCountsByPlayer.entries()).map(([id, count]) => ({
+      id,
+      count,
+    })),
+  );
+
   // Check if all players have at least 2 messages
   const allPlayersReady = game.players.every(
-    (player) => (messageCountsByPlayer.get(player.id) || 0) >= 3,
+    (player) => (messageCountsByPlayer.get(player.id) || 0) >= 2,
   );
 
   if (allPlayersReady) {
@@ -116,8 +127,9 @@ const checkAndTransitionToHunt = async (
       (player) => player.id !== game.last_bot_id,
     );
 
-    const botPlayer =
-      previousBot && noBotThisRound ? undefined : pickRandom(availablePlayers);
+    const botPlayer = previousBot && noBotThisRound
+      ? undefined
+      : pickRandom(availablePlayers);
 
     if (botPlayer) {
       await updatePlayerInGame(supabase, game.id, botPlayer.id, {

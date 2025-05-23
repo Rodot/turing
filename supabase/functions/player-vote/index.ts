@@ -137,7 +137,7 @@ type VotingData = {
   blankVoters: PlayerData[];
   voteCounts: Record<string, number>;
   numVotes: number;
-  humanImposters: PlayerData[];
+  mostVotedPlayers: PlayerData[];
   allVoted: boolean;
 };
 
@@ -160,9 +160,14 @@ async function gatherVotingData(
   const game = await fetchGame(supabase, gameId);
   if (!game) throw new Error("Game not found");
 
+  // Get active player IDs for vote validation
+  const activePlayerIds = new Set(game.players.map((p) => p.id));
+
   // Analyze player data
   const numHumans = game.players.filter((player) => !player.is_bot).length;
   const botPlayer = game.players.find((player) => player.is_bot);
+
+  // Filter players by their votes (only count valid votes)
   const botVoters = game.players.filter(
     (player) => player.vote === botPlayer?.id,
   );
@@ -170,10 +175,14 @@ async function gatherVotingData(
     (player) => player.vote_blank === true,
   );
 
-  // Count votes for each player
+  // Count votes for each player (only count votes for active players)
   const voteCounts = game.players.reduce(
     (counts, player) => {
-      if (player.vote && !player.vote_blank) {
+      if (
+        player.vote &&
+        !player.vote_blank &&
+        activePlayerIds.has(player.vote)
+      ) {
         counts[player.vote] = (counts[player.vote] || 0) + 1;
       }
       return counts;
@@ -183,21 +192,21 @@ async function gatherVotingData(
 
   // Calculate total votes
   const numVotes = game.players.filter(
-    (player) => player.vote || player.vote_blank,
+    (player) =>
+      (player.vote && activePlayerIds.has(player.vote)) || player.vote_blank,
   ).length;
 
-  // Find the maximum number of votes any player received
-  const maxVotes = botPlayer ? Math.max(...Object.values(voteCounts)) : 0;
-
-  // Calculate human imposters (humans with more votes than bot AND have the most votes)
-  const humanImposters = botPlayer
-    ? game.players.filter(
-        (player) =>
-          !player.is_bot &&
-          (voteCounts[player.id] || 0) > (voteCounts[botPlayer.id] || 0) &&
-          (voteCounts[player.id] || 0) === maxVotes,
-      )
-    : [];
+  // Find players with the most votes
+  const maxVotes =
+    Object.keys(voteCounts).length > 0
+      ? Math.max(...Object.values(voteCounts))
+      : 0;
+  const mostVotedPlayers =
+    maxVotes > 0
+      ? game.players.filter(
+          (player) => (voteCounts[player.id] || 0) === maxVotes,
+        )
+      : [];
 
   return {
     players: game.players,
@@ -207,46 +216,45 @@ async function gatherVotingData(
     blankVoters,
     voteCounts,
     numVotes,
-    humanImposters,
+    mostVotedPlayers,
     allVoted: numVotes >= numHumans,
   };
 }
 
 // STEP 2: Function to determine who gets points and why
 function determinePointsAllocation(votingData: VotingData): PointAllocation[] {
-  const {
-    botPlayer,
-    botVoters,
-    blankVoters,
-    humanImposters,
-    players,
-    voteCounts,
-  } = votingData;
+  const { botPlayer, botVoters, blankVoters, mostVotedPlayers, voteCounts } =
+    votingData;
 
   const pointAllocations: PointAllocation[] = [];
 
-  // Points for bot voters
-  if (botPlayer && botVoters.length > 0) {
-    botVoters.forEach((voter) => {
-      pointAllocations.push({
-        player: voter,
-        points: 1,
-        reason: "foundBot",
+  if (botPlayer) {
+    // Scenario: There is a bot in the game
+
+    // 1. Players who correctly identified the bot get points
+    if (botVoters.length > 0) {
+      botVoters.forEach((voter) => {
+        pointAllocations.push({
+          player: voter,
+          points: 1,
+          reason: "foundBot",
+        });
       });
-    });
-  }
+    } else {
+      // 2. If nobody found the bot, the bot gets a point for escaping
+      pointAllocations.push({
+        player: botPlayer,
+        points: 1,
+        reason: "botEscaped",
+      });
+    }
 
-  // Points for bot if nobody found it
-  if (botPlayer && botVoters.length === 0) {
-    pointAllocations.push({
-      player: botPlayer,
-      points: 1,
-      reason: "botEscaped",
-    });
-  }
+    // 3. Humans who got more votes than the bot are convincing imposters
+    const botVotes = voteCounts[botPlayer.id] || 0;
+    const humanImposters = mostVotedPlayers.filter(
+      (player) => !player.is_bot && (voteCounts[player.id] || 0) > botVotes,
+    );
 
-  // Points for human imposters
-  if (humanImposters.length > 0) {
     humanImposters.forEach((imposter) => {
       pointAllocations.push({
         player: imposter,
@@ -254,26 +262,10 @@ function determinePointsAllocation(votingData: VotingData): PointAllocation[] {
         reason: "moreConvincingThanBot",
       });
     });
-  }
+  } else {
+    // Scenario: There is no bot in the game
 
-  // Points for players with most votes when there's no bot (similar to human imposters)
-  if (!botPlayer && Object.keys(voteCounts).length > 0) {
-    const maxVotes = Math.max(...Object.values(voteCounts));
-    const mostVotedPlayers = players.filter(
-      (player) => (voteCounts[player.id] || 0) === maxVotes && maxVotes > 0,
-    );
-
-    mostVotedPlayers.forEach((player) => {
-      pointAllocations.push({
-        player,
-        points: 1,
-        reason: "moreConvincingThanBot",
-      });
-    });
-  }
-
-  // Points for blank voters when no bot
-  if (!botPlayer && blankVoters.length > 0) {
+    // 1. Players who voted blank correctly guessed there was no bot
     blankVoters.forEach((voter) => {
       pointAllocations.push({
         player: voter,
@@ -281,6 +273,17 @@ function determinePointsAllocation(votingData: VotingData): PointAllocation[] {
         reason: "correctlyGuessedNoBot",
       });
     });
+
+    // 2. Players with the most votes were the most convincing fake bots
+    if (mostVotedPlayers.length > 0) {
+      mostVotedPlayers.forEach((player) => {
+        pointAllocations.push({
+          player,
+          points: 1,
+          reason: "moreConvincingThanBot",
+        });
+      });
+    }
   }
 
   return pointAllocations;
@@ -325,19 +328,23 @@ async function postPointsMessages(
   votingData: VotingData,
   gameId: string,
 ) {
-  const { botPlayer, humanImposters } = votingData;
+  const { botPlayer } = votingData;
 
   // Group players by reason for better messaging
   const foundBotPlayers = pointAllocations
     .filter((a) => a.reason === "foundBot")
     .map((a) => a.player);
 
-  const correctlyGuessedNoBotPlayers = pointAllocations
-    .filter((a) => a.reason === "correctlyGuessedNoBot")
+  const botEscapedPlayers = pointAllocations
+    .filter((a) => a.reason === "botEscaped")
     .map((a) => a.player);
 
-  const mostVotedNoBotPlayers = pointAllocations
-    .filter((a) => a.reason === "moreConvincingThanBot" && !botPlayer)
+  const convincingImposters = pointAllocations
+    .filter((a) => a.reason === "moreConvincingThanBot")
+    .map((a) => a.player);
+
+  const correctlyGuessedNoBotPlayers = pointAllocations
+    .filter((a) => a.reason === "correctlyGuessedNoBot")
     .map((a) => a.player);
 
   // Messages to post
@@ -354,30 +361,14 @@ async function postPointsMessages(
   }
 
   // Create message for escaped bot
-  if (botPlayer && foundBotPlayers.length === 0) {
-    messages.push(`+1 🧠 to ${botPlayer.name} for pretending to be human`);
-  }
-
-  // Add message for humans who got more votes than the bot
-  if (humanImposters.length > 0) {
+  if (botEscapedPlayers.length > 0) {
     messages.push(
-      `+1 🧠 to ${humanImposters
-        .map((p) => p.name)
-        .join(" and ")} for pretending to be the AI`,
-    );
-  }
-
-  // Add message for most voted players when there's no bot
-  if (!botPlayer && mostVotedNoBotPlayers.length > 0) {
-    messages.push(
-      `+1 🧠 to ${mostVotedNoBotPlayers
-        .map((p) => p.name)
-        .join(" and ")} for pretending to be the AI`,
+      `+1 🧠 to ${botEscapedPlayers[0].name} for pretending to be human`,
     );
   }
 
   // Create message for bot voters
-  if (botPlayer && foundBotPlayers.length > 0) {
+  if (foundBotPlayers.length > 0) {
     messages.push(
       `+1 🧠 to ${foundBotPlayers
         .map((p) => p.name)
@@ -385,8 +376,16 @@ async function postPointsMessages(
     );
   }
 
+  // Add message for convincing imposters
+  if (convincingImposters.length > 0) {
+    const message = botPlayer
+      ? `+1 🧠 to ${convincingImposters.map((p) => p.name).join(" and ")} for being more convincing than the AI`
+      : `+1 🧠 to ${convincingImposters.map((p) => p.name).join(" and ")} for pretending to be the AI`;
+    messages.push(message);
+  }
+
   // Create message for correct blank voters
-  if (!botPlayer && correctlyGuessedNoBotPlayers.length > 0) {
+  if (correctlyGuessedNoBotPlayers.length > 0) {
     messages.push(
       `+1 🧠 to ${correctlyGuessedNoBotPlayers
         .map((p) => p.name)
@@ -396,7 +395,7 @@ async function postPointsMessages(
 
   messages.push("💬 The AI is gone, let's change the topic");
 
-  // Post all messages sequentially
+  // Post all messages sequentially with delays
   for (const message of messages) {
     await insertMessage(supabase, {
       author_name: "",
