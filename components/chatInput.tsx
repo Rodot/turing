@@ -77,7 +77,8 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
     await postMessageMutation.mutateAsync({
       game_id: gameId,
       profile_id: me.id,
-      author: me.name,
+      author_name: me.name,
+      type: "user",
       content: cleanAnswer(text),
     });
   };

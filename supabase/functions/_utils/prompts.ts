@@ -7,9 +7,9 @@ const messagesToPrompt = (
 ) => {
   let prompt = "";
   messages.forEach((message) => {
-    if (message.author === "system") return;
-    const you = message.author === speakerName ? "(you)" : "";
-    const author = removeEmojis(message.author);
+    if (message.type === "system") return;
+    const you = message.author_name === speakerName ? "(you)" : "";
+    const author = removeEmojis(message.author_name);
     prompt += `${author}${you}: ${message.content}\n`;
   });
   return prompt;

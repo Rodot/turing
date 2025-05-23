@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
     if (!message?.game_id) throw new Error("Game ID is required");
     if (!message?.profile_id) throw new Error("Profile ID is required");
     if (!message?.content) throw new Error("Content is required");
-    if (!message?.author) throw new Error("Author is required");
+    if (!message?.author_name) throw new Error("Author name is required");
 
     const supabase = createSupabaseClient(req);
 

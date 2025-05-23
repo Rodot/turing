@@ -51,7 +51,7 @@ export function ChatMessage({
       >
         {!fromSystem && (
           <Typography variant="caption" color={isMe ? "lightgrey" : "grey"}>
-            {message.author}
+            {message.author_name}
           </Typography>
         )}
         <Typography

@@ -78,28 +78,31 @@ export type Database = {
       };
       messages: {
         Row: {
-          author: string | null;
+          author_name: string | null;
           content: string | null;
           created_at: string;
           game_id: string;
           id: string;
           profile_id: string | null;
+          type: string | null;
         };
         Insert: {
-          author?: string | null;
+          author_name?: string | null;
           content?: string | null;
           created_at?: string;
           game_id: string;
           id?: string;
           profile_id?: string | null;
+          type?: string | null;
         };
         Update: {
-          author?: string | null;
+          author_name?: string | null;
           content?: string | null;
           created_at?: string;
           game_id?: string;
           id?: string;
           profile_id?: string | null;
+          type?: string | null;
         };
         Relationships: [
           {

@@ -8,8 +8,8 @@ import {
 export const nextVoteLength = (numPlayers: number) => 3 * numPlayers;
 
 export const isSystem = (message: MessageData) => {
-  if (message.author === "system") return true;
-  if (message.author === "icebreaker") return true;
+  if (message.type === "system") return true;
+  if (message.type === "icebreaker") return true;
   return false;
 };
 

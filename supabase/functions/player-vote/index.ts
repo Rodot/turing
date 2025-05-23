@@ -85,7 +85,8 @@ Deno.serve(async (req) => {
         if (winners.length) {
           const message = `${winners.map((w) => w.name).join(" and ")} won! 🏆`;
           await insertMessage(supabase, {
-            author: "system",
+            author_name: "",
+            type: "system",
             content: message,
             game_id: gameId,
           });
@@ -110,7 +111,8 @@ Deno.serve(async (req) => {
           updateGameWithStatusTransition(supabase, gameId, "talking"),
           insertMessage(supabase, {
             game_id: gameId,
-            author: "icebreaker",
+            author_name: "",
+            type: "icebreaker",
             content: "💡 " + pickRandom(iceBreakers[game?.lang ?? "en"]),
           }),
         ]);
@@ -395,7 +397,8 @@ async function postPointsMessages(
   // Post all messages sequentially
   for (const message of messages) {
     await insertMessage(supabase, {
-      author: "system",
+      author_name: "",
+      type: "system",
       content: message,
       game_id: gameId,
     });

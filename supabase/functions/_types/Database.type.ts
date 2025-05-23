@@ -1,8 +1,11 @@
+export type MessageType = "system" | "icebreaker" | "user";
+
 export type MessageData = {
   id: string;
   profile_id: string;
   game_id: string;
-  author: string;
+  author_name: string;
+  type: MessageType;
   content: string;
 };
 

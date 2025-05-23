@@ -37,7 +37,8 @@ CREATE TABLE public.messages(
     created_at timestamp NOT NULL DEFAULT NOW(),
     game_id uuid NOT NULL REFERENCES public.games ON DELETE CASCADE,
     profile_id uuid REFERENCES public.profiles ON DELETE SET NULL,
-    author text,
+    author_name text,
+    type text DEFAULT 'user',
     content text
 );
 

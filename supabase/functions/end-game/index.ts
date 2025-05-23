@@ -38,7 +38,8 @@ Deno.serve(async (req) => {
 
     // Post a message
     await insertMessage(supabase, {
-      author: "system",
+      author_name: "",
+      type: "system",
       content: `❌ ${player.name} ended the game`,
       game_id: gameId,
     });
