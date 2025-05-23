@@ -1,5 +1,5 @@
 import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2/dist/module/index.js";
-import { GameData, PlayerData } from "../_types/Database.type.ts";
+import { GameData, PlayerData, GameStatus } from "../_types/Database.type.ts";
 
 export const fetchGame = async (supabase: SupabaseClient, id: string) => {
   const req = await supabase.from("games").select("*").eq("id", id);
@@ -27,6 +27,52 @@ export const updateGame = async (
   const req = await supabase.from("games").update(data).eq("id", id);
   if (req.error) {
     throw new Error(req.error.message);
+  }
+};
+
+export const updateGameWithStatusTransition = async (
+  supabase: SupabaseClient,
+  id: string,
+  newStatus: GameStatus,
+) => {
+  const game = await fetchGame(supabase, id);
+  if (!game) throw new Error("Game not found");
+
+  const currentStatus = game.status;
+
+  // Validate status transition
+  const validTransitions: Record<string, string[]> = {
+    lobby: ["talking", "over"],
+    talking: ["voting", "over"],
+    voting: ["talking", "over"],
+    over: [],
+  };
+
+  const allowedNextStates = validTransitions[currentStatus] || [];
+
+  if (!allowedNextStates.includes(newStatus)) {
+    throw new Error(
+      `Invalid status transition: ${currentStatus} -> ${newStatus}. ` +
+        `Allowed transitions from ${currentStatus}: ${allowedNextStates.join(", ")}`,
+    );
+  }
+
+  // Use atomic update with where condition to prevent race conditions
+  const req = await supabase
+    .from("games")
+    .update({ status: newStatus })
+    .eq("id", id)
+    .eq("status", currentStatus);
+
+  if (req.error) {
+    throw new Error(req.error.message);
+  }
+
+  // Check if any rows were affected to detect race condition
+  if (req.count === 0) {
+    throw new Error(
+      `Status transition failed: game status changed from ${currentStatus} before update could complete`,
+    );
   }
 };
 

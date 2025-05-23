@@ -1,4 +1,7 @@
-import { updateGame, fetchGame } from "../_queries/game.query.ts";
+import {
+  fetchGame,
+  updateGameWithStatusTransition,
+} from "../_queries/game.query.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
@@ -14,9 +17,10 @@ Deno.serve(async (req) => {
       gameId: string;
     };
     if (!gameId) throw new Error("Missing gameId");
-    console.log("Ending game", { gameId });
-
     const supabase = createSupabaseClient(req);
+
+    console.log("Ending game", { gameId });
+    await updateGameWithStatusTransition(supabase, gameId, "over");
 
     const userResponse = await supabase.auth.getUser();
     if (userResponse.error) {
@@ -49,9 +53,6 @@ Deno.serve(async (req) => {
         "Error removing profiles: " + removeProfilesError.message,
       );
     }
-
-    // Set the game status to "over"
-    await updateGame(supabase, gameId, { status: "over" });
 
     const data = JSON.stringify({});
     return new Response(data, { headers, status: 200 });

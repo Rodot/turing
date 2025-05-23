@@ -1,4 +1,7 @@
-import { updateGame, fetchGame } from "../_queries/game.query.ts";
+import {
+  fetchGame,
+  updateGameWithStatusTransition,
+} from "../_queries/game.query.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
@@ -40,7 +43,7 @@ Deno.serve(async (req) => {
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
     // Set the game status to "voting"
-    await updateGame(supabase, gameId, { status: "voting" });
+    await updateGameWithStatusTransition(supabase, gameId, "voting");
 
     const data = JSON.stringify({});
     return new Response(data, { headers, status: 200 });

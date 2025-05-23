@@ -21,9 +21,11 @@ export type PlayerData = {
   score: number;
 };
 
+export type GameStatus = "lobby" | "talking" | "voting" | "over";
+
 export type GameData = {
   id: string;
   lang: "en" | "fr";
-  status: "lobby" | "talking" | "voting" | "over";
+  status: GameStatus;
   players: PlayerData[];
 };

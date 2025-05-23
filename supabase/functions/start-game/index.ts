@@ -7,8 +7,8 @@
 
 import {
   fetchGame,
-  updateGame,
   updateAllPlayersInGame,
+  updateGameWithStatusTransition,
   updatePlayerInGame,
 } from "../_queries/game.query.ts";
 import { headers } from "../_utils/cors.ts";
@@ -25,9 +25,10 @@ Deno.serve(async (req) => {
   try {
     const { gameId }: { gameId: string } = await req.json();
     if (!gameId) throw new Error("Missing gameId");
-    console.log("Starting game", gameId);
-
     const supabase = createSupabaseClient(req);
+
+    console.log("Starting game", gameId);
+    await updateGameWithStatusTransition(supabase, gameId, "talking");
 
     // fetch game
     const game = await fetchGame(supabase, gameId);
@@ -58,11 +59,6 @@ Deno.serve(async (req) => {
       game_id: gameId,
       author: "icebreaker",
       content: "💡 " + pickRandom(iceBreakers[game.lang]),
-    });
-
-    // start the game
-    await updateGame(supabase, gameId, {
-      status: "talking",
     });
 
     const data = JSON.stringify({});

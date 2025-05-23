@@ -8,7 +8,7 @@
 import { insertMessage } from "../_queries/messages.query.ts";
 import {
   fetchGame,
-  updateGame,
+  updateGameWithStatusTransition,
   updatePlayerInGame,
 } from "../_queries/game.query.ts";
 import { headers } from "../_utils/cors.ts";
@@ -87,7 +87,7 @@ Deno.serve(async (req) => {
         }
 
         // Close the game
-        await updateGame(supabase, gameId, { status: "over" });
+        await updateGameWithStatusTransition(supabase, gameId, "over");
 
         // Remove all players from the game
         await supabase
@@ -105,9 +105,7 @@ Deno.serve(async (req) => {
         // Reset votes and set random player as bot
         await Promise.all([
           setRandomPlayerAsBotAndResetVotes(supabase, gameId, game.players),
-          updateGame(supabase, gameId, {
-            status: "talking",
-          }),
+          updateGameWithStatusTransition(supabase, gameId, "talking"),
           insertMessage(supabase, {
             game_id: gameId,
             author: "icebreaker",
@@ -190,11 +188,11 @@ async function gatherVotingData(
   // Calculate human imposters (humans with more votes than bot AND have the most votes)
   const humanImposters = botPlayer
     ? game.players.filter(
-        (player) =>
-          !player.is_bot &&
-          (voteCounts[player.id] || 0) > (voteCounts[botPlayer.id] || 0) &&
-          (voteCounts[player.id] || 0) === maxVotes,
-      )
+      (player) =>
+        !player.is_bot &&
+        (voteCounts[player.id] || 0) > (voteCounts[botPlayer.id] || 0) &&
+        (voteCounts[player.id] || 0) === maxVotes,
+    )
     : [];
 
   return {
@@ -359,36 +357,44 @@ async function postPointsMessages(
   // Add message for humans who got more votes than the bot
   if (humanImposters.length > 0) {
     messages.push(
-      `+1 🧠 to ${humanImposters
-        .map((p) => p.name)
-        .join(" and ")} for pretending to be the AI`,
+      `+1 🧠 to ${
+        humanImposters
+          .map((p) => p.name)
+          .join(" and ")
+      } for pretending to be the AI`,
     );
   }
 
   // Add message for most voted players when there's no bot
   if (!botPlayer && mostVotedNoBotPlayers.length > 0) {
     messages.push(
-      `+1 🧠 to ${mostVotedNoBotPlayers
-        .map((p) => p.name)
-        .join(" and ")} for pretending to be the AI`,
+      `+1 🧠 to ${
+        mostVotedNoBotPlayers
+          .map((p) => p.name)
+          .join(" and ")
+      } for pretending to be the AI`,
     );
   }
 
   // Create message for bot voters
   if (botPlayer && foundBotPlayers.length > 0) {
     messages.push(
-      `+1 🧠 to ${foundBotPlayers
-        .map((p) => p.name)
-        .join(" and ")} for finding the AI`,
+      `+1 🧠 to ${
+        foundBotPlayers
+          .map((p) => p.name)
+          .join(" and ")
+      } for finding the AI`,
     );
   }
 
   // Create message for correct blank voters
   if (!botPlayer && correctlyGuessedNoBotPlayers.length > 0) {
     messages.push(
-      `+1 🧠 to ${correctlyGuessedNoBotPlayers
-        .map((p) => p.name)
-        .join(" and ")} who knew there was no AI`,
+      `+1 🧠 to ${
+        correctlyGuessedNoBotPlayers
+          .map((p) => p.name)
+          .join(" and ")
+      } who knew there was no AI`,
     );
   }
 
