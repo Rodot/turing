@@ -3,6 +3,7 @@ import {
   updateGameWithStatusTransition,
 } from "../_queries/game.query.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
+import { removeAllPlayersFromGame } from "../_queries/profiles.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { getPlayerFromGame } from "../_shared/utils.ts";
@@ -43,16 +44,7 @@ Deno.serve(async (req) => {
     });
 
     // Remove all players from the game
-    const { error: removeProfilesError } = await supabase
-      .from("profiles")
-      .update({ game_id: null })
-      .eq("game_id", gameId);
-
-    if (removeProfilesError) {
-      throw new Error(
-        "Error removing profiles: " + removeProfilesError.message,
-      );
-    }
+    await removeAllPlayersFromGame(supabase, gameId);
 
     const data = JSON.stringify({});
     return new Response(data, { headers, status: 200 });

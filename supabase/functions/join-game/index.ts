@@ -1,6 +1,10 @@
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { addPlayerToGame } from "../_queries/game.query.ts";
+import {
+  fetchProfile,
+  updateProfileGameId,
+} from "../_queries/profiles.query.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -23,21 +27,10 @@ Deno.serve(async (req) => {
     const user = userResponse.data.user;
 
     // Get user profile to get name
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("name")
-      .eq("id", user.id)
-      .single();
-
-    if (profileError) throw new Error(profileError.message);
+    const profile = await fetchProfile(supabase, user.id);
 
     // Update profile to join the game
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ game_id: gameId })
-      .eq("id", user.id);
-
-    if (updateError) throw new Error(updateError.message);
+    await updateProfileGameId(supabase, user.id, gameId);
 
     // Add player to game.players array
     await addPlayerToGame(supabase, gameId, {

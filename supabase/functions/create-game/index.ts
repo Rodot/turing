@@ -6,6 +6,10 @@
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
 import { insertGame, addPlayerToGame } from "../_queries/game.query.ts";
+import {
+  fetchProfile,
+  updateProfileGameId,
+} from "../_queries/profiles.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 
@@ -23,24 +27,13 @@ Deno.serve(async (req) => {
     const user = userResponse.data.user;
 
     // Get user profile to get name
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("name")
-      .eq("id", user.id)
-      .single();
-
-    if (profileError) throw new Error(profileError.message);
+    const profile = await fetchProfile(supabase, user.id);
 
     // Create new game
     const game = await insertGame(supabase);
 
     // Update profile to join the game
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ game_id: game.id })
-      .eq("id", user.id);
-
-    if (updateError) throw new Error(updateError.message);
+    await updateProfileGameId(supabase, user.id, game.id);
 
     // Add player to game.players array
     await addPlayerToGame(supabase, game.id, {
