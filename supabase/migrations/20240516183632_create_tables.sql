@@ -11,7 +11,8 @@ CREATE TABLE public.games(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     created_at timestamp NOT NULL DEFAULT NOW(),
     lang text DEFAULT 'en' ::text,
-    status text DEFAULT 'lobby' ::text
+    status text DEFAULT 'lobby' ::text,
+    players jsonb NOT NULL DEFAULT '[]'::jsonb
 );
 
 ALTER publication supabase_realtime
@@ -22,11 +23,7 @@ CREATE TABLE public.profiles(
     id uuid PRIMARY KEY NOT NULL REFERENCES auth.users ON DELETE CASCADE,
     created_at timestamp NOT NULL DEFAULT NOW(),
     game_id uuid REFERENCES public.games ON DELETE SET NULL,
-    name text,
-    vote uuid REFERENCES public.profiles ON DELETE SET NULL,
-    vote_blank boolean DEFAULT FALSE,
-    is_bot boolean DEFAULT FALSE,
-    score integer DEFAULT 0
+    name text
 );
 
 CREATE INDEX idx_profiles_game_id ON public.profiles(game_id);

@@ -28,9 +28,10 @@ This is "The Turing Trial" - a multiplayer party game where players try to disti
 
 ## Data Layers
 
-### Shared
+### Both frontend and backend
 
-- Domain model types defined in `Database.type.ts`
+- Domain model types defined in `./supabase/functions/_types/Database.type.ts`
+- Utility functions in `./supabase/functions/_shared/`
 
 ### Backend
 

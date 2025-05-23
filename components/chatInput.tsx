@@ -16,9 +16,9 @@ import { cleanAnswer } from "@/supabase/functions/_shared/utils";
 import { Send } from "@mui/icons-material";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
-import { useProfilesQuery } from "@/hooks/useProfilesQuery";
 import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 import { Spinner } from "./spinner";
+import { getPlayerFromGame } from "@/supabase/functions/_shared/utils";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -29,24 +29,22 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   const [botAnswers, setBotAnswers] = useState<string[] | undefined>();
   const userQuery = useUserQuery();
   const gameQuery = useGameQuery();
-  const profilesQuery = useProfilesQuery();
   const generateAnswersMutation = useGenerateAnswersMutation();
   const postMessageMutation = usePostMessageMutation();
   const isAnythingLoading = useIsAnythingLoading();
 
-  const profiles = profilesQuery.data || [];
   if (!userQuery.data) {
     console.error("User data not available");
     return null;
   }
   const gameId = gameQuery?.data?.id;
-  if (!gameId) {
+  if (!gameId || !gameQuery.data) {
     console.error("Game ID not available");
     return null;
   }
-  const me = profiles.find((profile) => profile.id === userQuery.data?.id);
+  const me = getPlayerFromGame(gameQuery.data, userQuery.data.id);
   if (!me) {
-    console.error("Profile not found for user", userQuery.data?.id);
+    console.error("Player not found for user", userQuery.data?.id);
     return null;
   }
 

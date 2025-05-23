@@ -39,18 +39,21 @@ export type Database = {
           created_at: string;
           id: string;
           lang: string | null;
+          players: Json;
           status: string | null;
         };
         Insert: {
           created_at?: string;
           id?: string;
           lang?: string | null;
+          players?: Json;
           status?: string | null;
         };
         Update: {
           created_at?: string;
           id?: string;
           lang?: string | null;
+          players?: Json;
           status?: string | null;
         };
         Relationships: [];
@@ -120,31 +123,19 @@ export type Database = {
           created_at: string;
           game_id: string | null;
           id: string;
-          is_bot: boolean | null;
           name: string | null;
-          score: number | null;
-          vote: string | null;
-          vote_blank: boolean | null;
         };
         Insert: {
           created_at?: string;
           game_id?: string | null;
           id: string;
-          is_bot?: boolean | null;
           name?: string | null;
-          score?: number | null;
-          vote?: string | null;
-          vote_blank?: boolean | null;
         };
         Update: {
           created_at?: string;
           game_id?: string | null;
           id?: string;
-          is_bot?: boolean | null;
           name?: string | null;
-          score?: number | null;
-          vote?: string | null;
-          vote_blank?: boolean | null;
         };
         Relationships: [
           {
@@ -152,13 +143,6 @@ export type Database = {
             columns: ["game_id"];
             isOneToOne: false;
             referencedRelation: "games";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "profiles_vote_fkey";
-            columns: ["vote"];
-            isOneToOne: false;
-            referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
         ];

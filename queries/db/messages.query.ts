@@ -18,17 +18,3 @@ export const fetchMessages = async (
     return data as MessageData[];
   }
 };
-
-export const insertMessage = async (
-  supabase: SupabaseClient,
-  message: Partial<MessageData>,
-) => {
-  const insertMessageResponse = await supabase
-    .from("messages")
-    .insert([message]);
-  if (insertMessageResponse.error) {
-    throw new Error(
-      "Error inserting message: " + insertMessageResponse.error.message,
-    );
-  }
-};

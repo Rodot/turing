@@ -10,15 +10,6 @@ export const fetchGame = async (supabase: SupabaseClient, id: string) => {
   return game;
 };
 
-export const insertGame = async (supabase: SupabaseClient) => {
-  const req = await supabase.from("games").insert({}).select();
-  if (req.error) {
-    throw new Error(req.error.message);
-  }
-  const game: GameData = req?.data?.[0];
-  return game;
-};
-
 export const updateGame = async (
   supabase: SupabaseClient,
   id: string,

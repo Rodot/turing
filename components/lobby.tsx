@@ -16,17 +16,16 @@ import { QRShare } from "./qrShare";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { useGameLanguageMutation } from "@/hooks/useGameMutation";
-import { useProfilesQuery } from "@/hooks/useProfilesQuery";
 import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 import { useStartGameMutation } from "@/hooks/useFunctionsMutation";
+import { PlayerData } from "@/supabase/functions/_types/Database.type";
 
 export const Lobby: React.FC = () => {
   const userQuery = useUserQuery();
   const gameQuery = useGameQuery();
-  const profilesQuery = useProfilesQuery();
-  const gameProfiles = profilesQuery.data || [];
-  const isHost = gameProfiles?.[0]?.id === userQuery.data?.id;
-  const enoughPlayers = gameProfiles?.length >= 3;
+  const gamePlayers = gameQuery.data?.players || [];
+  const isHost = gamePlayers?.[0]?.id === userQuery.data?.id;
+  const enoughPlayers = gamePlayers?.length >= 3;
   const url = window.location.href;
   const startGameMutation = useStartGameMutation();
   const gameLanguageMutation = useGameLanguageMutation();
@@ -59,8 +58,8 @@ export const Lobby: React.FC = () => {
         }}
       >
         <ButtonGoHome />
-        {gameProfiles?.map((profile) => (
-          <Chip key={profile.id} label={profile.name} size="small" />
+        {gamePlayers?.map((player: PlayerData) => (
+          <Chip key={player.id} label={player.name} size="small" />
         ))}
       </Paper>
 
@@ -73,7 +72,7 @@ export const Lobby: React.FC = () => {
       )}
       {enoughPlayers && !isHost && (
         <Typography>
-          <strong>Waiting for {gameProfiles?.[0]?.name}</strong> to start the
+          <strong>Waiting for {gamePlayers?.[0]?.name}</strong> to start the
           game.
         </Typography>
       )}

@@ -5,13 +5,12 @@ import { Box, Chip, Container, Paper, Typography } from "@mui/material";
 import { ChatVote } from "./chatVotes";
 import { ButtonGoHome } from "./buttonGoHome";
 import { ButtonStartVote } from "./buttonStartVote";
-import { useProfilesQuery } from "@/hooks/useProfilesQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
+import { PlayerData } from "@/supabase/functions/_types/Database.type";
 
 export const Chat: React.FC = () => {
   const gameQuery = useGameQuery();
-  const profilesQuery = useProfilesQuery();
-  const profiles = profilesQuery.data || [];
+  const players = gameQuery.data?.players || [];
 
   const isTalkingPhase = gameQuery?.data?.status === "talking";
   const isVotingPhase = gameQuery?.data?.status === "voting";
@@ -62,7 +61,7 @@ export const Chat: React.FC = () => {
           )}
         </Paper>
 
-        {/* profiles line */}
+        {/* players line */}
         <Paper
           sx={{
             display: "flex",
@@ -75,11 +74,11 @@ export const Chat: React.FC = () => {
             borderRadius: 0,
           }}
         >
-          {profiles
-            .sort((a, b) => b.score - a.score)
-            .map((profile) => (
+          {players
+            .sort((a: PlayerData, b: PlayerData) => b.score - a.score)
+            .map((player: PlayerData) => (
               <Box
-                key={profile.id}
+                key={player.id}
                 sx={{
                   display: "flex",
                   alignItems: "center",
@@ -87,7 +86,7 @@ export const Chat: React.FC = () => {
               >
                 <Chip
                   size="small"
-                  label={profile.name + " " + profile.score + " 🧠"}
+                  label={player.name + " " + player.score + " 🧠"}
                 />
               </Box>
             ))}

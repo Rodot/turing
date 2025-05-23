@@ -1,7 +1,6 @@
-import { updateProfile } from "../_queries/profiles.query.ts";
-import { fetchProfile } from "../_queries/profiles.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
+import { addPlayerToGame } from "../_queries/game.query.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -22,12 +21,35 @@ Deno.serve(async (req) => {
       throw new Error(userResponse.error.message);
     }
     const user = userResponse.data.user;
-    const profile = await fetchProfile(supabase, user.id);
 
-    // Update the profile to join the game
-    await updateProfile(supabase, { id: profile.id, game_id: gameId });
+    // Get user profile to get name
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("name")
+      .eq("id", user.id)
+      .single();
 
-    const data = JSON.stringify({ profileId: profile.id, gameId });
+    if (profileError) throw new Error(profileError.message);
+
+    // Update profile to join the game
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ game_id: gameId })
+      .eq("id", user.id);
+
+    if (updateError) throw new Error(updateError.message);
+
+    // Add player to game.players array
+    await addPlayerToGame(supabase, gameId, {
+      id: user.id,
+      name: profile.name || "Unknown",
+      vote: null,
+      vote_blank: false,
+      is_bot: false,
+      score: 0,
+    });
+
+    const data = JSON.stringify({ profileId: user.id, gameId });
     return new Response(data, { headers, status: 200 });
   } catch (error) {
     console.error(error);

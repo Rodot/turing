@@ -5,11 +5,7 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
-import {
-  addProfileToGame,
-  fetchUserProfile,
-} from "../_queries/profiles.query.ts";
-import { insertGame } from "../_queries/game.query.ts";
+import { insertGame, addPlayerToGame } from "../_queries/game.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 
@@ -26,14 +22,35 @@ Deno.serve(async (req) => {
     }
     const user = userResponse.data.user;
 
-    // create new game
-    const [game] = await Promise.all([
-      insertGame(supabase),
-      fetchUserProfile(supabase, user?.id),
-    ]);
+    // Get user profile to get name
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("name")
+      .eq("id", user.id)
+      .single();
 
-    // join game
-    await addProfileToGame(supabase, user?.id, game.id);
+    if (profileError) throw new Error(profileError.message);
+
+    // Create new game
+    const game = await insertGame(supabase);
+
+    // Update profile to join the game
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ game_id: game.id })
+      .eq("id", user.id);
+
+    if (updateError) throw new Error(updateError.message);
+
+    // Add player to game.players array
+    await addPlayerToGame(supabase, game.id, {
+      id: user.id,
+      name: profile.name || "Unknown",
+      vote: null,
+      vote_blank: false,
+      is_bot: false,
+      score: 0,
+    });
 
     const data = JSON.stringify({ game_id: game.id });
     return new Response(data, { headers, status: 200 });

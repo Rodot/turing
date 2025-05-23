@@ -6,10 +6,11 @@
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
 import {
-  fetchGameProfiles,
-  updateProfile,
-} from "../_queries/profiles.query.ts";
-import { fetchGame, updateGame } from "../_queries/game.query.ts";
+  fetchGame,
+  updateGame,
+  updateAllPlayersInGame,
+  updatePlayerInGame,
+} from "../_queries/game.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
@@ -32,23 +33,24 @@ Deno.serve(async (req) => {
     const game = await fetchGame(supabase, gameId);
     if (!game) throw new Error("Game not found");
 
-    // fetch profiles
-    const profiles = await fetchGameProfiles(supabase, gameId);
-    if (!profiles?.length) throw new Error("No profiles in game");
+    if (!game.players?.length) throw new Error("No players in game");
 
-    // Select random profile to be the bot
+    // Select random player to be the bot
+    const noBotThisRound = Math.random() <= 1 / (game.players.length + 1);
+    const botPlayer = noBotThisRound ? undefined : pickRandom(game.players);
 
-    const noBotThisRound = Math.random() <= 1 / (profiles.length + 1);
-    const botProfile = noBotThisRound ? undefined : pickRandom(profiles);
+    // Reset all players' game state
+    await updateAllPlayersInGame(supabase, gameId, {
+      vote: null,
+      vote_blank: false,
+      is_bot: false,
+      score: 0,
+    });
 
-    // Update each profile with initial game values
-    for (const profile of profiles) {
-      await updateProfile(supabase, {
-        id: profile.id,
-        vote: null,
-        vote_blank: false,
-        is_bot: profile.id === botProfile?.id,
-        score: 0,
+    // Set random player as bot if selected
+    if (botPlayer) {
+      await updatePlayerInGame(supabase, gameId, botPlayer.id, {
+        is_bot: true,
       });
     }
 

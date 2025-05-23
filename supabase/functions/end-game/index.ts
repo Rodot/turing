@@ -1,8 +1,8 @@
-import { updateGame } from "../_queries/game.query.ts";
+import { updateGame, fetchGame } from "../_queries/game.query.ts";
 import { insertMessage } from "../_queries/messages.query.ts";
-import { fetchProfile } from "../_queries/profiles.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
+import { getPlayerFromGame } from "../_shared/utils.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -23,12 +23,18 @@ Deno.serve(async (req) => {
       throw new Error(userResponse.error.message);
     }
     const user = userResponse.data.user;
-    const profile = await fetchProfile(supabase, user.id);
+
+    // Get game to find the player name
+    const game = await fetchGame(supabase, gameId);
+    if (!game) throw new Error("Game not found");
+
+    const player = getPlayerFromGame(game, user.id);
+    if (!player) throw new Error("Player not found in game");
 
     // Post a message
     await insertMessage(supabase, {
       author: "system",
-      content: `❌ ${profile.name} ended the game`,
+      content: `❌ ${player.name} ended the game`,
       game_id: gameId,
     });
 

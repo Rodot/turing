@@ -1,4 +1,9 @@
-import { MessageData, ProfileData } from "../_types/Database.type.ts";
+import {
+  MessageData,
+  ProfileData,
+  GameData,
+  PlayerData,
+} from "../_types/Database.type.ts";
 
 export const nextVoteLength = (numPlayers: number) => 3 * numPlayers;
 
@@ -87,4 +92,11 @@ export const getProfilesWithLeastMessages = (
     .map((p) => p.profile);
 
   return profilesWithLeastMesssages;
+};
+
+export const getPlayerFromGame = (
+  game: GameData,
+  playerId: string,
+): PlayerData | null => {
+  return game.players.find((player) => player.id === playerId) ?? null;
 };

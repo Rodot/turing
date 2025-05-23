@@ -2,10 +2,10 @@ import React from "react";
 import { Box, Button, SxProps, Theme, Typography } from "@mui/material";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
-import { useProfilesQuery } from "@/hooks/useProfilesQuery";
 import { usePlayerVoteMutation } from "@/hooks/useFunctionsMutation";
 import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
-import { ProfileData } from "@/supabase/functions/_types/Database.type";
+import { PlayerData } from "@/supabase/functions/_types/Database.type";
+import { getPlayerFromGame } from "@/supabase/functions/_shared/utils";
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -14,51 +14,49 @@ type Props = {
 export const ChatVote: React.FC<Props> = ({ sx }) => {
   const userQuery = useUserQuery();
   const gameQuery = useGameQuery();
-  const profilesQuery = useProfilesQuery();
-  const profiles = profilesQuery.data || [];
   const playerVoteMutation = usePlayerVoteMutation();
   const isAnythingLoading = useIsAnythingLoading();
 
-  const didVote = (profile: ProfileData) => profile.vote || profile.vote_blank;
-  const humans = profiles.filter((profile) => !profile.is_bot);
-  const humansDidntVote = humans.filter((profile) => !didVote(profile));
+  if (!gameQuery.data) return null;
+  if (!userQuery.data) return null;
+
+  const players = gameQuery.data.players || [];
+  const didVote = (player: PlayerData) => player.vote || player.vote_blank;
+  const humans = players.filter((player) => !player.is_bot);
+  const humansDidntVote = humans.filter((player) => !didVote(player));
   const humansDidntVoteString =
     humansDidntVote.length > 2
       ? "others"
       : humansDidntVote.map((p) => p.name).join(", ");
 
-  if (!profiles) return null;
-  if (!gameQuery) return null;
-  if (!userQuery.data) return null;
-
-  const me = profiles.find((profile) => profile.id === userQuery.data?.id);
+  const me = getPlayerFromGame(gameQuery.data, userQuery.data.id);
   if (!me) return null;
-  const otherProfiles = profiles.filter((profile) => profile.id !== me.id);
+  const otherPlayers = players.filter((player) => player.id !== me.id);
   const alreadyVoted = me.vote || me.vote_blank;
 
-  const canVote = (profile: { id: string; name: string }) => {
-    if (me.is_bot) return false; //
-    if (alreadyVoted) return false; // already voted
-    if (profile.id === me.id) return false; // can't vote for self
-    if (gameQuery.data?.status !== "voting") return false; // not voting
+  const canVote = (player: { id: string; name: string }) => {
+    if (me.is_bot) return false;
+    if (alreadyVoted) return false;
+    if (player.id === me.id) return false;
+    if (gameQuery.data?.status !== "voting") return false;
     return true;
   };
 
-  const vote = async (profileId: string) => {
+  const vote = async (playerId: string) => {
     if (!me) return;
     if (!gameQuery.data?.id) return;
     try {
       await playerVoteMutation.mutateAsync({
         gameId: gameQuery.data.id,
         profileId: me.id,
-        vote: profileId,
+        vote: playerId,
       });
     } catch (error) {
       console.error(error);
     }
   };
 
-  const voteOptions = [...otherProfiles, { id: "blank", name: "Nobody❌" }];
+  const voteOptions = [...otherPlayers, { id: "blank", name: "Nobody❌" }];
 
   if (humansDidntVote.length === 0) {
     return null;

@@ -50,7 +50,7 @@ test("multi-user game flow", async ({ browser }) => {
   await host.getByLabel("Start Game").waitFor();
   await host.getByLabel("Start Game").click();
 
-  await host.waitForTimeout(1000);
+  await host.waitForTimeout(3000);
 
   // Separate humans from ais
 
