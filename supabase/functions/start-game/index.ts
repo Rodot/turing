@@ -37,8 +37,7 @@ Deno.serve(async (req) => {
     if (!game.players?.length) throw new Error("No players in game");
 
     // Select random player to be the bot
-    const noBotThisRound = Math.random() <= 1 / (game.players.length + 1);
-    const botPlayer = noBotThisRound ? undefined : pickRandom(game.players);
+    const botPlayer = pickRandom(game.players);
 
     // Reset all players' game state
     await updateAllPlayersInGame(supabase, gameId, {
