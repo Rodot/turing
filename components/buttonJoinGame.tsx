@@ -1,8 +1,8 @@
 import React from "react";
 import { Button } from "@mui/material";
 import { useGameIdFromUrl } from "../hooks/useGameIdFromUrl";
-import { useJoinGameMutation } from "@/hooks/useGameMutation";
 import { useIsLoading } from "@/hooks/useIsLoading";
+import { useJoinGameMutation } from "@/hooks/useFunctionsMutation";
 
 export const ButtonJoinGame: React.FC = () => {
   const gameIdFromUrl = useGameIdFromUrl() ?? "";

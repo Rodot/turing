@@ -34,6 +34,7 @@ export const useCreateGameMutation = () => {
     mutationFn: async () => {
       const response = await supabase.functions.invoke("create-game");
       if (response.error) {
+        console.error(response.error);
         throw new Error("Error while creating game");
       }
       return response?.data?.game_id as string | undefined;
@@ -58,6 +59,7 @@ export const usePlayerVoteMutation = () => {
         body: params,
       });
       if (response.error) {
+        console.error(response.error);
         throw new Error("Error while voting");
       }
       return params;
@@ -72,6 +74,7 @@ export const usePostMessageMutation = () => {
         body: message,
       });
       if (response.error) {
+        console.error(response.error);
         throw new Error("Error while posting message");
       }
       return message;
@@ -90,14 +93,12 @@ export const useEndGameMutation = () => {
         body: { gameId },
       });
       if (response.error) {
+        console.error(response.error);
         throw new Error("Error while ending game");
       }
     },
     onSuccess: () => {
-      // Invalidate profile query to trigger a refetch
-      if (userId) {
-        queryClient.invalidateQueries({ queryKey: ["profile", userId] });
-      }
+      queryClient.invalidateQueries({ queryKey: ["profile", userId] });
     },
   });
 };
@@ -109,6 +110,7 @@ export const useStartVoteMutation = () => {
         body: { gameId },
       });
       if (response.error) {
+        console.error(response.error);
         throw new Error("Error while starting vote");
       }
     },
@@ -128,9 +130,33 @@ export const useGenerateAnswersMutation = () => {
         body: { gameId, playerName, lang },
       });
       if (response.error) {
+        console.error(response.error);
         throw new Error("Error while generating answers");
       }
       return response?.data;
+    },
+  });
+};
+
+export const useJoinGameMutation = () => {
+  const queryClient = useQueryClient();
+  const profileQuery = useProfileQuery();
+  const profile = profileQuery.data;
+
+  return useMutation({
+    mutationFn: async (gameId: string) => {
+      if (!profile?.id) throw new Error("User not authenticated");
+      const response = await supabase.functions.invoke("join-game", {
+        body: { gameId },
+      });
+      if (response.error) {
+        console.error(response.error);
+        throw new Error("Error while joining game");
+      }
+      return { profileId: profile.id, gameId };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["profile", data.profileId] });
     },
   });
 };
