@@ -1,4 +1,4 @@
-export type MessageType = "system" | "icebreaker" | "user";
+export type MessageType = "system" | "icebreaker" | "user" | "status";
 
 export type MessageData = {
   id: string;
@@ -24,11 +24,17 @@ export type PlayerData = {
   score: number;
 };
 
-export type GameStatus = "lobby" | "talking" | "voting" | "over";
+export type GameStatus =
+  | "lobby"
+  | "talking_warmup"
+  | "talking_hunt"
+  | "voting"
+  | "over";
 
 export type GameData = {
   id: string;
   lang: "en" | "fr";
   status: GameStatus;
   players: PlayerData[];
+  last_bot_id: string | null;
 };

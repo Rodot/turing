@@ -16,7 +16,6 @@ import { cleanAnswer } from "@/supabase/functions/_shared/utils";
 import { Send } from "@mui/icons-material";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
-import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 import { Spinner } from "./spinner";
 import { getPlayerFromGame } from "@/supabase/functions/_shared/utils";
 
@@ -31,7 +30,6 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   const gameQuery = useGameQuery();
   const generateAnswersMutation = useGenerateAnswersMutation();
   const postMessageMutation = usePostMessageMutation();
-  const isAnythingLoading = useIsAnythingLoading();
 
   if (!userQuery.data) {
     console.error("User data not available");
@@ -118,11 +116,11 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
               color="secondary"
               sx={{ flexShrink: 1, flexGrow: 0 }}
               onClick={generateAnswers}
-              disabled={isAnythingLoading}
+              disabled={generateAnswersMutation.isPending}
               aria-label="AI Answers"
             >
               Generate AI Answers 🤖
-              {isAnythingLoading && <Spinner />}
+              {generateAnswersMutation.isPending && <Spinner />}
             </Button>
           </Box>
         )}
@@ -148,7 +146,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
                   key="answer"
                   size="small"
                   onClick={() => sendMessageFromBot(answer)}
-                  disabled={isAnythingLoading}
+                  disabled={postMessageMutation.isPending}
                   aria-label="Send message"
                 >
                   <Send />
@@ -182,7 +180,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
                 type="submit"
                 variant="contained"
                 color="secondary"
-                disabled={isAnythingLoading}
+                disabled={postMessageMutation.isPending}
                 aria-label="Send message button"
               >
                 <Send />

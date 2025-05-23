@@ -39,6 +39,7 @@ export type Database = {
           created_at: string;
           id: string;
           lang: string | null;
+          last_bot_id: string | null;
           players: Json;
           status: string | null;
         };
@@ -46,6 +47,7 @@ export type Database = {
           created_at?: string;
           id?: string;
           lang?: string | null;
+          last_bot_id?: string | null;
           players?: Json;
           status?: string | null;
         };
@@ -53,6 +55,7 @@ export type Database = {
           created_at?: string;
           id?: string;
           lang?: string | null;
+          last_bot_id?: string | null;
           players?: Json;
           status?: string | null;
         };

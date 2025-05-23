@@ -27,7 +27,11 @@ Deno.serve(async (req) => {
     const user = userResponse.data.user;
 
     // Get game to find the player name and check status
-    const game = await fetchGameAndCheckStatus(supabase, gameId, "talking");
+    const game = await fetchGameAndCheckStatus(
+      supabase,
+      gameId,
+      "talking_hunt",
+    );
 
     const player = getPlayerFromGame(game, user.id);
     if (!player) throw new Error("Player not found in game");

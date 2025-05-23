@@ -1,5 +1,6 @@
 import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2/dist/module/index.js";
 import { GameData, PlayerData, GameStatus } from "../_types/Database.type.ts";
+import { insertMessage } from "./messages.query.ts";
 
 export const fetchGame = async (supabase: SupabaseClient, id: string) => {
   const req = await supabase.from("games").select("*").eq("id", id);
@@ -42,9 +43,10 @@ export const updateGameWithStatusTransition = async (
 
   // Validate status transition
   const validTransitions: Record<string, string[]> = {
-    lobby: ["talking", "over"],
-    talking: ["voting", "over"],
-    voting: ["talking", "over"],
+    lobby: ["talking_warmup", "over"],
+    talking_warmup: ["talking_hunt", "over"],
+    talking_hunt: ["voting", "over"],
+    voting: ["talking_warmup", "over"],
     over: [],
   };
 
@@ -74,6 +76,13 @@ export const updateGameWithStatusTransition = async (
       `Status transition failed: game status changed from ${currentStatus} before update could complete`,
     );
   }
+
+  // Post status message after successful state change
+  await insertMessage(supabase, {
+    game_id: id,
+    type: "status",
+    content: newStatus,
+  });
 };
 
 export const addPlayerToGame = async (
@@ -127,16 +136,21 @@ export const updateAllPlayersInGame = async (
 export const fetchGameAndCheckStatus = async (
   supabase: SupabaseClient,
   gameId: string,
-  expectedStatus: GameStatus,
+  expectedStatus: GameStatus | GameStatus[],
 ) => {
   const game = await fetchGame(supabase, gameId);
   if (!game) {
     throw new Error("Game not found");
   }
 
-  if (game.status !== expectedStatus) {
+  const validStatuses = Array.isArray(expectedStatus)
+    ? expectedStatus
+    : [expectedStatus];
+
+  if (!validStatuses.includes(game.status)) {
+    const statusList = validStatuses.map((s) => `"${s}"`).join(" or ");
     throw new Error(
-      `Game status must be "${expectedStatus}" but is "${game.status}"`,
+      `Game status must be ${statusList} but is "${game.status}"`,
     );
   }
 

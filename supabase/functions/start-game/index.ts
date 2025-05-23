@@ -9,7 +9,6 @@ import {
   fetchGameAndCheckStatus,
   updateAllPlayersInGame,
   updateGameWithStatusTransition,
-  updatePlayerInGame,
 } from "../_queries/game.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
@@ -32,27 +31,17 @@ Deno.serve(async (req) => {
     // fetch game and check it's in lobby status before starting
     const game = await fetchGameAndCheckStatus(supabase, gameId, "lobby");
 
-    await updateGameWithStatusTransition(supabase, gameId, "talking");
+    await updateGameWithStatusTransition(supabase, gameId, "talking_warmup");
 
     if (!game.players?.length) throw new Error("No players in game");
 
-    // Select random player to be the bot
-    const botPlayer = pickRandom(game.players);
-
-    // Reset all players' game state
+    // Reset all players' game state - no bot yet during warmup
     await updateAllPlayersInGame(supabase, gameId, {
       vote: null,
       vote_blank: false,
       is_bot: false,
       score: 0,
     });
-
-    // Set random player as bot if selected
-    if (botPlayer) {
-      await updatePlayerInGame(supabase, gameId, botPlayer.id, {
-        is_bot: true,
-      });
-    }
 
     await insertMessage(supabase, {
       game_id: gameId,

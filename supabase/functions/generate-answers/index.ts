@@ -38,6 +38,7 @@ Deno.serve(async (req) => {
     const data = JSON.stringify(gptAnswer);
     return new Response(data, { headers, status: 200 });
   } catch (error) {
+    console.error(error);
     const data = JSON.stringify({ error });
     return new Response(data, { headers, status: 400 });
   }

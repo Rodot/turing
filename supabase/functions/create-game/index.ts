@@ -5,7 +5,7 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
-import { insertGame, addPlayerToGame } from "../_queries/game.query.ts";
+import { addPlayerToGame, insertGame } from "../_queries/game.query.ts";
 import {
   fetchProfile,
   updateProfileGameId,
@@ -48,6 +48,7 @@ Deno.serve(async (req) => {
     const data = JSON.stringify({ game_id: game.id });
     return new Response(data, { headers, status: 200 });
   } catch (error) {
+    console.error(error);
     const data = JSON.stringify({ error });
     return new Response(data, { headers, status: 400 });
   }

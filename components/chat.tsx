@@ -11,9 +11,27 @@ import { PlayerData } from "@/supabase/functions/_types/Database.type";
 export const Chat: React.FC = () => {
   const gameQuery = useGameQuery();
   const players = gameQuery.data?.players || [];
+  const gameStatus = gameQuery?.data?.status;
 
-  const isTalkingPhase = gameQuery?.data?.status === "talking";
-  const isVotingPhase = gameQuery?.data?.status === "voting";
+  const isTalkingPhase =
+    gameStatus === "talking_warmup" || gameStatus === "talking_hunt";
+  const isVotingPhase = gameStatus === "voting";
+  const isHuntingPhase = gameStatus === "talking_hunt";
+
+  const getStatusText = () => {
+    switch (gameStatus) {
+      case "talking_warmup":
+        return "Warming up";
+      case "talking_hunt":
+        return "Find the AI";
+      case "voting":
+        return "Vote now";
+      case "over":
+        return "Game over";
+      default:
+        return "In progress";
+    }
+  };
 
   return (
     <Container
@@ -51,14 +69,11 @@ export const Chat: React.FC = () => {
         >
           <ButtonGoHome />
 
-          {isTalkingPhase && (
-            <>
-              <Typography sx={{ color: "primary.contrastText" }}>
-                Know who is the AI?
-              </Typography>
-              <ButtonStartVote />
-            </>
-          )}
+          <Typography sx={{ color: "primary.contrastText" }}>
+            {getStatusText()}
+          </Typography>
+
+          {isHuntingPhase && <ButtonStartVote />}
         </Paper>
 
         {/* players line */}

@@ -1,9 +1,6 @@
 import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2/dist/module/index.js";
 import { PlayerData } from "../_types/Database.type.ts";
-import {
-  updateAllPlayersInGame,
-  updatePlayerInGame,
-} from "../_queries/game.query.ts";
+import { updateAllPlayersInGame } from "../_queries/game.query.ts";
 
 export const setRandomPlayerAsBotAndResetVotes = async (
   supabase: SupabaseClient,
@@ -17,18 +14,5 @@ export const setRandomPlayerAsBotAndResetVotes = async (
     vote: null,
     vote_blank: false,
     is_bot: false,
-  });
-
-  // chance to add no bot if there was a bot before
-  const previousBot = players.find((player) => player.is_bot);
-  const noBotThisRound = Math.random() <= 1 / (players.length + 1);
-  if (previousBot && noBotThisRound) return;
-
-  // set random player as bot
-  const previousHumans = players.filter((player) => !player.is_bot);
-  const randomPlayer =
-    previousHumans[Math.floor(Math.random() * previousHumans.length)];
-  await updatePlayerInGame(supabase, gameId, randomPlayer.id, {
-    is_bot: true,
   });
 };

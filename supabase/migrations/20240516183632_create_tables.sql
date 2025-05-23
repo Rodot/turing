@@ -12,7 +12,8 @@ CREATE TABLE public.games(
     created_at timestamp NOT NULL DEFAULT NOW(),
     lang text DEFAULT 'en' ::text,
     status text DEFAULT 'lobby' ::text,
-    players jsonb NOT NULL DEFAULT '[]'::jsonb
+    players jsonb NOT NULL DEFAULT '[]'::jsonb,
+    last_bot_id uuid NULL
 );
 
 ALTER publication supabase_realtime

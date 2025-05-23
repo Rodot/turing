@@ -108,7 +108,7 @@ Deno.serve(async (req) => {
         // Reset votes and set random player as bot
         await Promise.all([
           setRandomPlayerAsBotAndResetVotes(supabase, gameId, game.players),
-          updateGameWithStatusTransition(supabase, gameId, "talking"),
+          updateGameWithStatusTransition(supabase, gameId, "talking_warmup"),
           insertMessage(supabase, {
             game_id: gameId,
             author_name: "",
@@ -393,6 +393,8 @@ async function postPointsMessages(
         .join(" and ")} who knew there was no AI`,
     );
   }
+
+  messages.push("💬 The AI is gone, let's change the topic");
 
   // Post all messages sequentially
   for (const message of messages) {

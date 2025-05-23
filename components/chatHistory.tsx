@@ -9,7 +9,8 @@ export const ChatHistory: React.FC = () => {
   const userQuery = useUserQuery();
   const messagesQuery = useMessagesQuery();
   const messages = useMemo(
-    () => messagesQuery.data || [],
+    () =>
+      (messagesQuery.data || []).filter((message) => message.type !== "status"),
     [messagesQuery.data],
   );
   const gameQuery = useGameQuery();
