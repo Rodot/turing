@@ -17,7 +17,7 @@ export const useStartGameMutation = () => {
         body: { gameId: gameIdFromUrl },
       });
       if (response.error) {
-        throw new Error("Error while starting game");
+        throw new Error("Error starting game:" + response.error.message);
       }
       return { gameId: gameIdFromUrl };
     },
@@ -35,7 +35,7 @@ export const useCreateGameMutation = () => {
       const response = await supabase.functions.invoke("create-game");
       if (response.error) {
         console.error(response.error);
-        throw new Error("Error while creating game");
+        throw new Error("Error creating game:" + response.error.message);
       }
       return response?.data?.game_id as string | undefined;
     },
@@ -60,7 +60,7 @@ export const usePlayerVoteMutation = () => {
       });
       if (response.error) {
         console.error(response.error);
-        throw new Error("Error while voting");
+        throw new Error("Error voting:" + response.error.message);
       }
       return params;
     },
@@ -75,7 +75,7 @@ export const usePostMessageMutation = () => {
       });
       if (response.error) {
         console.error(response.error);
-        throw new Error("Error while posting message");
+        throw new Error("Error posting message:" + response.error.message);
       }
       return message;
     },
@@ -94,7 +94,7 @@ export const useEndGameMutation = () => {
       });
       if (response.error) {
         console.error(response.error);
-        throw new Error("Error while ending game");
+        throw new Error("Error ending game:" + response.error.message);
       }
     },
     onSuccess: () => {
@@ -111,7 +111,7 @@ export const useStartVoteMutation = () => {
       });
       if (response.error) {
         console.error(response.error);
-        throw new Error("Error while starting vote");
+        throw new Error("Error starting vote:" + response.error.message);
       }
     },
   });
@@ -131,7 +131,9 @@ export const useGenerateAnswersMutation = () => {
       });
       if (response.error) {
         console.error(response.error);
-        throw new Error("Error while generating answers");
+        throw new Error(
+          "Error generating answers:" + response.error.message,
+        );
       }
       return response?.data;
     },
@@ -151,7 +153,7 @@ export const useJoinGameMutation = () => {
       });
       if (response.error) {
         console.error(response.error);
-        throw new Error("Error while joining game");
+        throw new Error("Error joining game:" + response.error.message);
       }
       return { profileId: profile.id, gameId };
     },
