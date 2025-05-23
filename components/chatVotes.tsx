@@ -4,7 +4,7 @@ import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { useProfilesQuery } from "@/hooks/useProfilesQuery";
 import { usePlayerVoteMutation } from "@/hooks/useFunctionsMutation";
-import { useIsLoading } from "@/hooks/useIsLoading";
+import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 import { ProfileData } from "@/supabase/functions/_types/Database.type";
 
 type Props = {
@@ -17,7 +17,7 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   const profilesQuery = useProfilesQuery();
   const profiles = profilesQuery.data || [];
   const playerVoteMutation = usePlayerVoteMutation();
-  const isLoading = useIsLoading();
+  const isAnythingLoading = useIsAnythingLoading();
 
   const didVote = (profile: ProfileData) => profile.vote || profile.vote_blank;
   const humans = profiles.filter((profile) => !profile.is_bot);
@@ -106,7 +106,7 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
               variant="contained"
               color={option.id === "blank" ? "primary" : "secondary"}
               onClick={() => vote(option.id)}
-              disabled={!canVote(option) || isLoading}
+              disabled={!canVote(option) || isAnythingLoading}
               size="small"
             >
               {option.name}

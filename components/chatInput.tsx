@@ -17,7 +17,7 @@ import { Send } from "@mui/icons-material";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { useProfilesQuery } from "@/hooks/useProfilesQuery";
-import { useIsLoading } from "@/hooks/useIsLoading";
+import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 import { Spinner } from "./spinner";
 
 type Props = {
@@ -32,7 +32,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   const profilesQuery = useProfilesQuery();
   const generateAnswersMutation = useGenerateAnswersMutation();
   const postMessageMutation = usePostMessageMutation();
-  const isLoading = useIsLoading();
+  const isAnythingLoading = useIsAnythingLoading();
 
   const profiles = profilesQuery.data || [];
   if (!userQuery.data) {
@@ -119,11 +119,11 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
               color="secondary"
               sx={{ flexShrink: 1, flexGrow: 0 }}
               onClick={generateAnswers}
-              disabled={isLoading}
+              disabled={isAnythingLoading}
               aria-label="AI Answers"
             >
               Generate AI Answers 🤖
-              {isLoading && <Spinner />}
+              {isAnythingLoading && <Spinner />}
             </Button>
           </Box>
         )}
@@ -149,7 +149,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
                   key="answer"
                   size="small"
                   onClick={() => sendMessageFromBot(answer)}
-                  disabled={isLoading}
+                  disabled={isAnythingLoading}
                   aria-label="Send message"
                 >
                   <Send />
@@ -183,7 +183,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
                 type="submit"
                 variant="contained"
                 color="secondary"
-                disabled={isLoading}
+                disabled={isAnythingLoading}
                 aria-label="Send message button"
               >
                 <Send />

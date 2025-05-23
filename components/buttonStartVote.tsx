@@ -3,12 +3,12 @@ import { HowToVote } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { useStartVoteMutation } from "@/hooks/useFunctionsMutation";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
-import { useIsLoading } from "@/hooks/useIsLoading";
+import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 
 export const ButtonStartVote: React.FC = () => {
   const startVoteMutation = useStartVoteMutation();
   const profileQuery = useProfileQuery();
-  const isLoading = useIsLoading();
+  const isAnythingLoading = useIsAnythingLoading();
   const gameId = profileQuery.data?.game_id ?? "";
 
   return (
@@ -16,7 +16,7 @@ export const ButtonStartVote: React.FC = () => {
       color="secondary"
       size="small"
       onClick={() => startVoteMutation.mutate(gameId)}
-      disabled={isLoading}
+      disabled={isAnythingLoading}
     >
       <HowToVote sx={{ mr: 0.5 }} />
       Start Vote

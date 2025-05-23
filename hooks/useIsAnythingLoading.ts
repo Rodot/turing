@@ -11,7 +11,7 @@ import { useProfileQuery } from "./useProfileQuery";
  * - Any mutations are running
  * - Profile data has not been loaded yet
  */
-export const useIsLoading = () => {
+export const useIsAnythingLoading = () => {
   const isFetching = useIsFetching();
   const isMutating = useIsMutating();
   const profileQuery = useProfileQuery();

@@ -17,7 +17,7 @@ import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { useGameLanguageMutation } from "@/hooks/useGameMutation";
 import { useProfilesQuery } from "@/hooks/useProfilesQuery";
-import { useIsLoading } from "@/hooks/useIsLoading";
+import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 import { useStartGameMutation } from "@/hooks/useFunctionsMutation";
 
 export const Lobby: React.FC = () => {
@@ -30,7 +30,7 @@ export const Lobby: React.FC = () => {
   const url = window.location.href;
   const startGameMutation = useStartGameMutation();
   const gameLanguageMutation = useGameLanguageMutation();
-  const isLoading = useIsLoading();
+  const isAnythingLoading = useIsAnythingLoading();
 
   return (
     <Container
@@ -83,7 +83,7 @@ export const Lobby: React.FC = () => {
           color="secondary"
           variant="contained"
           onClick={() => startGameMutation.mutate()}
-          disabled={isLoading || !enoughPlayers}
+          disabled={isAnythingLoading || !enoughPlayers}
           aria-label="Start Game"
         >
           Start Game

@@ -2,12 +2,12 @@ import React from "react";
 import { Button } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
-import { useIsLoading } from "@/hooks/useIsLoading";
+import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 
 export const ButtonResumeGame: React.FC = () => {
   const profileQuery = useProfileQuery();
   const router = useRouter();
-  const isLoading = useIsLoading();
+  const isAnythingLoading = useIsAnythingLoading();
 
   const startNewGame = async () => {
     router.push(`/?game=${profileQuery.data?.game_id}`);
@@ -18,7 +18,7 @@ export const ButtonResumeGame: React.FC = () => {
       color="secondary"
       variant="contained"
       onClick={startNewGame}
-      disabled={isLoading}
+      disabled={isAnythingLoading}
     >
       Resume
     </Button>

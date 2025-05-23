@@ -2,12 +2,12 @@
 
 import React from "react";
 import { LinearProgress } from "@mui/material";
-import { useIsLoading } from "@/hooks/useIsLoading";
+import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 
 export const QueryLoadingBar: React.FC = () => {
-  const isLoading = useIsLoading();
+  const isAnythingLoading = useIsAnythingLoading();
 
-  if (!isLoading) return null;
+  if (!isAnythingLoading) return null;
 
   return (
     <LinearProgress

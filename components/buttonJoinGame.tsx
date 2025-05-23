@@ -1,20 +1,20 @@
 import React from "react";
 import { Button } from "@mui/material";
 import { useGameIdFromUrl } from "../hooks/useGameIdFromUrl";
-import { useIsLoading } from "@/hooks/useIsLoading";
+import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 import { useJoinGameMutation } from "@/hooks/useFunctionsMutation";
 
 export const ButtonJoinGame: React.FC = () => {
   const gameIdFromUrl = useGameIdFromUrl() ?? "";
   const joinGameMutation = useJoinGameMutation();
-  const isLoading = useIsLoading();
+  const isAnythingLoading = useIsAnythingLoading();
 
   return (
     <Button
       color="secondary"
       variant="contained"
       onClick={() => joinGameMutation.mutate(gameIdFromUrl)}
-      disabled={isLoading}
+      disabled={isAnythingLoading}
       aria-label="Join Game"
     >
       Join Game
