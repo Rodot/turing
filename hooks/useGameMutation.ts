@@ -6,31 +6,8 @@ import { useProfileQuery } from "./useProfileQuery";
 import { updateProfileGame } from "@/queries/db/profile.query";
 import { updateGame } from "@/queries/db/game.query";
 import { useGameIdFromUrl } from "./useGameIdFromUrl";
-import {
-  useCreateGameMutation as useCreateGameFunctionMutation,
-  useStartGameMutation as useStartGameFunctionMutation,
-} from "@/hooks/useFunctionsMutation";
 
-export const useCreateGameMutation = () => {
-  const queryClient = useQueryClient();
-  const profileQuery = useProfileQuery();
-  const profile = profileQuery.data;
-  const createGameMutation = useCreateGameFunctionMutation();
-
-  return useMutation({
-    mutationFn: async () => {
-      return await createGameMutation.mutateAsync();
-    },
-    onSuccess: (gameId) => {
-      if (gameId && profile?.id) {
-        // Join the created game
-        updateProfileGame(supabase, profile.id, gameId);
-        // Invalidate profile query to trigger a refetch
-        queryClient.invalidateQueries({ queryKey: ["profile", profile.id] });
-      }
-    },
-  });
-};
+export { useCreateGameMutation } from "@/hooks/useFunctionsMutation";
 
 export const useJoinGameMutation = () => {
   const queryClient = useQueryClient();
@@ -47,22 +24,6 @@ export const useJoinGameMutation = () => {
       // Invalidate profile query to trigger a refetch
       queryClient.invalidateQueries({ queryKey: ["profile", data.profileId] });
     },
-  });
-};
-
-export const useStartGameMutation = () => {
-  const startGameMutation = useStartGameFunctionMutation();
-  const profileQuery = useProfileQuery();
-  const profile = profileQuery.data;
-  const gameId = profile?.game_id;
-
-  return useMutation({
-    mutationFn: async () => {
-      if (!gameId) throw new Error("No game joined");
-      await startGameMutation.mutateAsync();
-      return { gameId };
-    },
-    // don't invalidate the game query, as it will be done by the subscription
   });
 };
 

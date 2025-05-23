@@ -25,6 +25,7 @@ export const useStartGameMutation = () => {
 };
 
 export const useCreateGameMutation = () => {
+  const queryClient = useQueryClient();
   const profileQuery = useProfileQuery();
   const profile = profileQuery.data;
   const router = useRouter();
@@ -39,6 +40,7 @@ export const useCreateGameMutation = () => {
     },
     onSuccess: (gameId) => {
       if (gameId && profile?.id) {
+        queryClient.invalidateQueries({ queryKey: ["profile", profile.id] });
         router.push(`/?game=${gameId}`);
       }
     },

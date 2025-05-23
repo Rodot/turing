@@ -15,12 +15,10 @@ import { ButtonGoHome } from "./buttonGoHome";
 import { QRShare } from "./qrShare";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
-import {
-  useGameLanguageMutation,
-  useStartGameMutation,
-} from "@/hooks/useGameMutation";
+import { useGameLanguageMutation } from "@/hooks/useGameMutation";
 import { useProfilesQuery } from "@/hooks/useProfilesQuery";
 import { useIsLoading } from "@/hooks/useIsLoading";
+import { useStartGameMutation } from "@/hooks/useFunctionsMutation";
 
 export const Lobby: React.FC = () => {
   const userQuery = useUserQuery();

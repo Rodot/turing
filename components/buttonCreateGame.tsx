@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@mui/material";
-import { useCreateGameMutation } from "@/hooks/useGameMutation";
+import { useCreateGameMutation } from "@/hooks/useFunctionsMutation";
 
 export const ButtonCreateGame: React.FC = () => {
   const createGameMutation = useCreateGameMutation();
