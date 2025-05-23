@@ -41,7 +41,7 @@ export const useGameQuery = () => {
       .on(
         "postgres_changes",
         {
-          event: "*",
+          event: "UPDATE",
           schema: "public",
           table: "games",
           filter: `id=eq.${gameIdFromUrl}`,

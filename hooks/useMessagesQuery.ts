@@ -31,7 +31,7 @@ export const useMessagesQuery = () => {
       .on(
         "postgres_changes",
         {
-          event: "*",
+          event: "INSERT",
           schema: "public",
           table: "messages",
           filter: `game_id=eq.${gameIdFromUrl}`,
