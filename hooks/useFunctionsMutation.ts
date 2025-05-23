@@ -131,9 +131,7 @@ export const useGenerateAnswersMutation = () => {
       });
       if (response.error) {
         console.error(response.error);
-        throw new Error(
-          "Error generating answers:" + response.error.message,
-        );
+        throw new Error("Error generating answers:" + response.error.message);
       }
       return response?.data;
     },

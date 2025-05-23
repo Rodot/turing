@@ -1,102 +1,111 @@
 import { expect, Page, test } from "@playwright/test";
 
+interface TestPlayer {
+  name: string;
+  page: Page;
+  isAI?: boolean;
+}
+
 test("multi-user game flow", async ({ browser }) => {
   // Create contexts and pages for N players
 
   const contexts = await Promise.all([1, 2, 3].map(() => browser.newContext()));
-  const players = await Promise.all(
-    contexts.map((context) => context.newPage()),
-  );
+  const pages = await Promise.all(contexts.map((context) => context.newPage()));
+
+  const testPlayers: TestPlayer[] = pages.map((page, index) => ({
+    name: `Player${index}`,
+    page,
+  }));
 
   // Setup and join game
 
-  const host = players[0] as Page;
-  const guests = players.slice(1) as Page[];
+  const [host, ...guests] = testPlayers;
+  if (!host) throw new Error("No host player available");
 
-  await host.goto("/");
-  await host.getByLabel("Your name").fill("HostPlayerName");
-  await host.getByLabel("Submit").click();
-  await host.getByLabel("New Game").waitFor();
-  await host.getByLabel("New Game").click();
+  await host.page.goto("/");
+  await host.page.getByLabel("Your name").fill(host.name);
+  await host.page.getByLabel("Submit").click();
+  await host.page.getByLabel("New Game").waitFor();
+  await host.page.getByLabel("New Game").click();
 
-  await host.getByText("Invite Link").waitFor();
+  await host.page.getByText("Invite Link").waitFor();
 
-  const gameUrl = host.url();
-
-  for (const guest of guests) {
-    await guest.goto(gameUrl);
-    await guest.getByLabel("Your name").fill("GuestPlayerName");
-    await guest.getByLabel("Submit").click();
-    await guest.getByLabel("Join Game").waitFor();
-    await guest.getByLabel("Join Game").click();
-  }
-
-  await expect(host.getByText("HostPlayerName", { exact: true })).toHaveCount(
-    1,
-  );
-  await expect(host.getByText("GuestPlayerName", { exact: true })).toHaveCount(
-    guests.length,
-  );
+  const gameUrl = host.page.url();
 
   for (const guest of guests) {
-    await expect(
-      guest.getByText("GuestPlayerName", { exact: true }),
-    ).toHaveCount(guests.length);
-    await expect(
-      guest.getByText("HostPlayerName", { exact: true }),
-    ).toHaveCount(1);
+    await guest.page.goto(gameUrl);
+    await guest.page.getByLabel("Your name").fill(guest.name);
+    await guest.page.getByLabel("Submit").click();
+    await guest.page.getByLabel("Join Game").waitFor();
+    await guest.page.getByLabel("Join Game").click();
   }
 
-  await host.getByLabel("Start Game").waitFor();
-  await host.getByLabel("Start Game").click();
+  // Verify all players are visible in the lobby
+  for (const player of testPlayers) {
+    await expect(host.page.getByText(player.name, { exact: true })).toHaveCount(
+      1,
+    );
+  }
 
-  await host.waitForTimeout(3000);
+  for (const guest of guests) {
+    for (const player of testPlayers) {
+      await expect(
+        guest.page.getByText(player.name, { exact: true }),
+      ).toHaveCount(1);
+    }
+  }
 
-  // Separate humans from ais
+  await host.page.getByLabel("Start Game").waitFor();
+  await host.page.getByLabel("Start Game").click();
 
-  const humans = [] as Page[];
-  const ais = [] as Page[];
-  for (const player of players) {
+  await host.page.waitForTimeout(3000);
+
+  // Determine which players are humans vs AI
+  for (const player of testPlayers) {
     try {
-      if (await player.getByLabel("Message input").isVisible()) {
-        console.log("Found human");
-        humans.push(player);
+      if (await player.page.getByLabel("Message input").isVisible()) {
+        console.log(`Found human: ${player.name}`);
+        player.isAI = false;
       }
     } catch {}
     try {
-      if (await player.getByLabel("AI Answers").isVisible()) {
-        console.log("Found AI");
-        ais.push(player);
+      if (await player.page.getByLabel("AI Answers").isVisible()) {
+        console.log(`Found AI: ${player.name}`);
+        player.isAI = true;
       }
     } catch {}
   }
 
-  expect(humans.length).toBe(players.length - 1);
+  const humans = testPlayers.filter((p) => p.isAI === false);
+  const ais = testPlayers.filter((p) => p.isAI === true);
+
+  expect(humans.length).toBe(testPlayers.length - 1);
   expect(ais.length).toBe(1);
+
+  const [human1, human2] = humans;
+  if (!human1 || !human2) throw new Error("Need at least 2 human players");
+  const [aiPlayer] = ais;
+  if (!aiPlayer) throw new Error("Need at least 1 AI player");
 
   // Send human messages
 
-  await humans[0]
-    ?.getByLabel("Message input")
+  await human1.page
+    .getByLabel("Message input")
     .getByRole("textbox")
     .fill("Hello");
-  await humans[0]?.getByLabel("Send message button").click();
+  await human1.page.getByLabel("Send message button").click();
 
-  for (const player of players) {
-    await player.getByText("Hello").waitFor();
+  for (const player of testPlayers) {
+    await player.page.getByText("Hello").waitFor();
   }
 
-  await humans[1]
-    ?.getByLabel("Message input")
+  await human2.page
+    .getByLabel("Message input")
     .getByRole("textbox")
     .fill("How are you?");
-  await humans[1]?.getByLabel("Send message button").click();
+  await human2.page.getByLabel("Send message button").click();
 
-  for (const player of players) {
-    await player.getByText("How are you?").waitFor();
+  for (const player of testPlayers) {
+    await player.page.getByText("How are you?").waitFor();
   }
-
-  // Send AI message
-
-  await ais[0]?.getByLabel("AI Answers").click();
 });
