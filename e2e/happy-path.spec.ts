@@ -3,9 +3,7 @@ import { expect, Page, test } from "@playwright/test";
 test("multi-user game flow", async ({ browser }) => {
   // Create contexts and pages for N players
 
-  const contexts = await Promise.all(
-    [1, 2, 3, 4].map(() => browser.newContext()),
-  );
+  const contexts = await Promise.all([1, 2, 3].map(() => browser.newContext()));
   const players = await Promise.all(
     contexts.map((context) => context.newPage()),
   );
