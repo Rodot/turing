@@ -19,5 +19,11 @@
   "imports": {
     "std/": "https://deno.land/std@0.208.0/"
   },
-  "include": ["functions/"]
+  "include": ["functions/"],
+  "test": {
+    "include": ["functions/**/*.test.ts"]
+  },
+  "tasks": {
+    "test": "deno test --allow-all"
+  }
 }

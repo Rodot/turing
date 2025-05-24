@@ -10,7 +10,6 @@ import {
   postSystemMessage,
 } from "../_queries/messages.query.ts";
 import {
-  fetchGame,
   fetchGameAndCheckStatus,
   updateGameWithStatusTransition,
   updatePlayerInGame,
@@ -23,6 +22,11 @@ import { createSupabaseClient } from "../_utils/supabase.ts";
 import { createErrorResponse } from "../_utils/error.ts";
 import { pickRandom } from "../_shared/utils.ts";
 import { iceBreakers } from "../_shared/lang.ts";
+import { checkIfAllPlayersVoted } from "../_utils/check-if-all-players-voted.ts";
+import {
+  determineVotingOutcomes,
+  type VotingOutcome,
+} from "../_utils/determine-voting-outcomes.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -39,81 +43,87 @@ Deno.serve(async (req) => {
     if (!profileId) throw new Error("Missing profileId");
     if (!vote) throw new Error("Missing vote");
 
-    const supabase = createSupabaseClient(req);
+    const supa = createSupabaseClient(req);
     console.log("Voting", { gameId, profileId });
 
     // Check that game is in voting status
-    const game = await fetchGameAndCheckStatus(supabase, gameId, "voting");
+    await fetchGameAndCheckStatus(supa, gameId, "voting");
 
     // Apply player vote
     if (vote === "blank") {
-      await updatePlayerInGame(supabase, gameId, profileId, {
+      await updatePlayerInGame(supa, gameId, profileId, {
         vote: null,
         vote_blank: true,
       });
     } else {
-      await updatePlayerInGame(supabase, gameId, profileId, {
+      await updatePlayerInGame(supa, gameId, profileId, {
         vote,
         vote_blank: false,
       });
     }
 
+    const gameAfterVote = await fetchGameAndCheckStatus(supa, gameId, "voting");
+
     // Process voting if all players have voted
-    const allVoted = checkIfAllPlayersVoted(game);
+    const allVoted = checkIfAllPlayersVoted(gameAfterVote);
     if (allVoted) {
       console.log("All players have voted", gameId);
 
       // Announce bot reveal
-      await announceBotReveal(supabase, game);
+      await announceBotReveal(supa, gameAfterVote);
 
       // Determine voting outcomes
-      const votingOutcomes = determineVotingOutcomes(game);
+      const votingOutcomes = determineVotingOutcomes(gameAfterVote);
 
       // Process voting outcomes - update points and post messages
-      await processVotingOutcomes(supabase, votingOutcomes, gameId);
+      await processVotingOutcomes(supa, votingOutcomes, gameId);
 
       await postSystemMessage(
-        supabase,
+        supa,
         gameId,
         "💬 The AI is gone, let's change the topic",
       );
 
       // Get updated game data for end game check
-      const gameAfter = await fetchGame(supabase, gameId);
-      if (!gameAfter) throw new Error("Game not found after vote");
+      const gameAfterPoints = await fetchGameAndCheckStatus(
+        supa,
+        gameId,
+        "voting",
+      );
 
-      const maxScore = Math.max(...gameAfter.players.map((p) => p.score));
+      const maxScore = Math.max(...gameAfterPoints.players.map((p) => p.score));
 
       if (maxScore >= 5) {
         // Game over
         console.log("Game over", gameId);
 
         // Announce winner
-        const winners = gameAfter.players.filter((p) => p.score === maxScore);
+        const winners = gameAfterPoints.players.filter(
+          (p) => p.score === maxScore,
+        );
         if (winners.length) {
           const message = `${winners.map((w) => w.name).join(" and ")} won! 🏆`;
-          await postSystemMessage(supabase, gameId, message);
+          await postSystemMessage(supa, gameId, message);
         }
 
         // Close the game
-        await updateGameWithStatusTransition(supabase, gameId, "over");
+        await updateGameWithStatusTransition(supa, gameId, "over");
 
         // Remove all players from the game
-        await removeAllPlayersFromGame(supabase, gameId);
+        await removeAllPlayersFromGame(supa, gameId);
       } else {
         // Next round
         console.log("Next round", gameId);
 
         // Set up next vote
-        const game = await fetchGame(supabase, gameId);
-        if (!game) throw new Error("Game not found");
+        const game = await fetchGameAndCheckStatus(supa, gameId, "voting");
 
         // Reset votes and set random player as bot
         await Promise.all([
-          setRandomPlayerAsBotAndResetVotes(supabase, gameId, game.players),
-          updateGameWithStatusTransition(supabase, gameId, "talking_warmup"),
+          setRandomPlayerAsBotAndResetVotes(supa, gameId, game.players),
+          updateGameWithStatusTransition(supa, gameId, "talking_warmup"),
           postIcebreakerMessage(
-            supabase,
+            supa,
             gameId,
             pickRandom(iceBreakers[game?.lang ?? "en"]),
           ),
@@ -127,32 +137,6 @@ Deno.serve(async (req) => {
     return createErrorResponse(error);
   }
 });
-
-type RewardReason =
-  | "foundBot"
-  | "botEscaped"
-  | "moreConvincingThanBot"
-  | "correctlyGuessedNoBot";
-
-type VotingOutcome = {
-  playerId: string;
-  playerName: string;
-  pointsEarned: number;
-  rewardReason: RewardReason;
-};
-
-// Check if all players have voted
-function checkIfAllPlayersVoted(game: GameData): boolean {
-  const activePlayerIds = new Set(game.players.map((p) => p.id));
-  const numHumans = game.players.filter((player) => !player.is_bot).length;
-
-  const numVotes = game.players.filter(
-    (player) =>
-      (player.vote && activePlayerIds.has(player.vote)) || player.vote_blank,
-  ).length;
-
-  return numVotes >= numHumans && game.players.length > 1;
-}
 
 // Announce bot reveal
 async function announceBotReveal(
@@ -169,111 +153,6 @@ async function announceBotReveal(
   } else {
     await postSystemMessage(supabase, game.id, `❌ Nobody`);
   }
-}
-
-// Determine voting outcomes
-function determineVotingOutcomes(game: GameData): VotingOutcome[] {
-  const votingOutcomes: VotingOutcome[] = [];
-  const activePlayerIds = new Set(game.players.map((p) => p.id));
-  const botPlayer = game.players.find((player) => player.is_bot);
-
-  // Filter players by their votes
-  const botVoters = game.players.filter(
-    (player) => player.vote === botPlayer?.id,
-  );
-  const blankVoters = game.players.filter(
-    (player) => player.vote_blank === true,
-  );
-
-  // Count votes for each player
-  const voteCounts = game.players.reduce(
-    (counts, player) => {
-      if (
-        player.vote &&
-        !player.vote_blank &&
-        activePlayerIds.has(player.vote)
-      ) {
-        counts[player.vote] = (counts[player.vote] || 0) + 1;
-      }
-      return counts;
-    },
-    {} as Record<string, number>,
-  );
-
-  // Find players with the most votes
-  const maxVotes = Object.keys(voteCounts).length > 0
-    ? Math.max(...Object.values(voteCounts))
-    : 0;
-  const mostVotedPlayers = maxVotes > 0
-    ? game.players.filter(
-      (player) => (voteCounts[player.id] || 0) === maxVotes,
-    )
-    : [];
-
-  if (botPlayer) {
-    // Scenario: There is a bot in the game
-
-    // 1. Players who correctly identified the bot get points
-    if (botVoters.length > 0) {
-      botVoters.forEach((voter) => {
-        votingOutcomes.push({
-          playerId: voter.id,
-          playerName: voter.name,
-          pointsEarned: 1,
-          rewardReason: "foundBot",
-        });
-      });
-    } else {
-      // 2. If nobody found the bot, the bot gets a point for escaping
-      votingOutcomes.push({
-        playerId: botPlayer.id,
-        playerName: botPlayer.name,
-        pointsEarned: 1,
-        rewardReason: "botEscaped",
-      });
-    }
-
-    // 3. Humans who got more votes than the bot are convincing imposters
-    const botVotes = voteCounts[botPlayer.id] || 0;
-    const humanImposters = mostVotedPlayers.filter(
-      (player) => !player.is_bot && (voteCounts[player.id] || 0) > botVotes,
-    );
-
-    humanImposters.forEach((imposter) => {
-      votingOutcomes.push({
-        playerId: imposter.id,
-        playerName: imposter.name,
-        pointsEarned: 1,
-        rewardReason: "moreConvincingThanBot",
-      });
-    });
-  } else {
-    // Scenario: There is no bot in the game
-
-    // 1. Players who voted blank correctly guessed there was no bot
-    blankVoters.forEach((voter) => {
-      votingOutcomes.push({
-        playerId: voter.id,
-        playerName: voter.name,
-        pointsEarned: 1,
-        rewardReason: "correctlyGuessedNoBot",
-      });
-    });
-
-    // 2. Players with the most votes were the most convincing fake bots
-    if (mostVotedPlayers.length > 0) {
-      mostVotedPlayers.forEach((player) => {
-        votingOutcomes.push({
-          playerId: player.id,
-          playerName: player.name,
-          pointsEarned: 1,
-          rewardReason: "moreConvincingThanBot",
-        });
-      });
-    }
-  }
-
-  return votingOutcomes;
 }
 
 // Process voting outcomes - update points and post messages
@@ -301,14 +180,14 @@ async function processVotingOutcomes(
       case "foundBot":
         message = `+1 🧠 to ${outcome.playerName} for finding the AI`;
         break;
-      case "botEscaped":
-        message = `+1 🧠 to ${outcome.playerName} for pretending to be human`;
+      case "botAvoided":
+        message = `+1 🧠 to ${outcome.playerName} for fooling everyone as the AI`;
         break;
-      case "moreConvincingThanBot":
-        message = `+1 🧠 to ${outcome.playerName} for pretending to be the AI`;
+      case "bestActing":
+        message = `+1 🧠 to ${outcome.playerName} for best AI impression`;
         break;
       case "correctlyGuessedNoBot":
-        message = `+1 🧠 to ${outcome.playerName} who knew there was no AI`;
+        message = `+1 🧠 to ${outcome.playerName} who sensed there was no AI`;
         break;
     }
 
