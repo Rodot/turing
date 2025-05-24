@@ -64,20 +64,17 @@ test("multi-user game flow", async ({ browser }) => {
   await expect(host.page.getByText("Warming up")).toBeVisible();
 
   // During warmup phase, all players should be human and able to send messages
-  // Each player needs to send 3 messages to trigger transition to hunt phase
-  for (let i = 0; i < 3; i++) {
+  // Each player needs to send 2 messages to trigger transition to hunt phase
+  for (let i = 0; i < 2; i++) {
     for (const player of testPlayers) {
       await player.page
         .getByLabel("Message input")
         .getByRole("textbox")
         .fill(`Warmup message ${i + 1} from ${player.name}`);
       await player.page.getByLabel("Send message button").click();
-      await player.page.waitForTimeout(500); // Small delay between messages
     }
   }
 
-  // Wait for transition to hunt phase and check status changed
-  await host.page.waitForTimeout(2000);
   await expect(host.page.getByText("Find the AI")).toBeVisible();
 
   // Now determine which players are humans vs AI (after transition to hunt phase)

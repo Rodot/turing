@@ -127,9 +127,8 @@ const checkAndTransitionToHunt = async (
       (player) => player.id !== game.last_bot_id,
     );
 
-    const botPlayer = previousBot && noBotThisRound
-      ? undefined
-      : pickRandom(availablePlayers);
+    const botPlayer =
+      previousBot && noBotThisRound ? undefined : pickRandom(availablePlayers);
 
     if (botPlayer) {
       await updatePlayerInGame(supabase, game.id, botPlayer.id, {
