@@ -19,7 +19,6 @@ import { createSupabaseClient } from "../_utils/supabase.ts";
 import { createErrorResponse } from "../_utils/error.ts";
 import { pickRandom } from "../_shared/utils.ts";
 import { iceBreakers } from "../_shared/lang.ts";
-import { PlayerData } from "../_types/Database.type.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -55,21 +54,25 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Gather all data needed to determine points
-    const votingData = await gatherVotingData(supabase, gameId);
-
     // Process voting if all players have voted
-    if (votingData.allVoted && votingData.players.length > 1) {
+    const allVoted = await checkIfAllPlayersVoted(supabase, gameId);
+    if (allVoted) {
       console.log("All players have voted", gameId);
 
-      // Determine who got points and why
-      const pointAllocations = determinePointsAllocation(votingData);
+      // Announce bot reveal
+      await announceBotReveal(supabase, gameId);
 
-      // Post messages about who got points and why
-      await postPointsMessages(supabase, pointAllocations, votingData, gameId);
+      // Determine voting outcomes
+      const votingOutcomes = await determineVotingOutcomes(supabase, gameId);
 
-      // Update players who got points
-      await updatePlayerPoints(supabase, pointAllocations, gameId);
+      // Process voting outcomes - update points and post messages
+      await processVotingOutcomes(supabase, votingOutcomes, gameId);
+
+      await postSystemMessage(
+        supabase,
+        gameId,
+        "💬 The AI is gone, let's change the topic",
+      );
 
       // Get updated game data for end game check
       const gameAfter = await fetchGame(supabase, gameId);
@@ -127,46 +130,83 @@ Deno.serve(async (req) => {
   }
 });
 
-// Types for the voting data processing
-type VotingData = {
-  players: PlayerData[];
-  numHumans: number;
-  botPlayer: PlayerData | undefined;
-  botVoters: PlayerData[];
-  blankVoters: PlayerData[];
-  voteCounts: Record<string, number>;
-  numVotes: number;
-  mostVotedPlayers: PlayerData[];
-  allVoted: boolean;
+type RewardReason =
+  | "foundBot"
+  | "botEscaped"
+  | "moreConvincingThanBot"
+  | "correctlyGuessedNoBot";
+
+type VotingOutcome = {
+  playerId: string;
+  playerName: string;
+  pointsEarned: number;
+  rewardReason: RewardReason;
 };
 
-type PointAllocation = {
-  player: PlayerData;
-  points: number;
-  reason:
-    | "foundBot"
-    | "botEscaped"
-    | "moreConvincingThanBot"
-    | "correctlyGuessedNoBot";
-};
+// Helper function to post system message with delay
+async function postSystemMessage(
+  supabase: ReturnType<typeof createSupabaseClient>,
+  gameId: string,
+  message: string,
+) {
+  await insertMessage(supabase, {
+    author_name: "",
+    type: "system",
+    content: message,
+    game_id: gameId,
+  });
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+}
 
-// STEP 1: Gather all the data needed to determine point allocation
-async function gatherVotingData(
+// Check if all players have voted
+async function checkIfAllPlayersVoted(
+  supabase: ReturnType<typeof createSupabaseClient>,
+  gameId: string,
+): Promise<boolean> {
+  const game = await fetchGameAndCheckStatus(supabase, gameId, "voting");
+
+  const activePlayerIds = new Set(game.players.map((p) => p.id));
+  const numHumans = game.players.filter((player) => !player.is_bot).length;
+
+  const numVotes = game.players.filter(
+    (player) =>
+      (player.vote && activePlayerIds.has(player.vote)) || player.vote_blank,
+  ).length;
+
+  return numVotes >= numHumans && game.players.length > 1;
+}
+
+// Announce bot reveal
+async function announceBotReveal(
   supabase: ReturnType<typeof createSupabaseClient>,
   gameId: string,
 ) {
-  // Fetch game data
-  const game = await fetchGame(supabase, gameId);
-  if (!game) throw new Error("Game not found");
+  const game = await fetchGameAndCheckStatus(supabase, gameId, "voting");
 
-  // Get active player IDs for vote validation
-  const activePlayerIds = new Set(game.players.map((p) => p.id));
-
-  // Analyze player data
-  const numHumans = game.players.filter((player) => !player.is_bot).length;
   const botPlayer = game.players.find((player) => player.is_bot);
 
-  // Filter players by their votes (only count valid votes)
+  await postSystemMessage(supabase, gameId, "😱 Results are in!");
+  await postSystemMessage(supabase, gameId, "🥁 And the AI was...");
+
+  if (botPlayer) {
+    await postSystemMessage(supabase, gameId, `🤖 ${botPlayer.name}`);
+  } else {
+    await postSystemMessage(supabase, gameId, `❌ Nobody`);
+  }
+}
+
+// Determine voting outcomes
+async function determineVotingOutcomes(
+  supabase: ReturnType<typeof createSupabaseClient>,
+  gameId: string,
+): Promise<VotingOutcome[]> {
+  const game = await fetchGameAndCheckStatus(supabase, gameId, "voting");
+
+  const votingOutcomes: VotingOutcome[] = [];
+  const activePlayerIds = new Set(game.players.map((p) => p.id));
+  const botPlayer = game.players.find((player) => player.is_bot);
+
+  // Filter players by their votes
   const botVoters = game.players.filter(
     (player) => player.vote === botPlayer?.id,
   );
@@ -174,7 +214,7 @@ async function gatherVotingData(
     (player) => player.vote_blank === true,
   );
 
-  // Count votes for each player (only count votes for active players)
+  // Count votes for each player
   const voteCounts = game.players.reduce(
     (counts, player) => {
       if (
@@ -189,43 +229,15 @@ async function gatherVotingData(
     {} as Record<string, number>,
   );
 
-  // Calculate total votes
-  const numVotes = game.players.filter(
-    (player) =>
-      (player.vote && activePlayerIds.has(player.vote)) || player.vote_blank,
-  ).length;
-
   // Find players with the most votes
-  const maxVotes =
-    Object.keys(voteCounts).length > 0
-      ? Math.max(...Object.values(voteCounts))
-      : 0;
-  const mostVotedPlayers =
-    maxVotes > 0
-      ? game.players.filter(
-          (player) => (voteCounts[player.id] || 0) === maxVotes,
-        )
-      : [];
-
-  return {
-    players: game.players,
-    numHumans,
-    botPlayer,
-    botVoters,
-    blankVoters,
-    voteCounts,
-    numVotes,
-    mostVotedPlayers,
-    allVoted: numVotes >= numHumans,
-  };
-}
-
-// STEP 2: Function to determine who gets points and why
-function determinePointsAllocation(votingData: VotingData): PointAllocation[] {
-  const { botPlayer, botVoters, blankVoters, mostVotedPlayers, voteCounts } =
-    votingData;
-
-  const pointAllocations: PointAllocation[] = [];
+  const maxVotes = Object.keys(voteCounts).length > 0
+    ? Math.max(...Object.values(voteCounts))
+    : 0;
+  const mostVotedPlayers = maxVotes > 0
+    ? game.players.filter(
+      (player) => (voteCounts[player.id] || 0) === maxVotes,
+    )
+    : [];
 
   if (botPlayer) {
     // Scenario: There is a bot in the game
@@ -233,18 +245,20 @@ function determinePointsAllocation(votingData: VotingData): PointAllocation[] {
     // 1. Players who correctly identified the bot get points
     if (botVoters.length > 0) {
       botVoters.forEach((voter) => {
-        pointAllocations.push({
-          player: voter,
-          points: 1,
-          reason: "foundBot",
+        votingOutcomes.push({
+          playerId: voter.id,
+          playerName: voter.name,
+          pointsEarned: 1,
+          rewardReason: "foundBot",
         });
       });
     } else {
       // 2. If nobody found the bot, the bot gets a point for escaping
-      pointAllocations.push({
-        player: botPlayer,
-        points: 1,
-        reason: "botEscaped",
+      votingOutcomes.push({
+        playerId: botPlayer.id,
+        playerName: botPlayer.name,
+        pointsEarned: 1,
+        rewardReason: "botEscaped",
       });
     }
 
@@ -255,10 +269,11 @@ function determinePointsAllocation(votingData: VotingData): PointAllocation[] {
     );
 
     humanImposters.forEach((imposter) => {
-      pointAllocations.push({
-        player: imposter,
-        points: 1,
-        reason: "moreConvincingThanBot",
+      votingOutcomes.push({
+        playerId: imposter.id,
+        playerName: imposter.name,
+        pointsEarned: 1,
+        rewardReason: "moreConvincingThanBot",
       });
     });
   } else {
@@ -266,142 +281,68 @@ function determinePointsAllocation(votingData: VotingData): PointAllocation[] {
 
     // 1. Players who voted blank correctly guessed there was no bot
     blankVoters.forEach((voter) => {
-      pointAllocations.push({
-        player: voter,
-        points: 1,
-        reason: "correctlyGuessedNoBot",
+      votingOutcomes.push({
+        playerId: voter.id,
+        playerName: voter.name,
+        pointsEarned: 1,
+        rewardReason: "correctlyGuessedNoBot",
       });
     });
 
     // 2. Players with the most votes were the most convincing fake bots
     if (mostVotedPlayers.length > 0) {
       mostVotedPlayers.forEach((player) => {
-        pointAllocations.push({
-          player,
-          points: 1,
-          reason: "moreConvincingThanBot",
+        votingOutcomes.push({
+          playerId: player.id,
+          playerName: player.name,
+          pointsEarned: 1,
+          rewardReason: "moreConvincingThanBot",
         });
       });
     }
   }
 
-  return pointAllocations;
+  return votingOutcomes;
 }
 
-// STEP 3: Function to update players who got points
-async function updatePlayerPoints(
+// Process voting outcomes - update points and post messages
+async function processVotingOutcomes(
   supabase: ReturnType<typeof createSupabaseClient>,
-  pointAllocations: PointAllocation[],
+  votingOutcomes: VotingOutcome[],
   gameId: string,
 ) {
-  // Reduce to calculate total points per player
-  const pointsByPlayer = pointAllocations.reduce<
-    Record<string, { player: PlayerData; totalPoints: number }>
-  >((acc, allocation) => {
-    const { player, points } = allocation;
-    const playerId = player.id;
+  // Process each voting outcome
+  for (const outcome of votingOutcomes) {
+    // fetch game with updated points
+    const game = await fetchGameAndCheckStatus(supabase, gameId, "voting");
 
-    if (!acc[playerId]) {
-      acc[playerId] = { player, totalPoints: 0 };
+    const player = game.players.find((p) => p.id === outcome.playerId);
+    if (!player) throw new Error(`Player ${outcome.playerId} not found`);
+
+    // Update player score
+    await updatePlayerInGame(supabase, gameId, outcome.playerId, {
+      score: player.score + outcome.pointsEarned,
+    });
+
+    // Post message for this outcome
+    let message = "";
+    switch (outcome.rewardReason) {
+      case "foundBot":
+        message = `+1 🧠 to ${outcome.playerName} for finding the AI`;
+        break;
+      case "botEscaped":
+        message = `+1 🧠 to ${outcome.playerName} for pretending to be human`;
+        break;
+      case "moreConvincingThanBot":
+        message = `+1 🧠 to ${outcome.playerName} for pretending to be the AI`;
+        break;
+      case "correctlyGuessedNoBot":
+        message = `+1 🧠 to ${outcome.playerName} who knew there was no AI`;
+        break;
     }
 
-    acc[playerId].totalPoints += points;
-    return acc;
-  }, {});
-
-  // Update each player with their total points
-  const updatePromises = Object.values(pointsByPlayer).map(
-    ({ player, totalPoints }) =>
-      updatePlayerInGame(supabase, gameId, player.id, {
-        score: player.score + totalPoints,
-      }),
-  );
-
-  await Promise.all(updatePromises);
-}
-
-// STEP 4: Function to post messages about who got points and why
-async function postPointsMessages(
-  supabase: ReturnType<typeof createSupabaseClient>,
-  pointAllocations: PointAllocation[],
-  votingData: VotingData,
-  gameId: string,
-) {
-  const { botPlayer } = votingData;
-
-  // Group players by reason for better messaging
-  const foundBotPlayers = pointAllocations
-    .filter((a) => a.reason === "foundBot")
-    .map((a) => a.player);
-
-  const botEscapedPlayers = pointAllocations
-    .filter((a) => a.reason === "botEscaped")
-    .map((a) => a.player);
-
-  const convincingImposters = pointAllocations
-    .filter((a) => a.reason === "moreConvincingThanBot")
-    .map((a) => a.player);
-
-  const correctlyGuessedNoBotPlayers = pointAllocations
-    .filter((a) => a.reason === "correctlyGuessedNoBot")
-    .map((a) => a.player);
-
-  // Messages to post
-  const messages: string[] = [];
-
-  messages.push("😱 Results are in!");
-  messages.push("🥁 And the AI was...");
-
-  // Create message to reveal the bot
-  if (botPlayer) {
-    messages.push(`🤖 ${botPlayer.name}`);
-  } else {
-    messages.push(`❌ Nobody`);
-  }
-
-  // Create message for escaped bot
-  if (botEscapedPlayers.length > 0) {
-    messages.push(
-      `+1 🧠 to ${botEscapedPlayers[0].name} for pretending to be human`,
-    );
-  }
-
-  // Create message for bot voters
-  if (foundBotPlayers.length > 0) {
-    messages.push(
-      `+1 🧠 to ${foundBotPlayers
-        .map((p) => p.name)
-        .join(" and ")} for finding the AI`,
-    );
-  }
-
-  // Add message for convincing imposters
-  if (convincingImposters.length > 0) {
-    const message = botPlayer
-      ? `+1 🧠 to ${convincingImposters.map((p) => p.name).join(" and ")} for being more convincing than the AI`
-      : `+1 🧠 to ${convincingImposters.map((p) => p.name).join(" and ")} for pretending to be the AI`;
-    messages.push(message);
-  }
-
-  // Create message for correct blank voters
-  if (correctlyGuessedNoBotPlayers.length > 0) {
-    messages.push(
-      `+1 🧠 to ${correctlyGuessedNoBotPlayers
-        .map((p) => p.name)
-        .join(" and ")} who knew there was no AI`,
-    );
-  }
-
-  messages.push("💬 The AI is gone, let's change the topic");
-
-  // Post all messages sequentially with delays
-  for (const message of messages) {
-    await insertMessage(supabase, {
-      author_name: "",
-      type: "system",
-      content: message,
-      game_id: gameId,
-    });
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    if (message) {
+      await postSystemMessage(supabase, gameId, message);
+    }
   }
 }
