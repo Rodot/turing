@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useGameIdFromUrl } from "./useGameIdFromUrl";
 import { useProfileQuery } from "./useProfileQuery";
 import { useRouter } from "next/navigation";
+import { extractSupabaseError } from "@/utils/supabase/errorHandling";
 
 export const useStartGameMutation = () => {
   const gameIdFromUrl = useGameIdFromUrl();
@@ -17,7 +18,11 @@ export const useStartGameMutation = () => {
         body: { gameId: gameIdFromUrl },
       });
       if (response.error) {
-        throw new Error("Error starting game:" + response.error.message);
+        const errorMessage = await extractSupabaseError(
+          response,
+          "Error starting game",
+        );
+        throw new Error(errorMessage);
       }
       return { gameId: gameIdFromUrl };
     },
@@ -35,7 +40,11 @@ export const useCreateGameMutation = () => {
       const response = await supabase.functions.invoke("create-game");
       if (response.error) {
         console.error(response.error);
-        throw new Error("Error creating game:" + response.error.message);
+        const errorMessage = await extractSupabaseError(
+          response,
+          "Error creating game",
+        );
+        throw new Error(errorMessage);
       }
       return response?.data?.game_id as string | undefined;
     },
@@ -60,7 +69,11 @@ export const usePlayerVoteMutation = () => {
       });
       if (response.error) {
         console.error(response.error);
-        throw new Error("Error voting:" + response.error.message);
+        const errorMessage = await extractSupabaseError(
+          response,
+          "Error voting",
+        );
+        throw new Error(errorMessage);
       }
       return params;
     },
@@ -75,7 +88,11 @@ export const usePostMessageMutation = () => {
       });
       if (response.error) {
         console.error(response.error);
-        throw new Error("Error posting message:" + response.error.message);
+        const errorMessage = await extractSupabaseError(
+          response,
+          "Error posting message",
+        );
+        throw new Error(errorMessage);
       }
       return message;
     },
@@ -94,7 +111,11 @@ export const useEndGameMutation = () => {
       });
       if (response.error) {
         console.error(response.error);
-        throw new Error("Error ending game:" + response.error.message);
+        const errorMessage = await extractSupabaseError(
+          response,
+          "Error ending game",
+        );
+        throw new Error(errorMessage);
       }
     },
     onSuccess: () => {
@@ -111,7 +132,11 @@ export const useStartVoteMutation = () => {
       });
       if (response.error) {
         console.error(response.error);
-        throw new Error("Error starting vote:" + response.error.message);
+        const errorMessage = await extractSupabaseError(
+          response,
+          "Error starting vote",
+        );
+        throw new Error(errorMessage);
       }
     },
   });
@@ -131,7 +156,11 @@ export const useGenerateAnswersMutation = () => {
       });
       if (response.error) {
         console.error(response.error);
-        throw new Error("Error generating answers:" + response.error.message);
+        const errorMessage = await extractSupabaseError(
+          response,
+          "Error generating answers",
+        );
+        throw new Error(errorMessage);
       }
       return response?.data;
     },
@@ -150,8 +179,12 @@ export const useJoinGameMutation = () => {
         body: { gameId },
       });
       if (response.error) {
-        console.error(response.error);
-        throw new Error("Error joining game:" + response.error.message);
+        console.error(response);
+        const errorMessage = await extractSupabaseError(
+          response,
+          "Error joining game",
+        );
+        throw new Error(errorMessage);
       }
       return { profileId: profile.id, gameId };
     },

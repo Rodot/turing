@@ -1,9 +1,7 @@
 {
   "lint": {
     "rules": {
-      "tags": [
-        "recommended"
-      ]
+      "tags": ["recommended"]
     }
   },
   "fmt": {
@@ -15,15 +13,11 @@
     "proseWrap": "preserve"
   },
   "compilerOptions": {
-    "lib": [
-      "deno.window"
-    ],
+    "lib": ["deno.window"],
     "strict": true
   },
   "imports": {
     "std/": "https://deno.land/std@0.208.0/"
   },
-  "include": [
-    "functions/"
-  ]
+  "include": ["functions/"]
 }

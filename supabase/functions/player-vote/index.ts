@@ -16,6 +16,7 @@ import { removeAllPlayersFromGame } from "../_queries/profiles.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { setRandomPlayerAsBotAndResetVotes } from "../_utils/vote.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
+import { createErrorResponse } from "../_utils/error.ts";
 import { pickRandom } from "../_shared/utils.ts";
 import { iceBreakers } from "../_shared/lang.ts";
 import { PlayerData } from "../_types/Database.type.ts";
@@ -122,9 +123,7 @@ Deno.serve(async (req) => {
     const data = JSON.stringify({});
     return new Response(data, { headers, status: 200 });
   } catch (error) {
-    console.error(error);
-    const data = JSON.stringify({ error });
-    return new Response(data, { headers, status: 400 });
+    return createErrorResponse(error);
   }
 });
 
