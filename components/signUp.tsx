@@ -72,11 +72,9 @@ export const SignUp: React.FC = () => {
       </Box>
 
       <Box sx={{ alignSelf: "center" }}>
-        <Typography>
-          +1 🧠 <strong>Vote against the AI</strong> 👎
-        </Typography>
-        <Typography>+1 🧠 Get the most votes (if human)</Typography>
-        <Typography>+1 🧠 Don&apos;t get most votes (if AI)</Typography>
+        <Typography>+1 🧠 Humans who vote for the AI</Typography>
+        <Typography>+1 🧠 AI who avoids votes majority</Typography>
+        <Typography>+1 🧠 Humans who get the most votes</Typography>
       </Box>
 
       <Typography fontWeight={900} align="center" sx={{ my: 4 }}>
