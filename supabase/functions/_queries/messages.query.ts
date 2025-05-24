@@ -48,13 +48,34 @@ export const postSystemMessage = async (
 
 export const postIcebreakerMessage = async (
   supabase: SupabaseClient,
-  gameId: string,
-  message: string,
+  game: { id: string; lang: "en" | "fr" },
+  messages: MessageData[],
 ) => {
+  const { iceBreakers } = await import("../_shared/lang.ts");
+  const { pickRandom } = await import("../_shared/utils.ts");
+
+  const availableQuestions = iceBreakers[game.lang];
+  const usedQuestions = messages
+    .filter((msg) => msg.type === "icebreaker")
+    .map((msg) => msg.content.replace("💡 ", ""));
+
+  let selectedQuestion: string;
+  let attempts = 0;
+  const maxAttempts = 50;
+
+  do {
+    selectedQuestion = pickRandom(availableQuestions);
+    attempts++;
+  } while (usedQuestions.includes(selectedQuestion) && attempts < maxAttempts);
+
+  if (attempts >= maxAttempts && usedQuestions.includes(selectedQuestion)) {
+    selectedQuestion = pickRandom(availableQuestions);
+  }
+
   await insertMessage(supabase, {
     author_name: "",
     type: "icebreaker",
-    content: "💡 " + message,
-    game_id: gameId,
+    content: "💡 " + selectedQuestion,
+    game_id: game.id,
   });
 };

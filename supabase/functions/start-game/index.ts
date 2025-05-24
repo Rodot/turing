@@ -13,9 +13,10 @@ import {
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { createErrorResponse } from "../_utils/error.ts";
-import { postIcebreakerMessage } from "../_queries/messages.query.ts";
-import { pickRandom } from "../_shared/utils.ts";
-import { iceBreakers } from "../_shared/lang.ts";
+import {
+  postIcebreakerMessage,
+  fetchMessages,
+} from "../_queries/messages.query.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -44,11 +45,8 @@ Deno.serve(async (req) => {
       score: 0,
     });
 
-    await postIcebreakerMessage(
-      supabase,
-      gameId,
-      pickRandom(iceBreakers[game.lang]),
-    );
+    const messages = await fetchMessages(supabase, gameId);
+    await postIcebreakerMessage(supabase, game, messages);
 
     const data = JSON.stringify({});
     return new Response(data, { headers, status: 200 });

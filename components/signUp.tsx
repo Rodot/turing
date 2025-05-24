@@ -63,7 +63,7 @@ export const SignUp: React.FC = () => {
       </Box>
 
       <Box sx={{ my: 4 }}>
-        <Typography fontWeight={900} align="center">
+        <Typography align="center" sx={{ fontWeight: 900 }}>
           An AI controls someone in the chat.
         </Typography>
         <Typography align="center" sx={{ fontStyle: "italic" }}>
@@ -72,14 +72,37 @@ export const SignUp: React.FC = () => {
       </Box>
 
       <Box sx={{ alignSelf: "center" }}>
-        <Typography>+1 🧠 Humans who vote for the AI</Typography>
-        <Typography>+1 🧠 AI who avoids votes majority</Typography>
-        <Typography>+1 🧠 Humans who get the most votes</Typography>
+        <Typography>
+          <strong>1. Warmup</strong> Chat among Humans
+        </Typography>
+        <Typography>
+          <strong>2. Hunt</strong> The AI replaces one of the Humans
+        </Typography>
+        <Typography>
+          <strong>3. Vote</strong> Start a vote when you found the AI
+        </Typography>
+        <Typography>
+          <strong>4. Repeat</strong> The AI leaves, new round begins
+        </Typography>
       </Box>
 
-      <Typography fontWeight={900} align="center" sx={{ my: 4 }}>
+      <Box sx={{ my: 2 }} />
+
+      <Box sx={{ alignSelf: "center" }}>
+        <Typography>
+          +1 🧠<strong> to Humans who vote for the AI</strong>
+        </Typography>
+        <Typography>+1 🧠 to AI who avoids votes majority</Typography>
+        <Typography>+1 🧠 to Humans who get the most votes</Typography>
+      </Box>
+
+      <Box sx={{ my: 2 }} />
+
+      <Typography fontWeight={900} align="center">
         Earn 5 🧠 to win
       </Typography>
+
+      <Box sx={{ my: 2 }} />
 
       {!isAnythingLoading && !isNameSet && (
         <form onSubmit={onSubmit} style={{ width: "100%" }}>

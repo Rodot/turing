@@ -8,6 +8,7 @@
 import {
   postIcebreakerMessage,
   postSystemMessage,
+  fetchMessages,
 } from "../_queries/messages.query.ts";
 import {
   fetchGameAndCheckStatus,
@@ -20,8 +21,6 @@ import { headers } from "../_utils/cors.ts";
 import { setRandomPlayerAsBotAndResetVotes } from "../_utils/vote.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { createErrorResponse } from "../_utils/error.ts";
-import { pickRandom } from "../_shared/utils.ts";
-import { iceBreakers } from "../_shared/lang.ts";
 import { checkIfAllPlayersVoted } from "../_utils/check-if-all-players-voted.ts";
 import {
   determineVotingOutcomes,
@@ -119,14 +118,11 @@ Deno.serve(async (req) => {
         const game = await fetchGameAndCheckStatus(supa, gameId, "voting");
 
         // Reset votes and set random player as bot
+        const messages = await fetchMessages(supa, gameId);
         await Promise.all([
           setRandomPlayerAsBotAndResetVotes(supa, gameId, game.players),
           updateGameWithStatusTransition(supa, gameId, "talking_warmup"),
-          postIcebreakerMessage(
-            supa,
-            gameId,
-            pickRandom(iceBreakers[game?.lang ?? "en"]),
-          ),
+          postIcebreakerMessage(supa, game, messages),
         ]);
       }
     }
