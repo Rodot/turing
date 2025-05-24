@@ -2,7 +2,7 @@ import {
   fetchGame,
   updateGameWithStatusTransition,
 } from "../_queries/game.query.ts";
-import { insertMessage } from "../_queries/messages.query.ts";
+import { postSystemMessage } from "../_queries/messages.query.ts";
 import { removeAllPlayersFromGame } from "../_queries/profiles.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
@@ -38,12 +38,11 @@ Deno.serve(async (req) => {
     if (!player) throw new Error("Player not found in game");
 
     // Post a message
-    await insertMessage(supabase, {
-      author_name: "",
-      type: "system",
-      content: `❌ ${player.name} ended the game`,
-      game_id: gameId,
-    });
+    await postSystemMessage(
+      supabase,
+      gameId,
+      `❌ ${player.name} ended the game`,
+    );
 
     // Remove all players from the game
     await removeAllPlayersFromGame(supabase, gameId);

@@ -13,7 +13,7 @@ import {
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { createErrorResponse } from "../_utils/error.ts";
-import { insertMessage } from "../_queries/messages.query.ts";
+import { postIcebreakerMessage } from "../_queries/messages.query.ts";
 import { pickRandom } from "../_shared/utils.ts";
 import { iceBreakers } from "../_shared/lang.ts";
 
@@ -44,12 +44,11 @@ Deno.serve(async (req) => {
       score: 0,
     });
 
-    await insertMessage(supabase, {
-      game_id: gameId,
-      author_name: "",
-      type: "icebreaker",
-      content: "💡 " + pickRandom(iceBreakers[game.lang]),
-    });
+    await postIcebreakerMessage(
+      supabase,
+      gameId,
+      pickRandom(iceBreakers[game.lang]),
+    );
 
     const data = JSON.stringify({});
     return new Response(data, { headers, status: 200 });

@@ -5,7 +5,11 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 /// <reference types="https://esm.sh/@supabase/functions-js/src/edge-runtime.d.ts" />
 
-import { fetchMessages, insertMessage } from "../_queries/messages.query.ts";
+import {
+  fetchMessages,
+  insertMessage,
+  postSystemMessage,
+} from "../_queries/messages.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { createErrorResponse } from "../_utils/error.ts";
@@ -138,11 +142,10 @@ const checkAndTransitionToHunt = async (
       await updateGame(supabase, game.id, { last_bot_id: botPlayer.id });
     }
 
-    await insertMessage(supabase, {
-      author_name: "",
-      type: "system",
-      content: `🤖 The AI took control of someone, find who!`,
-      game_id: game.id,
-    });
+    await postSystemMessage(
+      supabase,
+      game.id,
+      `🤖 The AI took control of someone, find who!`,
+    );
   }
 };

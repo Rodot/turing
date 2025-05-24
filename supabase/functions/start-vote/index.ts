@@ -2,7 +2,7 @@ import {
   fetchGameAndCheckStatus,
   updateGameWithStatusTransition,
 } from "../_queries/game.query.ts";
-import { insertMessage } from "../_queries/messages.query.ts";
+import { postSystemMessage } from "../_queries/messages.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { createErrorResponse } from "../_utils/error.ts";
@@ -38,14 +38,11 @@ Deno.serve(async (req) => {
     if (!player) throw new Error("Player not found in game");
 
     // Post a message
-    await insertMessage(supabase, {
-      author_name: "",
-      type: "system",
-      content: `🗳️ ${player.name} started a vote`,
-      game_id: gameId,
-    });
-
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await postSystemMessage(
+      supabase,
+      gameId,
+      `🗳️ ${player.name} started a vote`,
+    );
 
     // Set the game status to "voting"
     await updateGameWithStatusTransition(supabase, gameId, "voting");

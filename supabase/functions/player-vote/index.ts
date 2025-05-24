@@ -5,13 +5,17 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 /// <reference types="https://esm.sh/@supabase/functions-js@2.4.4/src/edge-runtime.d.ts" />
 
-import { insertMessage } from "../_queries/messages.query.ts";
+import {
+  postIcebreakerMessage,
+  postSystemMessage,
+} from "../_queries/messages.query.ts";
 import {
   fetchGame,
   fetchGameAndCheckStatus,
   updateGameWithStatusTransition,
   updatePlayerInGame,
 } from "../_queries/game.query.ts";
+import type { GameData } from "../_types/Database.type.ts";
 import { removeAllPlayersFromGame } from "../_queries/profiles.query.ts";
 import { headers } from "../_utils/cors.ts";
 import { setRandomPlayerAsBotAndResetVotes } from "../_utils/vote.ts";
@@ -39,7 +43,7 @@ Deno.serve(async (req) => {
     console.log("Voting", { gameId, profileId });
 
     // Check that game is in voting status
-    await fetchGameAndCheckStatus(supabase, gameId, "voting");
+    const game = await fetchGameAndCheckStatus(supabase, gameId, "voting");
 
     // Apply player vote
     if (vote === "blank") {
@@ -55,15 +59,15 @@ Deno.serve(async (req) => {
     }
 
     // Process voting if all players have voted
-    const allVoted = await checkIfAllPlayersVoted(supabase, gameId);
+    const allVoted = checkIfAllPlayersVoted(game);
     if (allVoted) {
       console.log("All players have voted", gameId);
 
       // Announce bot reveal
-      await announceBotReveal(supabase, gameId);
+      await announceBotReveal(supabase, game);
 
       // Determine voting outcomes
-      const votingOutcomes = await determineVotingOutcomes(supabase, gameId);
+      const votingOutcomes = determineVotingOutcomes(game);
 
       // Process voting outcomes - update points and post messages
       await processVotingOutcomes(supabase, votingOutcomes, gameId);
@@ -88,12 +92,7 @@ Deno.serve(async (req) => {
         const winners = gameAfter.players.filter((p) => p.score === maxScore);
         if (winners.length) {
           const message = `${winners.map((w) => w.name).join(" and ")} won! 🏆`;
-          await insertMessage(supabase, {
-            author_name: "",
-            type: "system",
-            content: message,
-            game_id: gameId,
-          });
+          await postSystemMessage(supabase, gameId, message);
         }
 
         // Close the game
@@ -113,12 +112,11 @@ Deno.serve(async (req) => {
         await Promise.all([
           setRandomPlayerAsBotAndResetVotes(supabase, gameId, game.players),
           updateGameWithStatusTransition(supabase, gameId, "talking_warmup"),
-          insertMessage(supabase, {
-            game_id: gameId,
-            author_name: "",
-            type: "icebreaker",
-            content: "💡 " + pickRandom(iceBreakers[game?.lang ?? "en"]),
-          }),
+          postIcebreakerMessage(
+            supabase,
+            gameId,
+            pickRandom(iceBreakers[game?.lang ?? "en"]),
+          ),
         ]);
       }
     }
@@ -143,28 +141,8 @@ type VotingOutcome = {
   rewardReason: RewardReason;
 };
 
-// Helper function to post system message with delay
-async function postSystemMessage(
-  supabase: ReturnType<typeof createSupabaseClient>,
-  gameId: string,
-  message: string,
-) {
-  await insertMessage(supabase, {
-    author_name: "",
-    type: "system",
-    content: message,
-    game_id: gameId,
-  });
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-}
-
 // Check if all players have voted
-async function checkIfAllPlayersVoted(
-  supabase: ReturnType<typeof createSupabaseClient>,
-  gameId: string,
-): Promise<boolean> {
-  const game = await fetchGameAndCheckStatus(supabase, gameId, "voting");
-
+function checkIfAllPlayersVoted(game: GameData): boolean {
   const activePlayerIds = new Set(game.players.map((p) => p.id));
   const numHumans = game.players.filter((player) => !player.is_bot).length;
 
@@ -179,29 +157,22 @@ async function checkIfAllPlayersVoted(
 // Announce bot reveal
 async function announceBotReveal(
   supabase: ReturnType<typeof createSupabaseClient>,
-  gameId: string,
+  game: GameData,
 ) {
-  const game = await fetchGameAndCheckStatus(supabase, gameId, "voting");
-
   const botPlayer = game.players.find((player) => player.is_bot);
 
-  await postSystemMessage(supabase, gameId, "😱 Results are in!");
-  await postSystemMessage(supabase, gameId, "🥁 And the AI was...");
+  await postSystemMessage(supabase, game.id, "😱 Results are in!");
+  await postSystemMessage(supabase, game.id, "🥁 And the AI was...");
 
   if (botPlayer) {
-    await postSystemMessage(supabase, gameId, `🤖 ${botPlayer.name}`);
+    await postSystemMessage(supabase, game.id, `🤖 ${botPlayer.name}`);
   } else {
-    await postSystemMessage(supabase, gameId, `❌ Nobody`);
+    await postSystemMessage(supabase, game.id, `❌ Nobody`);
   }
 }
 
 // Determine voting outcomes
-async function determineVotingOutcomes(
-  supabase: ReturnType<typeof createSupabaseClient>,
-  gameId: string,
-): Promise<VotingOutcome[]> {
-  const game = await fetchGameAndCheckStatus(supabase, gameId, "voting");
-
+function determineVotingOutcomes(game: GameData): VotingOutcome[] {
   const votingOutcomes: VotingOutcome[] = [];
   const activePlayerIds = new Set(game.players.map((p) => p.id));
   const botPlayer = game.players.find((player) => player.is_bot);
@@ -313,14 +284,14 @@ async function processVotingOutcomes(
 ) {
   // Process each voting outcome
   for (const outcome of votingOutcomes) {
-    // fetch game with updated points
+    // re-fetch game with updated points
     const game = await fetchGameAndCheckStatus(supabase, gameId, "voting");
 
     const player = game.players.find((p) => p.id === outcome.playerId);
     if (!player) throw new Error(`Player ${outcome.playerId} not found`);
 
     // Update player score
-    await updatePlayerInGame(supabase, gameId, outcome.playerId, {
+    await updatePlayerInGame(supabase, game.id, outcome.playerId, {
       score: player.score + outcome.pointsEarned,
     });
 
@@ -342,7 +313,7 @@ async function processVotingOutcomes(
     }
 
     if (message) {
-      await postSystemMessage(supabase, gameId, message);
+      await postSystemMessage(supabase, game.id, message);
     }
   }
 }

@@ -31,3 +31,30 @@ export const insertMessage = async (
     );
   }
 };
+
+export const postSystemMessage = async (
+  supabase: SupabaseClient,
+  gameId: string,
+  message: string,
+) => {
+  await insertMessage(supabase, {
+    author_name: "",
+    type: "system",
+    content: message,
+    game_id: gameId,
+  });
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+};
+
+export const postIcebreakerMessage = async (
+  supabase: SupabaseClient,
+  gameId: string,
+  message: string,
+) => {
+  await insertMessage(supabase, {
+    author_name: "",
+    type: "icebreaker",
+    content: "💡 " + message,
+    game_id: gameId,
+  });
+};
