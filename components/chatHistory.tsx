@@ -5,20 +5,22 @@ import React, {
   useState,
   useCallback,
 } from "react";
-import { List, Fab } from "@mui/material";
+import { List, Fab, Box, Typography } from "@mui/material";
 import { KeyboardArrowDown } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import { ChatMessage } from "./chatMessage";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useMessagesQuery } from "@/hooks/useMessagesQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
 
 export const ChatHistory: React.FC = () => {
+  const { t } = useTranslation();
   const userQuery = useUserQuery();
   const messagesQuery = useMessagesQuery();
   const messages = useMemo(
     () =>
       (messagesQuery.data || []).filter((message) => message.type !== "status"),
-    [messagesQuery.data],
+    [messagesQuery.data]
   );
   const gameQuery = useGameQuery();
   const endOfMessagesRef = useRef<null | HTMLDivElement>(null);
@@ -111,10 +113,10 @@ export const ChatHistory: React.FC = () => {
         <div ref={endOfMessagesRef} />
       </List>
 
-      {!isNearBottom && hasUnreadMessages && (
+      {!isNearBottom && (
         <Fab
-          size="small"
-          color="primary"
+          variant={hasUnreadMessages ? "extended" : "circular"}
+          color={hasUnreadMessages ? "secondary" : "default"}
           onClick={scrollToBottom}
           data-testid="new-messages-button"
           sx={{
@@ -125,6 +127,9 @@ export const ChatHistory: React.FC = () => {
           }}
         >
           <KeyboardArrowDown />
+          {hasUnreadMessages && (
+            <Typography variant="body2">{t("buttons.newMessage")}</Typography>
+          )}
         </Fab>
       )}
     </>

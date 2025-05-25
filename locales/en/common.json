@@ -11,7 +11,8 @@
     "generateAiAnswers": "Generate AI Answers 🤖",
     "sendMessage": "Send message",
     "startGame": "Start Game",
-    "submit": "Submit"
+    "submit": "Submit",
+    "newMessage": "New message"
   },
   "errors": {
     "gameNotFound": "Game not found",

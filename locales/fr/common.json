@@ -11,7 +11,8 @@
     "generateAiAnswers": "Générer des Réponses IA 🤖",
     "sendMessage": "Envoyer un message",
     "startGame": "Commencer la Partie",
-    "submit": "Envoyer"
+    "submit": "Envoyer",
+    "newMessage": "Nouveau message"
   },
   "errors": {
     "gameNotFound": "Partie introuvable",
