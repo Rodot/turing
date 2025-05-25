@@ -53,14 +53,12 @@ Deno.test("checkWarmupTransition - no warmup status message", () => {
   const messages: MessageData[] = [
     createMessage("1", "player1", "Hello"),
     createMessage("2", "player2", "Hi there"),
+    createMessage("3", "player1", "How are you?"),
   ];
 
-  const newMessage = createMessage("3", "player1", "How are you?");
+  const result = checkWarmupTransition(game, messages);
 
-  const result = checkWarmupTransition(game, messages, newMessage);
-
-  assertEquals(result.shouldTransition, false);
-  assertEquals(result.messageCountsByPlayer.size, 0);
+  assertEquals(result, false);
 });
 
 Deno.test(
@@ -76,15 +74,12 @@ Deno.test(
       createMessage("2", "player1", "Hello"),
       createMessage("3", "player1", "How are you?"),
       createMessage("4", "player2", "Hi there"), // Bob only has 1 message
+      createMessage("5", "player1", "Another message"),
     ];
 
-    const newMessage = createMessage("5", "player1", "Another message");
+    const result = checkWarmupTransition(game, messages);
 
-    const result = checkWarmupTransition(game, messages, newMessage);
-
-    assertEquals(result.shouldTransition, false);
-    assertEquals(result.messageCountsByPlayer.get("player1"), 3); // Alice has 3 messages (2 existing + 1 new)
-    assertEquals(result.messageCountsByPlayer.get("player2"), 1); // Bob has 1 message
+    assertEquals(result, false);
   },
 );
 
@@ -100,15 +95,12 @@ Deno.test("checkWarmupTransition - enough messages from all players", () => {
     createMessage("3", "player1", "How are you?"),
     createMessage("4", "player2", "Hi there"),
     createMessage("5", "player2", "I'm good"),
+    createMessage("6", "player1", "Great!"),
   ];
 
-  const newMessage = createMessage("6", "player1", "Great!");
+  const result = checkWarmupTransition(game, messages);
 
-  const result = checkWarmupTransition(game, messages, newMessage);
-
-  assertEquals(result.shouldTransition, true);
-  assertEquals(result.messageCountsByPlayer.get("player1"), 3); // Alice: 2 existing + 1 new
-  assertEquals(result.messageCountsByPlayer.get("player2"), 2); // Bob: 2 existing
+  assertEquals(result, true);
 });
 
 Deno.test(
@@ -124,15 +116,12 @@ Deno.test(
       createMessage("2", "player1", "Hello"),
       createMessage("3", "player1", "How are you?"),
       createMessage("4", "player2", "Hi there"), // Bob has 1 message
+      createMessage("5", "player2", "I'm good"), // Bob's 2nd message
     ];
 
-    const newMessage = createMessage("5", "player2", "I'm good"); // Bob's 2nd message
+    const result = checkWarmupTransition(game, messages);
 
-    const result = checkWarmupTransition(game, messages, newMessage);
-
-    assertEquals(result.shouldTransition, true);
-    assertEquals(result.messageCountsByPlayer.get("player1"), 2); // Alice: 2 existing
-    assertEquals(result.messageCountsByPlayer.get("player2"), 2); // Bob: 1 existing + 1 new
+    assertEquals(result, true);
   },
 );
 
@@ -150,15 +139,12 @@ Deno.test("checkWarmupTransition - ignores non-user messages", () => {
     createMessage("5", "player2", "Hi there"),
     createMessage("6", "system", "Another system message", "system"),
     createMessage("7", "player2", "I'm good"),
+    createMessage("8", "player1", "Great!"),
   ];
 
-  const newMessage = createMessage("8", "player1", "Great!");
+  const result = checkWarmupTransition(game, messages);
 
-  const result = checkWarmupTransition(game, messages, newMessage);
-
-  assertEquals(result.shouldTransition, true);
-  assertEquals(result.messageCountsByPlayer.get("player1"), 3); // Alice: 2 existing + 1 new (ignores system messages)
-  assertEquals(result.messageCountsByPlayer.get("player2"), 2); // Bob: 2 existing
+  assertEquals(result, true);
 });
 
 Deno.test(
@@ -176,19 +162,12 @@ Deno.test(
       createMessage("4", "system", "talking_warmup", "status"), // Second warmup (should use this)
       createMessage("5", "player1", "Hello from second warmup"),
       createMessage("6", "player2", "Hi from second warmup"),
+      createMessage("7", "player2", "Second message in second warmup"),
     ];
 
-    const newMessage = createMessage(
-      "7",
-      "player2",
-      "Second message in second warmup",
-    );
+    const result = checkWarmupTransition(game, messages);
 
-    const result = checkWarmupTransition(game, messages, newMessage);
-
-    assertEquals(result.shouldTransition, false); // Alice only has 1 message, needs 2
-    assertEquals(result.messageCountsByPlayer.get("player1"), 1); // Alice: 1 message since last warmup
-    assertEquals(result.messageCountsByPlayer.get("player2"), 2); // Bob: 1 existing + 1 new since last warmup
+    assertEquals(result, false); // Alice only has 1 message, needs 2
   },
 );
 
@@ -208,19 +187,12 @@ Deno.test(
       createMessage("5", "player1", "Hello from second warmup"),
       createMessage("6", "player1", "Second message from second warmup"),
       createMessage("7", "player2", "Hi from second warmup"),
+      createMessage("8", "player2", "Second message in second warmup"),
     ];
 
-    const newMessage = createMessage(
-      "8",
-      "player2",
-      "Second message in second warmup",
-    );
+    const result = checkWarmupTransition(game, messages);
 
-    const result = checkWarmupTransition(game, messages, newMessage);
-
-    assertEquals(result.shouldTransition, true); // Both players have 2+ messages since last warmup
-    assertEquals(result.messageCountsByPlayer.get("player1"), 2); // Alice: 2 messages since last warmup
-    assertEquals(result.messageCountsByPlayer.get("player2"), 2); // Bob: 1 existing + 1 new since last warmup
+    assertEquals(result, true); // Both players have 2+ messages since last warmup
   },
 );
 
@@ -237,27 +209,21 @@ Deno.test("checkWarmupTransition - three players scenario", () => {
     createMessage("3", "player1", "How are you?"),
     createMessage("4", "player2", "Hi there"),
     createMessage("5", "player2", "I'm good"),
-    createMessage("6", "player3", "Hey everyone"), // Charlie has 1 message
+    createMessage("6", "player3", "Hey everyone"),
+    createMessage("7", "player3", "Nice to meet you"), // Charlie's 2nd message
   ];
 
-  const newMessage = createMessage("7", "player3", "Nice to meet you"); // Charlie's 2nd message
+  const result = checkWarmupTransition(game, messages);
 
-  const result = checkWarmupTransition(game, messages, newMessage);
-
-  assertEquals(result.shouldTransition, true);
-  assertEquals(result.messageCountsByPlayer.get("player1"), 2);
-  assertEquals(result.messageCountsByPlayer.get("player2"), 2);
-  assertEquals(result.messageCountsByPlayer.get("player3"), 2); // 1 existing + 1 new
+  assertEquals(result, true);
 });
 
 Deno.test("checkWarmupTransition - edge case with empty messages array", () => {
   const game = createGameData([{ id: "player1", name: "Alice" }]);
 
-  const messages: MessageData[] = [];
-  const newMessage = createMessage("1", "player1", "Hello");
+  const messages: MessageData[] = [createMessage("1", "player1", "Hello")];
 
-  const result = checkWarmupTransition(game, messages, newMessage);
+  const result = checkWarmupTransition(game, messages);
 
-  assertEquals(result.shouldTransition, false);
-  assertEquals(result.messageCountsByPlayer.size, 0);
+  assertEquals(result, false);
 });

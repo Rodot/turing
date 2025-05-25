@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
       console.log(
         `Checking if we can transition to talking_hunt for game ${game.id}`,
       );
-      await checkAndTransitionToHunt(supabase, game, messages, message);
+      await checkAndTransitionToHunt(supabase, game);
     }
 
     const data = JSON.stringify({});
@@ -70,30 +70,14 @@ Deno.serve(async (req) => {
 const checkAndTransitionToHunt = async (
   supabase: SupabaseClient,
   game: GameData,
-  messages: MessageData[],
-  newMessage: Partial<MessageData>,
 ) => {
-  const result = checkWarmupTransition(game, messages, newMessage);
+  // Re-fetch all messages to ensure we have the latest data
+  const messages = await fetchMessages(supabase, game.id);
+  if (!messages) throw new Error("No messages found after re-fetch");
 
-  console.log(
-    `Message counts since warmup for game ${game.id}:`,
-    Array.from(result.messageCountsByPlayer.entries()).map(([id, count]) => ({
-      id,
-      count,
-    })),
-  );
+  const shouldTransition = checkWarmupTransition(game, messages);
 
-  console.log(
-    `User messages since warmup (${result.userMessagesSinceWarmup.length} total):`,
-    result.userMessagesSinceWarmup.map((m) => ({
-      id: m.id,
-      profile_id: m.profile_id,
-      content: m.content?.substring(0, 20) + "...",
-      type: m.type,
-    })),
-  );
-
-  if (result.shouldTransition) {
+  if (shouldTransition) {
     // Transition to talking_hunt
     await updateGameWithStatusTransition(supabase, game.id, "talking_hunt");
 

@@ -8,7 +8,8 @@ export const fetchMessages = async (
   const { data, error } = await supabase
     .from("messages")
     .select("*")
-    .eq("game_id", gameId);
+    .eq("game_id", gameId)
+    .order("created_at", { ascending: true });
 
   if (error) {
     console.error("Error fetching messages:", error);
@@ -24,12 +25,15 @@ export const insertMessage = async (
 ) => {
   const insertMessageResponse = await supabase
     .from("messages")
-    .insert([message]);
+    .insert([message])
+    .select()
+    .single();
   if (insertMessageResponse.error) {
     throw new Error(
       "Error inserting message: " + insertMessageResponse.error.message,
     );
   }
+  return insertMessageResponse.data as MessageData;
 };
 
 export const postSystemMessage = async (

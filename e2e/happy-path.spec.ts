@@ -74,13 +74,15 @@ test("multi-user game flow", async ({ browser }) => {
 
   // During warmup phase, all players should be human and able to send messages
   // Each player needs to send 2 messages to trigger transition to hunt phase
-  for (let i = 0; i < 2; i++) {
-    for (const player of testPlayers) {
+  for (const player of testPlayers) {
+    for (let i = 0; i < 2; i++) {
+      const message = `#${i + 1} by ${player.name}`;
       await player.page
         .getByLabel("Message input")
         .getByRole("textbox")
-        .fill(`Warmup message ${i + 1} from ${player.name}`);
+        .fill(message);
       await player.page.getByLabel("Send message button").click();
+      await player.page.getByText(message).waitFor();
     }
   }
 
