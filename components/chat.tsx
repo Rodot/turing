@@ -7,6 +7,7 @@ import { ButtonGoHome } from "./buttonGoHome";
 import { ButtonStartVote } from "./buttonStartVote";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
+import { motion } from "framer-motion";
 
 export const Chat: React.FC = () => {
   const gameQuery = useGameQuery();
@@ -92,18 +93,27 @@ export const Chat: React.FC = () => {
           {players
             .sort((a: PlayerData, b: PlayerData) => b.score - a.score)
             .map((player: PlayerData) => (
-              <Box
+              <motion.div
                 key={player.id}
-                sx={{
+                layoutId={player.id}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                style={{
                   display: "flex",
                   alignItems: "center",
                 }}
               >
-                <Chip
-                  size="small"
-                  label={player.name + " " + player.score + " 🧠"}
-                />
-              </Box>
+                <motion.div
+                  key={player.score}
+                  initial={{ scale: 1.5 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 1.0 }}
+                >
+                  <Chip
+                    size="small"
+                    label={player.name + " " + player.score + " 🧠"}
+                  />
+                </motion.div>
+              </motion.div>
             ))}
         </Paper>
       </Paper>
