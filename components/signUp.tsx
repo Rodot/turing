@@ -11,8 +11,10 @@ import { useProfileNameMutation } from "@/hooks/useProfileMutation";
 import { ButtonEndGame } from "./buttonEndGame";
 import { useGameIdFromUrl } from "@/hooks/useGameIdFromUrl";
 import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
+import { useTranslation } from "react-i18next";
 
 export const SignUp: React.FC = () => {
+  const { t } = useTranslation();
   const profileQuery = useProfileQuery();
   const profileNameMutation = useProfileNameMutation();
   const [name, setName] = useState("");
@@ -64,42 +66,44 @@ export const SignUp: React.FC = () => {
 
       <Box sx={{ my: 4 }}>
         <Typography align="center" sx={{ fontWeight: 900 }}>
-          An AI controls someone in the chat.
+          {t("game.subtitle")}
         </Typography>
         <Typography align="center" sx={{ fontStyle: "italic" }}>
-          Will you tell your friends from the AI?
+          {t("game.description")}
         </Typography>
       </Box>
 
       <Box sx={{ alignSelf: "center" }}>
         <Typography>
-          <strong>1. Warmup</strong> Chat among Humans
+          <strong>{t("game.steps.warmup.title")}</strong>{" "}
+          {t("game.steps.warmup.description")}
         </Typography>
         <Typography>
-          <strong>2. Hunt</strong> The AI replaces one of the Humans
+          <strong>{t("game.steps.hunt.title")}</strong>{" "}
+          {t("game.steps.hunt.description")}
         </Typography>
         <Typography>
-          <strong>3. Vote</strong> Start a vote when you found the AI
+          <strong>{t("game.steps.vote.title")}</strong>{" "}
+          {t("game.steps.vote.description")}
         </Typography>
         <Typography>
-          <strong>4. Repeat</strong> The AI leaves, new round begins
+          <strong>{t("game.steps.repeat.title")}</strong>{" "}
+          {t("game.steps.repeat.description")}
         </Typography>
       </Box>
 
       <Box sx={{ my: 2 }} />
 
       <Box sx={{ alignSelf: "center" }}>
-        <Typography>
-          +1 🧠<strong> to Humans who vote for the AI</strong>
-        </Typography>
-        <Typography>+1 🧠 to AI who avoids votes majority</Typography>
-        <Typography>+1 🧠 to Humans who get the most votes</Typography>
+        <Typography>{t("game.scoring.humansVoteAi")}</Typography>
+        <Typography>{t("game.scoring.aiAvoidsMajority")}</Typography>
+        <Typography>{t("game.scoring.humansGetVotes")}</Typography>
       </Box>
 
       <Box sx={{ my: 2 }} />
 
       <Typography fontWeight={900} align="center">
-        Earn 5 🧠 to win
+        {t("game.scoring.winCondition")}
       </Typography>
 
       <Box sx={{ my: 2 }} />
@@ -115,7 +119,7 @@ export const SignUp: React.FC = () => {
             }}
           >
             <TextField
-              label="Your name"
+              label={t("forms.yourName")}
               value={name}
               onChange={(e) => setName(e.target.value)}
               sx={{ mr: 1 }}

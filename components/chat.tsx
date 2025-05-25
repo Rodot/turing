@@ -8,8 +8,10 @@ import { ButtonStartVote } from "./buttonStartVote";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 export const Chat: React.FC = () => {
+  const { t } = useTranslation();
   const gameQuery = useGameQuery();
   const players = gameQuery.data?.players || [];
   const gameStatus = gameQuery?.data?.status;
@@ -22,15 +24,15 @@ export const Chat: React.FC = () => {
   const getStatusText = () => {
     switch (gameStatus) {
       case "talking_warmup":
-        return "Warming up";
+        return t("status.warmingUp");
       case "talking_hunt":
-        return "Find the AI";
+        return t("status.findTheAi");
       case "voting":
-        return "Vote now";
+        return t("status.voteNow");
       case "over":
-        return "Game over";
+        return t("status.gameOver");
       default:
-        return "In progress";
+        return t("status.inProgress");
     }
   };
 

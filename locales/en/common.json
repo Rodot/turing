@@ -1,0 +1,75 @@
+{
+  "buttons": {
+    "newGame": "New Game",
+    "endGame": "End Game",
+    "joinGame": "Join Game",
+    "joinPlayerGame": "Join {{player}}'s game",
+    "resume": "Resume",
+    "copy": "Copy",
+    "copied": "Copied",
+    "startVote": "Start Vote",
+    "generateAiAnswers": "Generate AI Answers 🤖",
+    "sendMessage": "Send message",
+    "startGame": "Start Game",
+    "submit": "Submit"
+  },
+  "errors": {
+    "gameNotFound": "Game not found",
+    "gameAlreadyStarted": "This game already started"
+  },
+  "status": {
+    "warmingUp": "Warming up",
+    "findTheAi": "Find the AI",
+    "voteNow": "Vote now",
+    "gameOver": "Game over",
+    "inProgress": "In progress"
+  },
+  "voting": {
+    "waitingForPlayers": "Waiting for {{players}} to vote",
+    "whoWasAi": "Who was the AI? 🤖",
+    "nobody": "Nobody❌"
+  },
+  "lobby": {
+    "playersRequired": "3+ players required",
+    "waitingForStart": "Waiting for {{player}} to start the game.",
+    "conversationLanguage": "Conversation Language",
+    "inviteLink": "Invite Link",
+    "scanToJoin": "Scan to join",
+    "languages": {
+      "english": "English",
+      "french": "French"
+    }
+  },
+  "game": {
+    "title": "The Turing Trial",
+    "subtitle": "An AI controls someone in the chat.",
+    "description": "Will you tell your friends from the AI?",
+    "steps": {
+      "warmup": {
+        "title": "1. Warmup",
+        "description": "Chat among Humans"
+      },
+      "hunt": {
+        "title": "2. Hunt",
+        "description": "The AI replaces one of the Humans"
+      },
+      "vote": {
+        "title": "3. Vote",
+        "description": "Start a vote when you found the AI"
+      },
+      "repeat": {
+        "title": "4. Repeat",
+        "description": "The AI leaves, new round begins"
+      }
+    },
+    "scoring": {
+      "humansVoteAi": "+1 🧠 to Humans who vote for the AI",
+      "aiAvoidsMajority": "+1 🧠 to AI who avoids votes majority",
+      "humansGetVotes": "+1 🧠 to Humans who get the most votes",
+      "winCondition": "Earn 5 🧠 to win"
+    }
+  },
+  "forms": {
+    "yourName": "Your name"
+  }
+}

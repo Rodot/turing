@@ -6,8 +6,10 @@ import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 import { useJoinGameMutation } from "@/hooks/useFunctionsMutation";
 import { useSnackbar } from "./snackbarContext";
 import { useGameQuery } from "@/hooks/useGameQuery";
+import { useTranslation } from "react-i18next";
 
 export const ButtonJoinGame: React.FC = () => {
+  const { t } = useTranslation();
   const gameIdFromUrl = useGameIdFromUrl() ?? "";
   const joinGameMutation = useJoinGameMutation();
   const isAnythingLoading = useIsAnythingLoading();
@@ -17,13 +19,13 @@ export const ButtonJoinGame: React.FC = () => {
 
   const handleJoinGame = async () => {
     if (!game) {
-      show("Game not found", "error");
+      show(t("errors.gameNotFound"), "error");
       router.push("/");
       return;
     }
 
     if (game.status !== "lobby") {
-      show("This game already started", "error");
+      show(t("errors.gameAlreadyStarted"), "error");
       router.push("/");
       return;
     }
@@ -58,8 +60,8 @@ export const ButtonJoinGame: React.FC = () => {
         aria-label="Join Game"
       >
         {game?.players?.[0]?.name
-          ? `Join ${game.players[0].name}'s game`
-          : "Join Game"}
+          ? t("buttons.joinPlayerGame", { player: game.players[0].name })
+          : t("buttons.joinGame")}
       </Button>
     </>
   );

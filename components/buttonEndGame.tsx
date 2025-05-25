@@ -4,8 +4,10 @@ import { Button } from "@mui/material";
 import { useEndGameMutation } from "@/hooks/useFunctionsMutation";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
 import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
+import { useTranslation } from "react-i18next";
 
 export const ButtonEndGame: React.FC = () => {
+  const { t } = useTranslation();
   const endGameMutation = useEndGameMutation();
   const profileQuery = useProfileQuery();
   const isAnything = useIsAnythingLoading();
@@ -18,7 +20,7 @@ export const ButtonEndGame: React.FC = () => {
       disabled={isAnything}
     >
       <Close />
-      End Game
+      {t("buttons.endGame")}
     </Button>
   );
 };

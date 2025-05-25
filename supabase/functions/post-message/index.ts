@@ -23,6 +23,7 @@ import {
 import { pickRandom } from "../_shared/utils.ts";
 import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2/dist/module/index.js";
 import { checkWarmupTransition } from "../_utils/check-warmup-transition.ts";
+import { getTranslationFunction } from "../_shared/i18n.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -119,10 +120,13 @@ const checkAndTransitionToHunt = async (
       await updateGame(supabase, game.id, { last_bot_id: botPlayer.id });
     }
 
+    // Get translation function based on game language
+    const t = getTranslationFunction(game.lang);
+
     await postSystemMessage(
       supabase,
       game.id,
-      `🤖 The AI took control of someone, find who!`,
+      `🤖 ${t("messages.aiTookControl")}`,
     );
   }
 };

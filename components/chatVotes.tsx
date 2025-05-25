@@ -6,12 +6,14 @@ import { usePlayerVoteMutation } from "@/hooks/useFunctionsMutation";
 import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
 import { getPlayerFromGame } from "@/supabase/functions/_shared/utils";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   sx?: SxProps<Theme>;
 };
 
 export const ChatVote: React.FC<Props> = ({ sx }) => {
+  const { t } = useTranslation();
   const userQuery = useUserQuery();
   const gameQuery = useGameQuery();
   const playerVoteMutation = usePlayerVoteMutation();
@@ -56,7 +58,10 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
     }
   };
 
-  const voteOptions = [...otherPlayers, { id: "blank", name: "Nobody❌" }];
+  const voteOptions = [
+    ...otherPlayers,
+    { id: "blank", name: t("voting.nobody") },
+  ];
 
   if (humansDidntVote.length === 0) {
     return null;
@@ -65,7 +70,9 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   if (alreadyVoted || me.is_bot) {
     return (
       <Typography align="center">
-        <strong>Waiting for {humansDidntVoteString}</strong> to vote
+        <strong>
+          {t("voting.waitingForPlayers", { players: humansDidntVoteString })}
+        </strong>
       </Typography>
     );
   }
@@ -84,7 +91,9 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
     >
       {/* clue */}
       {!me.is_bot && (
-        <Typography sx={{ textAlign: "center" }}>Who was the AI? 🤖</Typography>
+        <Typography sx={{ textAlign: "center" }}>
+          {t("voting.whoWasAi")}
+        </Typography>
       )}
       {/* vote buttons */}
       <Box

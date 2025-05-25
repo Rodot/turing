@@ -26,6 +26,7 @@ import {
   determineVotingOutcomes,
   type VotingOutcome,
 } from "../_utils/determine-voting-outcomes.ts";
+import { getTranslationFunction } from "../_shared/i18n.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -75,13 +76,15 @@ Deno.serve(async (req) => {
       const votingOutcomes = determineVotingOutcomes(gameAfterVote);
 
       // Process voting outcomes - update points and post messages
-      await processVotingOutcomes(supa, votingOutcomes, gameId);
-
-      await postSystemMessage(
+      await processVotingOutcomes(
         supa,
+        votingOutcomes,
         gameId,
-        "💬 The AI is gone, let's change the topic",
+        gameAfterVote.lang,
       );
+
+      const t = getTranslationFunction(gameAfterVote.lang);
+      await postSystemMessage(supa, gameId, `💬 ${t("messages.aiIsGone")}`);
 
       // Get updated game data for end game check
       const gameAfterPoints = await fetchGameAndCheckStatus(
@@ -101,7 +104,9 @@ Deno.serve(async (req) => {
           (p) => p.score === maxScore,
         );
         if (winners.length) {
-          const message = `${winners.map((w) => w.name).join(" and ")} won! 🏆`;
+          const t2 = getTranslationFunction(gameAfterPoints.lang);
+          const winnersNames = winners.map((w) => w.name).join(" and ");
+          const message = t2("messages.playersWon", { players: winnersNames });
           await postSystemMessage(supa, gameId, message);
         }
 
@@ -140,14 +145,23 @@ async function announceBotReveal(
   game: GameData,
 ) {
   const botPlayer = game.players.find((player) => player.is_bot);
+  const t = getTranslationFunction(game.lang);
 
-  await postSystemMessage(supabase, game.id, "😱 Results are in!");
-  await postSystemMessage(supabase, game.id, "🥁 And the AI was...");
+  await postSystemMessage(supabase, game.id, `😱 ${t("messages.resultsIn")}`);
+  await postSystemMessage(supabase, game.id, `🥁 ${t("messages.andTheAiWas")}`);
 
   if (botPlayer) {
-    await postSystemMessage(supabase, game.id, `🤖 ${botPlayer.name}`);
+    await postSystemMessage(
+      supabase,
+      game.id,
+      `🤖 ${t("messages.aiPlayerReveal", { player: botPlayer.name })}`,
+    );
   } else {
-    await postSystemMessage(supabase, game.id, `❌ Nobody`);
+    await postSystemMessage(
+      supabase,
+      game.id,
+      `❌ ${t("messages.nobodyWasAi")}`,
+    );
   }
 }
 
@@ -156,6 +170,7 @@ async function processVotingOutcomes(
   supabase: ReturnType<typeof createSupabaseClient>,
   votingOutcomes: VotingOutcome[],
   gameId: string,
+  lang: "en" | "fr",
 ) {
   // Process each voting outcome
   for (const outcome of votingOutcomes) {
@@ -171,19 +186,22 @@ async function processVotingOutcomes(
     });
 
     // Post message for this outcome
+    const t = getTranslationFunction(lang);
     let message = "";
     switch (outcome.rewardReason) {
       case "foundBot":
-        message = `+1 🧠 to ${outcome.playerName} for finding the AI`;
+        message = t("messages.foundBot", { player: outcome.playerName });
         break;
       case "botAvoided":
-        message = `+1 🧠 to ${outcome.playerName} for fooling everyone as the AI`;
+        message = t("messages.botAvoided", { player: outcome.playerName });
         break;
       case "bestActing":
-        message = `+1 🧠 to ${outcome.playerName} for best AI impression`;
+        message = t("messages.bestActing", { player: outcome.playerName });
         break;
       case "correctlyGuessedNoBot":
-        message = `+1 🧠 to ${outcome.playerName} who sensed there was no AI`;
+        message = t("messages.correctlyGuessedNoBot", {
+          player: outcome.playerName,
+        });
         break;
     }
 

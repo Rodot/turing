@@ -1,0 +1,75 @@
+{
+  "buttons": {
+    "newGame": "Nouvelle Partie",
+    "endGame": "Terminer la Partie",
+    "joinGame": "Rejoindre la Partie",
+    "joinPlayerGame": "Rejoindre la partie de {{player}}",
+    "resume": "Reprendre",
+    "copy": "Copier",
+    "copied": "Copié",
+    "startVote": "Commencer le Vote",
+    "generateAiAnswers": "Générer des Réponses IA 🤖",
+    "sendMessage": "Envoyer un message",
+    "startGame": "Commencer la Partie",
+    "submit": "Envoyer"
+  },
+  "errors": {
+    "gameNotFound": "Partie introuvable",
+    "gameAlreadyStarted": "Cette partie a déjà commencé"
+  },
+  "status": {
+    "warmingUp": "Échauffement",
+    "findTheAi": "Trouvez l'IA",
+    "voteNow": "Votez maintenant",
+    "gameOver": "Partie terminée",
+    "inProgress": "En cours"
+  },
+  "voting": {
+    "waitingForPlayers": "En attente de {{players}} pour voter",
+    "whoWasAi": "Qui était l'IA ? 🤖",
+    "nobody": "Personne❌"
+  },
+  "lobby": {
+    "playersRequired": "3+ joueurs requis",
+    "waitingForStart": "En attente de {{player}} pour commencer la partie.",
+    "conversationLanguage": "Langue de Conversation",
+    "inviteLink": "Lien d'Invitation",
+    "scanToJoin": "Scanner pour rejoindre",
+    "languages": {
+      "english": "Anglais",
+      "french": "Français"
+    }
+  },
+  "game": {
+    "title": "Le Procès de Turing",
+    "subtitle": "Une IA contrôle quelqu'un dans le chat.",
+    "description": "Saurez-vous distinguer vos amis de l'IA ?",
+    "steps": {
+      "warmup": {
+        "title": "1. Échauffement",
+        "description": "Chat entre Humains"
+      },
+      "hunt": {
+        "title": "2. Chasse",
+        "description": "L'IA remplace un des Humains"
+      },
+      "vote": {
+        "title": "3. Vote",
+        "description": "Lancez un vote quand vous trouvez l'IA"
+      },
+      "repeat": {
+        "title": "4. Répéter",
+        "description": "L'IA part, un nouveau tour commence"
+      }
+    },
+    "scoring": {
+      "humansVoteAi": "+1 🧠 aux Humains qui votent pour l'IA",
+      "aiAvoidsMajority": "+1 🧠 à l'IA qui évite la majorité des votes",
+      "humansGetVotes": "+1 🧠 aux Humains qui reçoivent le plus de votes",
+      "winCondition": "Gagnez 5 🧠 pour gagner"
+    }
+  },
+  "forms": {
+    "yourName": "Votre nom"
+  }
+}

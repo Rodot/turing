@@ -1,12 +1,14 @@
 import { Check, ContentCopy as ContentCopyIcon } from "@mui/icons-material";
 import { Box, Button, TextField } from "@mui/material";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   url: string;
 }
 
 export const ButtonShare: React.FC<Props> = ({ url: urlToCopy }) => {
+  const { t } = useTranslation();
   const [clicked, setClicked] = useState(false);
 
   const share = async () => {
@@ -38,7 +40,7 @@ export const ButtonShare: React.FC<Props> = ({ url: urlToCopy }) => {
           ) : (
             <ContentCopyIcon data-testid="ContentCopyIcon" sx={{ mr: 0.5 }} />
           )}
-          {clicked ? "Copied" : "Copy"}
+          {clicked ? t("buttons.copied") : t("buttons.copy")}
         </Button>
       </Box>
     </>

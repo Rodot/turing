@@ -8,12 +8,13 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../theme";
 import { SnackbarProvider } from "./snackbarContext";
+import I18nProvider from "./i18nProvider";
 
 // Create QueryClient instance
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 500,
+      staleTime: 200,
     },
   },
 });
@@ -21,17 +22,19 @@ const queryClient = new QueryClient({
 export function BaseLayout({ children }: React.PropsWithChildren) {
   return (
     <Suspense fallback={<Spinner />}>
-      <QueryClientProvider client={queryClient}>
-        <AppRouterCacheProvider>
-          <ThemeProvider theme={theme}>
-            <SnackbarProvider>
-              <QueryErrorReporter />
-              <QueryLoadingBar />
-              {children}
-            </SnackbarProvider>
-          </ThemeProvider>
-        </AppRouterCacheProvider>
-      </QueryClientProvider>
+      <I18nProvider>
+        <QueryClientProvider client={queryClient}>
+          <AppRouterCacheProvider>
+            <ThemeProvider theme={theme}>
+              <SnackbarProvider>
+                <QueryErrorReporter />
+                <QueryLoadingBar />
+                {children}
+              </SnackbarProvider>
+            </ThemeProvider>
+          </AppRouterCacheProvider>
+        </QueryClientProvider>
+      </I18nProvider>
     </Suspense>
   );
 }

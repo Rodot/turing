@@ -7,6 +7,7 @@ import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { createErrorResponse } from "../_utils/error.ts";
 import { getPlayerFromGame } from "../_shared/utils.ts";
+import { getTranslationFunction } from "../_shared/i18n.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -37,11 +38,14 @@ Deno.serve(async (req) => {
     const player = getPlayerFromGame(game, user.id);
     if (!player) throw new Error("Player not found in game");
 
+    // Get translation function based on game language
+    const t = getTranslationFunction(game.lang);
+
     // Post a message
     await postSystemMessage(
       supabase,
       gameId,
-      `🗳️ ${player.name} started a vote`,
+      `🗳️ ${t("messages.startedVote", { player: player.name })}`,
     );
 
     // Set the game status to "voting"

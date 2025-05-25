@@ -18,12 +18,14 @@ import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { Spinner } from "./spinner";
 import { getPlayerFromGame } from "@/supabase/functions/_shared/utils";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   sx?: SxProps<Theme>;
 };
 
 export const ChatInput: React.FC<Props> = ({ sx }) => {
+  const { t } = useTranslation();
   const [content, setContent] = useState("");
   const [botAnswers, setBotAnswers] = useState<string[] | undefined>();
   const userQuery = useUserQuery();
@@ -119,7 +121,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
               disabled={generateAnswersMutation.isPending}
               aria-label="AI Answers"
             >
-              Generate AI Answers 🤖
+              {t("buttons.generateAiAnswers")}
               {generateAnswersMutation.isPending && <Spinner />}
             </Button>
           </Box>
@@ -171,7 +173,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
                 autoComplete="off"
                 value={content}
                 onChange={handleInputChange}
-                label="Send message"
+                label={t("buttons.sendMessage")}
                 sx={{ flexGrow: 1, mr: 1 }}
                 aria-label="Message input"
               />

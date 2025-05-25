@@ -2,12 +2,14 @@ import React from "react";
 import { Box, Chip, SxProps, Theme, Typography } from "@mui/material";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   sx?: SxProps<Theme>;
 };
 
 export const VoteResults: React.FC<Props> = ({ sx }) => {
+  const { t } = useTranslation();
   const gameQuery = useGameQuery();
   const players = gameQuery.data?.players || [];
 
@@ -57,7 +59,7 @@ export const VoteResults: React.FC<Props> = ({ sx }) => {
           gap: 1,
         }}
       >
-        <Chip size="small" label={"Nobody ❌"} color="primary" />
+        <Chip size="small" label={t("voting.nobody")} color="primary" />
         {players
           .filter((other: PlayerData) => other.vote_blank)
           .map((other: PlayerData) => (
@@ -68,7 +70,7 @@ export const VoteResults: React.FC<Props> = ({ sx }) => {
       {/* reminder line */}
       {!everyoneVoted && (
         <Typography align="center">
-          Waiting for {humansDidntVoteString} to vote
+          {t("voting.waitingForPlayers", { players: humansDidntVoteString })}
         </Typography>
       )}
     </Box>

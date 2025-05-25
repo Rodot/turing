@@ -3,8 +3,10 @@ import { HowToVote } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { useStartVoteMutation } from "@/hooks/useFunctionsMutation";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
+import { useTranslation } from "react-i18next";
 
 export const ButtonStartVote: React.FC = () => {
+  const { t } = useTranslation();
   const startVoteMutation = useStartVoteMutation();
   const profileQuery = useProfileQuery();
   const gameId = profileQuery.data?.game_id ?? "";
@@ -19,7 +21,7 @@ export const ButtonStartVote: React.FC = () => {
       aria-label="Start Vote"
     >
       <HowToVote sx={{ mr: 0.5 }} />
-      Start Vote
+      {t("buttons.startVote")}
     </Button>
   );
 };

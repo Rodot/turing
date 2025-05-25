@@ -48,3 +48,25 @@ This is "The Turing Trial" - a multiplayer party game where players try to disti
 - Components use hooks for data fetching rather than prop drilling
 - `/components/` contains all UI components with clear single responsibilities
 - Material-UI theming configured in `theme.ts`
+
+## Internationalization (i18n)
+
+### Frontend
+
+ `./locales/{en,fr}/common.json` for UI text
+
+```typescript
+import { useTranslation } from "next-i18next";
+const { t } = useTranslation("common");
+const text = t("buttons.newGame");
+```
+
+### Backend and edge functions
+
+ `./supabase/functions/_shared/locales/{en,fr}.ts` for system messages
+
+```typescript
+import { getTranslationFunction } from "../_shared/i18n.ts";
+const t = getTranslationFunction(game.lang);
+const message = t("messages.startedVote", { player: playerName });
+```

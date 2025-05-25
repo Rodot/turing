@@ -46,6 +46,5 @@ export const useUserQuery = () => {
   return useQuery({
     queryKey: ["user"],
     queryFn: getOrCreateUser,
-    staleTime: 1000,
   });
 };

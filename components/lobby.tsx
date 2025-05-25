@@ -19,8 +19,10 @@ import { useGameLanguageMutation } from "@/hooks/useGameMutation";
 import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 import { useStartGameMutation } from "@/hooks/useFunctionsMutation";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
+import { useTranslation } from "react-i18next";
 
 export const Lobby: React.FC = () => {
+  const { t } = useTranslation();
   const userQuery = useUserQuery();
   const gameQuery = useGameQuery();
   const gamePlayers = gameQuery.data?.players || [];
@@ -66,13 +68,14 @@ export const Lobby: React.FC = () => {
 
       {!enoughPlayers && (
         <Typography>
-          <strong>3+ players required</strong>, invite people!
+          <strong>{t("lobby.playersRequired")}</strong>, invite people!
         </Typography>
       )}
       {enoughPlayers && !isHost && (
         <Typography>
-          <strong>Waiting for {gamePlayers?.[0]?.name}</strong> to start the
-          game.
+          <strong>
+            {t("lobby.waitingForStart", { player: gamePlayers?.[0]?.name })}
+          </strong>
         </Typography>
       )}
       {enoughPlayers && isHost && (
@@ -84,7 +87,7 @@ export const Lobby: React.FC = () => {
           disabled={isAnythingLoading || !enoughPlayers}
           aria-label="Start Game"
         >
-          Start Game
+          {t("buttons.startGame")}
         </Button>
       )}
 
@@ -93,7 +96,7 @@ export const Lobby: React.FC = () => {
           <Box sx={{ mb: 4 }}></Box>
 
           <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
-            Conversation Language
+            {t("lobby.conversationLanguage")}
           </Typography>
           <ButtonGroup>
             <Button
@@ -102,7 +105,7 @@ export const Lobby: React.FC = () => {
               onClick={() => gameLanguageMutation.mutate("en")}
               disabled={gameLanguageMutation.isPending}
             >
-              English
+              {t("lobby.languages.english")}
             </Button>
             <Button
               component="button"
@@ -110,7 +113,7 @@ export const Lobby: React.FC = () => {
               onClick={() => gameLanguageMutation.mutate("fr")}
               disabled={gameLanguageMutation.isPending}
             >
-              French
+              {t("lobby.languages.french")}
             </Button>
           </ButtonGroup>
         </>
@@ -119,7 +122,7 @@ export const Lobby: React.FC = () => {
       <Box sx={{ mb: 4 }}></Box>
 
       <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
-        Invite Link
+        {t("lobby.inviteLink")}
       </Typography>
       <Box>
         <ButtonShare url={url} />
@@ -128,7 +131,7 @@ export const Lobby: React.FC = () => {
       <Box sx={{ mb: 2 }}></Box>
 
       <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
-        Scan to join
+        {t("lobby.scanToJoin")}
       </Typography>
       <QRShare url={url} />
     </Container>
