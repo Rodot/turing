@@ -106,13 +106,17 @@ export const Chat: React.FC = () => {
               >
                 <motion.div
                   key={player.score}
-                  initial={{ scale: 1.5 }}
+                  initial={{ scale: player.score > 0 ? 1.5 : 1 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 1.0 }}
                 >
                   <Chip
                     size="small"
-                    label={player.name + " " + player.score + " 🧠"}
+                    label={
+                      player.score === 0
+                        ? player.name
+                        : player.name + " " + player.score + " 🧠"
+                    }
                   />
                 </motion.div>
               </motion.div>

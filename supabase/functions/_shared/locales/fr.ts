@@ -7,12 +7,11 @@ export const fr = {
     andTheAiWas: "Et l'IA était...",
     aiPlayerReveal: "{{player}}",
     nobodyWasAi: "Personne",
-    playersWon: "{{players}} ont gagné ! 🏆",
+    playersWon: "{{players}} a gagné ! 🏆",
     foundBot: "+1 🧠 à {{player}} pour avoir trouvé l'IA",
-    botAvoided:
-      "+1 🧠 à {{player}} pour avoir dupé tout le monde en tant qu'IA",
+    botAvoided: "+1 🧠 à {{player}} pour s'être fait passer pour Humain",
     bestActing: "+1 🧠 à {{player}} pour la meilleure imitation d'IA",
     correctlyGuessedNoBot:
-      "+1 🧠 à {{player}} qui a senti qu'il n'y avait pas d'IA",
+      "+1 🧠 à {{player}} qui a deviné qu'il n'y avait pas d'IA",
   },
 };

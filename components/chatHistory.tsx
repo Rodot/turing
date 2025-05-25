@@ -5,7 +5,7 @@ import React, {
   useState,
   useCallback,
 } from "react";
-import { List, Fab, Box, Typography } from "@mui/material";
+import { List, Fab, Typography } from "@mui/material";
 import { KeyboardArrowDown } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { ChatMessage } from "./chatMessage";
@@ -20,7 +20,7 @@ export const ChatHistory: React.FC = () => {
   const messages = useMemo(
     () =>
       (messagesQuery.data || []).filter((message) => message.type !== "status"),
-    [messagesQuery.data]
+    [messagesQuery.data],
   );
   const gameQuery = useGameQuery();
   const endOfMessagesRef = useRef<null | HTMLDivElement>(null);

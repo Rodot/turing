@@ -9,7 +9,7 @@ export const en = {
     nobodyWasAi: "Nobody",
     playersWon: "{{players}} won! 🏆",
     foundBot: "+1 🧠 to {{player}} for finding the AI",
-    botAvoided: "+1 🧠 to {{player}} for fooling everyone as the AI",
+    botAvoided: "+1 🧠 to {{player}} for pretenting to be Human",
     bestActing: "+1 🧠 to {{player}} for best AI impression",
     correctlyGuessedNoBot: "+1 🧠 to {{player}} who sensed there was no AI",
   },
