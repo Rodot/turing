@@ -26,7 +26,7 @@ export default function RootLayout({
       <CssBaseline />
       <GlobalStyles
         styles={{
-          body: { margin: 0, minHeight: "100vh" },
+          body: { margin: 0 },
           strong: { color: "#f50057", fontWeight: 900 },
         }}
       />

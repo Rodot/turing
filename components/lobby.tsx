@@ -34,8 +34,7 @@ export const Lobby: React.FC = () => {
   return (
     <Container
       sx={{
-        maxWidth: "720px!important",
-        minHeight: "100vh",
+        maxWidth: "720px",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
