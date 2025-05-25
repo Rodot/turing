@@ -53,7 +53,7 @@ This is "The Turing Trial" - a multiplayer party game where players try to disti
 
 ### Frontend
 
- `./locales/{en,fr}/common.json` for UI text
+`./locales/{en,fr}/common.json` for UI text
 
 ```typescript
 import { useTranslation } from "next-i18next";
@@ -63,7 +63,7 @@ const text = t("buttons.newGame");
 
 ### Backend and edge functions
 
- `./supabase/functions/_shared/locales/{en,fr}.ts` for system messages
+`./supabase/functions/_shared/locales/{en,fr}.ts` for system messages
 
 ```typescript
 import { getTranslationFunction } from "../_shared/i18n.ts";
