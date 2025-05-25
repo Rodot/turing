@@ -22,6 +22,7 @@ import {
 } from "../_queries/game.query.ts";
 import { pickRandom } from "../_shared/utils.ts";
 import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2/dist/module/index.js";
+import { checkWarmupTransition } from "../_utils/check-warmup-transition.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -71,51 +72,27 @@ const checkAndTransitionToHunt = async (
   messages: MessageData[],
   newMessage: Partial<MessageData>,
 ) => {
-  // Find the last status message indicating talking_warmup started
-  const lastWarmupStatusIndex = messages.findLastIndex(
-    (m) => m.type === "status" && m.content === "talking_warmup",
-  );
-
-  if (lastWarmupStatusIndex === -1) {
-    // No warmup status message found, can't determine when warmup started
-    return;
-  }
-
-  // Get all messages since warmup started
-  const messagesSinceWarmup = messages.slice(lastWarmupStatusIndex + 1);
-
-  // Add the new message we just posted to the list
-  const allMessagesSinceWarmup = [...messagesSinceWarmup, newMessage];
-
-  // Get only user messages since warmup (including the new one)
-  const userMessagesSinceWarmup = allMessagesSinceWarmup.filter(
-    (m) => m.type === "user",
-  );
-
-  // Count messages per player
-  const messageCountsByPlayer = new Map<string, number>();
-
-  for (const player of game.players) {
-    const playerMessages = userMessagesSinceWarmup.filter(
-      (m) => m.profile_id === player.id,
-    );
-    messageCountsByPlayer.set(player.id, playerMessages.length);
-  }
+  const result = checkWarmupTransition(game, messages, newMessage);
 
   console.log(
     `Message counts since warmup for game ${game.id}:`,
-    Array.from(messageCountsByPlayer.entries()).map(([id, count]) => ({
+    Array.from(result.messageCountsByPlayer.entries()).map(([id, count]) => ({
       id,
       count,
     })),
   );
 
-  // Check if all players have at least 2 messages
-  const allPlayersReady = game.players.every(
-    (player) => (messageCountsByPlayer.get(player.id) || 0) >= 2,
+  console.log(
+    `User messages since warmup (${result.userMessagesSinceWarmup.length} total):`,
+    result.userMessagesSinceWarmup.map((m) => ({
+      id: m.id,
+      profile_id: m.profile_id,
+      content: m.content?.substring(0, 20) + "...",
+      type: m.type,
+    })),
   );
 
-  if (allPlayersReady) {
+  if (result.shouldTransition) {
     // Transition to talking_hunt
     await updateGameWithStatusTransition(supabase, game.id, "talking_hunt");
 
