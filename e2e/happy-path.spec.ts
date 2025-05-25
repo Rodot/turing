@@ -37,6 +37,12 @@ test("multi-user game flow", async ({ browser }) => {
     await guest.page.getByLabel("Your name").fill(guest.name);
     await guest.page.getByLabel("Submit").click();
     await guest.page.getByLabel("Join Game").waitFor();
+
+    // Check that existing player names are visible before joining
+    await expect(
+      guest.page.getByText(host.name, { exact: true }),
+    ).toBeVisible();
+
     await guest.page.getByLabel("Join Game").click();
   }
 
