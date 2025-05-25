@@ -63,6 +63,9 @@ test("multi-user game flow", async ({ browser }) => {
   // Check initial warmup phase status
   await expect(host.page.getByText("Warming up")).toBeVisible();
 
+  // Check that the ice breaker message (starting with 💡) is visible on mobile viewport
+  await expect(host.page.getByText(/💡/).first()).toBeVisible();
+
   // During warmup phase, all players should be human and able to send messages
   // Each player needs to send 2 messages to trigger transition to hunt phase
   for (let i = 0; i < 2; i++) {
