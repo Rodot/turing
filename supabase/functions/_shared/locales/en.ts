@@ -12,5 +12,7 @@ export const en = {
     botAvoided: "+1 🧠 to {{player}} for pretenting to be Human",
     bestActing: "+1 🧠 to {{player}} for best AI impression",
     correctlyGuessedNoBot: "+1 🧠 to {{player}} who sensed there was no AI",
+    tieAtWinningScore:
+      "🤝 It's a tie at {{score}} 🧠! Starting another round...",
   },
 };

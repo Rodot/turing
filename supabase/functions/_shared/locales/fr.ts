@@ -13,5 +13,6 @@ export const fr = {
     bestActing: "+1 🧠 à {{player}} pour la meilleure imitation d'IA",
     correctlyGuessedNoBot:
       "+1 🧠 à {{player}} qui a deviné qu'il n'y avait pas d'IA",
+    tieAtWinningScore: "🤝 Égalité à {{score}} 🧠 ! On continue...",
   },
 };

@@ -96,25 +96,59 @@ Deno.serve(async (req) => {
       const maxScore = Math.max(...gameAfterPoints.players.map((p) => p.score));
 
       if (maxScore >= 5) {
-        // Game over
-        console.log("Game over", gameId);
-
-        // Announce winner
+        // Check for tie at winning score
         const winners = gameAfterPoints.players.filter(
           (p) => p.score === maxScore,
         );
-        if (winners.length) {
+
+        if (winners.length > 1) {
+          // Tie at winning score - continue to next round
+          console.log(
+            "Tie at winning score",
+            gameId,
+            winners.length,
+            "players",
+          );
+
           const t2 = getTranslationFunction(gameAfterPoints.lang);
-          const winnersNames = winners.map((w) => w.name).join(" and ");
-          const message = t2("messages.playersWon", { players: winnersNames });
+          const message = t2("messages.tieAtWinningScore", {
+            score: maxScore.toString(),
+          });
           await postSystemMessage(supa, gameId, message);
+
+          // Continue to next round (same logic as maxScore < 5)
+          console.log("Next round due to tie", gameId);
+
+          // Set up next vote
+          const game = await fetchGameAndCheckStatus(supa, gameId, "voting");
+
+          // Reset votes and set random player as bot
+          const messages = await fetchMessages(supa, gameId);
+          await Promise.all([
+            setRandomPlayerAsBotAndResetVotes(supa, gameId, game.players),
+            updateGameWithStatusTransition(supa, gameId, "talking_warmup"),
+            postIcebreakerMessage(supa, game, messages),
+          ]);
+        } else {
+          // Single winner - game over
+          console.log("Game over with single winner", gameId);
+
+          // Announce winner
+          if (winners.length) {
+            const t2 = getTranslationFunction(gameAfterPoints.lang);
+            const winnersNames = winners.map((w) => w.name).join(" and ");
+            const message = t2("messages.playersWon", {
+              players: winnersNames,
+            });
+            await postSystemMessage(supa, gameId, message);
+          }
+
+          // Close the game
+          await updateGameWithStatusTransition(supa, gameId, "over");
+
+          // Remove all players from the game
+          await removeAllPlayersFromGame(supa, gameId);
         }
-
-        // Close the game
-        await updateGameWithStatusTransition(supa, gameId, "over");
-
-        // Remove all players from the game
-        await removeAllPlayersFromGame(supa, gameId);
       } else {
         // Next round
         console.log("Next round", gameId);
