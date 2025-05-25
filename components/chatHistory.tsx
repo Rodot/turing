@@ -1,5 +1,12 @@
-import React, { useRef, useEffect, useMemo } from "react";
-import { List } from "@mui/material";
+import React, {
+  useRef,
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+} from "react";
+import { List, Fab } from "@mui/material";
+import { KeyboardArrowDown } from "@mui/icons-material";
 import { ChatMessage } from "./chatMessage";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useMessagesQuery } from "@/hooks/useMessagesQuery";
@@ -15,47 +22,111 @@ export const ChatHistory: React.FC = () => {
   );
   const gameQuery = useGameQuery();
   const endOfMessagesRef = useRef<null | HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const [isNearBottom, setIsNearBottom] = useState(true);
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
+  const scrollStateRef = useRef({
+    isNearBottom: true,
+    lastChecked: Date.now(),
+  });
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+    setHasUnreadMessages(false);
+  }, []);
 
-  useEffect(() => {
-    const timeoutId = setTimeout(scrollToBottom, 300);
+  const checkScrollPosition = useCallback(() => {
+    const threshold = 100; // pixels from bottom
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight;
+    const clientHeight = window.innerHeight;
+    const nearBottom = scrollHeight - scrollTop - clientHeight < threshold;
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [messages, gameQuery?.data]);
-
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-
-    const handleResize = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        scrollToBottom();
-      }, 300);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      clearTimeout(timeoutId);
-      window.removeEventListener("resize", handleResize);
+    setIsNearBottom(nearBottom);
+    scrollStateRef.current = {
+      isNearBottom: nearBottom,
+      lastChecked: Date.now(),
     };
   }, []);
+
+  useEffect(() => {
+    if (!userQuery.data || messages.length === 0) return;
+
+    const currentUserId = userQuery.data.id;
+    const latestMessage = messages[messages.length - 1];
+    const isMyMessage = latestMessage?.profile_id === currentUserId;
+
+    // Always scroll if it's my own message
+    if (isMyMessage) {
+      scrollToBottom();
+      setIsNearBottom(true);
+      setHasUnreadMessages(false);
+      return;
+    }
+
+    // For others' messages, use the most recent scroll state captured by scroll events
+    const shouldAutoScroll = scrollStateRef.current.isNearBottom;
+
+    if (shouldAutoScroll) {
+      scrollToBottom();
+      setIsNearBottom(true);
+      setHasUnreadMessages(false);
+    } else {
+      setIsNearBottom(false);
+      setHasUnreadMessages(true);
+    }
+  }, [messages, gameQuery?.data, scrollToBottom, userQuery.data]);
+
+  useEffect(() => {
+    const handleScroll = () => checkScrollPosition();
+    const handleResize = () => {
+      checkScrollPosition();
+      if (isNearBottom) {
+        scrollToBottom();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleResize);
+
+    // Initial check
+    checkScrollPosition();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [checkScrollPosition, isNearBottom, scrollToBottom]);
 
   if (!userQuery.data) return null;
 
   const userData = userQuery.data;
 
   return (
-    <List>
-      {messages.map((message) => (
-        <ChatMessage key={message.id} message={message} user={userData} />
-      ))}
-      <div ref={endOfMessagesRef} />
-    </List>
+    <>
+      <List ref={listRef}>
+        {messages.map((message) => (
+          <ChatMessage key={message.id} message={message} user={userData} />
+        ))}
+        <div ref={endOfMessagesRef} />
+      </List>
+
+      {!isNearBottom && hasUnreadMessages && (
+        <Fab
+          size="small"
+          color="primary"
+          onClick={scrollToBottom}
+          data-testid="new-messages-button"
+          sx={{
+            position: "fixed",
+            bottom: 100,
+            right: 16,
+            zIndex: 10,
+          }}
+        >
+          <KeyboardArrowDown />
+        </Fab>
+      )}
+    </>
   );
 };
