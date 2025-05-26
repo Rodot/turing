@@ -173,10 +173,10 @@ export const SignUp: React.FC = () => {
         <Typography variant="body2" color="text.secondary">
           Please give me feedback at{" "}
           <Link
-            href="mailto:turing@betalab.fr?subject=Feedback turing.betalab.fr"
+            href="mailto:turing@mail.betalab.fr?subject=Feedback turing.betalab.fr"
             color="secondary.main"
           >
-            turing@betalab.fr
+            turing@mail.betalab.fr
           </Link>
         </Typography>
       </Box>
