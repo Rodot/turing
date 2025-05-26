@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  TextField,
+  Typography,
+  Link,
+} from "@mui/material";
 import { ButtonCreateGame } from "./buttonCreateGame";
 import { Send } from "@mui/icons-material";
 import { ButtonJoinGame } from "./buttonJoinGame";
@@ -149,6 +156,30 @@ export const SignUp: React.FC = () => {
           {isCreateGameVisible && <ButtonCreateGame />}
         </>
       )}
+
+      <Box sx={{ mt: 4, textAlign: "center" }}>
+        <Typography variant="body2" color="text.secondary">
+          Made with ❤️ by Aurelien from{" "}
+          <Link
+            href="https://betalab.fr"
+            target="_blank"
+            rel="noopener"
+            color="secondary.main"
+          >
+            BetaLab
+          </Link>
+          .
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Please give me feedback at{" "}
+          <Link
+            href="mailto:turing@betalab.fr?subject=Feedback turing.betalab.fr"
+            color="secondary.main"
+          >
+            turing@betalab.fr
+          </Link>
+        </Typography>
+      </Box>
     </Container>
   );
 };
