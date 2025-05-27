@@ -1,4 +1,5 @@
 import { expect, Page, test } from "@playwright/test";
+import { setupConsoleLogging } from "./helpers";
 
 interface TestPlayer {
   name: string;
@@ -10,28 +11,8 @@ test("smart chat scrolling behavior", async ({ browser }) => {
   const contexts = await Promise.all([1, 2, 3].map(() => browser.newContext()));
   const pages = await Promise.all(contexts.map((context) => context.newPage()));
 
-  // Listen to console logs for debugging
-  pages[0]!.on("console", (msg) => {
-    if (
-      msg.text().includes("Smart scroll") ||
-      msg.text().includes("Others message")
-    )
-      console.log("HOST:", msg.text());
-  });
-  pages[1]!.on("console", (msg) => {
-    if (
-      msg.text().includes("Smart scroll") ||
-      msg.text().includes("Others message")
-    )
-      console.log("GUEST1:", msg.text());
-  });
-  pages[2]!.on("console", (msg) => {
-    if (
-      msg.text().includes("Smart scroll") ||
-      msg.text().includes("Others message")
-    )
-      console.log("GUEST2:", msg.text());
-  });
+  // Setup console logging for all pages
+  setupConsoleLogging(pages, "SMART_SCROLL");
 
   const testPlayers: TestPlayer[] = pages.map((page, index) => ({
     name: `Player${index}`,
@@ -72,23 +53,40 @@ test("smart chat scrolling behavior", async ({ browser }) => {
   // Wait for the chat phase (warmup talking)
   await expect(host.page.getByText("Warming up")).toBeVisible();
 
+  // Take screenshot when warmup phase starts
+  await host.page.screenshot({
+    path: "test-results/warmup-start.png",
+    fullPage: true,
+  });
+
   // Send enough messages to make the chat scrollable
   const chatInput = host.page.getByRole("textbox", { name: "Send message" });
   const sendButton = host.page.getByRole("button", {
     name: "Send message button",
   });
 
-  for (let i = 1; i <= 10; i++) {
-    await chatInput.fill(
-      `Message ${i} from host - this is a long message to ensure we have enough content to scroll`,
-    );
-    await sendButton.click();
-    await host.page.waitForTimeout(100); // Small delay between messages
-  }
+  // Take screenshot before trying to interact with chat input
+  await host.page.screenshot({
+    path: "test-results/before-chat-input.png",
+    fullPage: true,
+  });
+
+  // Send one very long message to create scrollable content without triggering warmup transition
+  const longMessage = Array(20)
+    .fill(
+      "This is a very long message that will create enough content to make the chat scrollable and test the smart scrolling behavior without triggering the warmup transition by sending too many separate messages.",
+    )
+    .join(" ");
+
+  await chatInput.fill(longMessage);
+  await sendButton.click();
+  await host.page.waitForTimeout(500); // Wait for message to appear
 
   // Test 1: When at bottom, new messages should auto-scroll
   // Verify we can see the latest message (should be auto-scrolled)
-  await expect(host.page.getByText("Message 10 from host")).toBeVisible();
+  await expect(
+    host.page.getByText("This is a very long message", { exact: false }),
+  ).toBeVisible();
 
   // Test 2: Scroll up manually on ALL pages, then add new message
 

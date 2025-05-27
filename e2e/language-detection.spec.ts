@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { setupConsoleLogging } from "./helpers";
 
 test("browser language detection for French", async ({ browser }) => {
   // Create a new context with French locale
@@ -7,6 +8,9 @@ test("browser language detection for French", async ({ browser }) => {
   });
 
   const page = await context.newPage();
+
+  // Setup console logging
+  setupConsoleLogging([page], "LANG_DETECT");
 
   // Navigate to the home page
   await page.goto("/");

@@ -1,4 +1,5 @@
 import { expect, Page, test } from "@playwright/test";
+import { setupConsoleLogging } from "./helpers";
 
 interface TestPlayer {
   name: string;
@@ -11,6 +12,9 @@ test("multi-user game flow", async ({ browser }) => {
 
   const contexts = await Promise.all([1, 2, 3].map(() => browser.newContext()));
   const pages = await Promise.all(contexts.map((context) => context.newPage()));
+
+  // Setup console logging for all pages
+  setupConsoleLogging(pages, "HAPPY_PATH");
 
   const testPlayers: TestPlayer[] = pages.map((page, index) => ({
     name: `Player${index}`,
@@ -73,17 +77,26 @@ test("multi-user game flow", async ({ browser }) => {
   await expect(host.page.getByText(/💡/).first()).toBeVisible();
 
   // During warmup phase, all players should be human and able to send messages
-  // Each player needs to send 2 messages to trigger transition to hunt phase
-  for (const player of testPlayers) {
-    for (let i = 0; i < 2; i++) {
-      const message = `#${i + 1} by ${player.name}`;
-      await player.page
-        .getByLabel("Message input")
-        .getByRole("textbox")
-        .fill(message);
-      await player.page.getByLabel("Send message button").click();
-      await player.page.getByText(message).waitFor();
-    }
+  // Need total of 3 × number of players messages to trigger transition to hunt phase
+  // With 3 players, that's 9 total messages needed
+  const totalMessagesNeeded = 3 * testPlayers.length;
+  for (
+    let messageIndex = 0;
+    messageIndex < totalMessagesNeeded;
+    messageIndex++
+  ) {
+    const playerIndex = messageIndex % testPlayers.length;
+    const player = testPlayers[playerIndex];
+    if (!player) throw new Error(`No player at index ${playerIndex}`);
+
+    const messageNum = Math.floor(messageIndex / testPlayers.length) + 1;
+    const message = `#${messageNum} by ${player.name}`;
+    await player.page
+      .getByLabel("Message input")
+      .getByRole("textbox")
+      .fill(message);
+    await player.page.getByLabel("Send message button").click();
+    await player.page.getByText(message).waitFor();
   }
 
   await expect(host.page.getByText("Find the AI")).toBeVisible();

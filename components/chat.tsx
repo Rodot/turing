@@ -5,6 +5,7 @@ import { Box, Chip, Container, Paper, Typography } from "@mui/material";
 import { ChatVote } from "./chatVotes";
 import { ButtonGoHome } from "./buttonGoHome";
 import { ButtonStartVote } from "./buttonStartVote";
+import { WarmupProgressBar } from "./warmupProgressBar";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
 import { motion } from "framer-motion";
@@ -78,6 +79,8 @@ export const Chat: React.FC = () => {
 
           {isHuntingPhase && <ButtonStartVote />}
         </Paper>
+
+        <WarmupProgressBar />
 
         {/* players line */}
         <Paper

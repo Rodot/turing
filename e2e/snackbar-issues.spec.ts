@@ -1,6 +1,10 @@
 import { expect, test } from "@playwright/test";
+import { setupConsoleLogging } from "./helpers";
 
 test("snackbar should close when X button is clicked", async ({ page }) => {
+  // Setup console logging
+  setupConsoleLogging([page], "SNACKBAR");
+
   // Navigate to a non-existent game to trigger an error
   await page.goto("/?game=nonexistent123");
 
@@ -20,6 +24,9 @@ test("snackbar should close when X button is clicked", async ({ page }) => {
 });
 
 test("snackbar should auto-hide after timeout", async ({ page }) => {
+  // Setup console logging
+  setupConsoleLogging([page], "SNACKBAR");
+
   // Navigate to a non-existent game to trigger an error
   await page.goto("/?game=nonexistent123");
 
