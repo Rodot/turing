@@ -59,6 +59,7 @@ export function ChatMessage({
             textAlign: getTextAlign(),
             wordWrap: "break-word",
             overflowWrap: "break-word",
+            whiteSpace: "pre-line",
           }}
         >
           {message.content}

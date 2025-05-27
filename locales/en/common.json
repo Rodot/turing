@@ -45,28 +45,9 @@
     "title": "The Turing Trial",
     "subtitle": "An AI controls someone in the chat.",
     "description": "Will you tell your friends from the AI?",
-    "steps": {
-      "warmup": {
-        "title": "1. Warmup",
-        "description": "Chat among Humans"
-      },
-      "hunt": {
-        "title": "2. Hunt",
-        "description": "The AI replaces one of the Humans"
-      },
-      "vote": {
-        "title": "3. Vote",
-        "description": "Start a vote when you found the AI"
-      },
-      "repeat": {
-        "title": "4. Repeat",
-        "description": "The AI leaves, new round begins"
-      }
-    },
     "scoring": {
-      "humansVoteAi": "+1 🧠 to Humans who vote for the AI",
-      "aiAvoidsMajority": "+1 🧠 to AI who avoids votes majority",
-      "humansGetVotes": "+1 🧠 to Humans who get the most votes",
+      "findAi": "+1 🧠 if you find the AI among humans",
+      "confuseHuman": "-1 🧠 if you confuse a human for the AI",
       "winCondition": "Earn 5 🧠 to win"
     }
   },

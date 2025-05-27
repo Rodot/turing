@@ -45,28 +45,9 @@
     "title": "Le Procès de Turing",
     "subtitle": "Une IA contrôle quelqu'un dans le chat.",
     "description": "Saurez-vous distinguer vos amis de l'IA ?",
-    "steps": {
-      "warmup": {
-        "title": "1. Échauffement",
-        "description": "Chat entre Humains"
-      },
-      "hunt": {
-        "title": "2. Chasse",
-        "description": "L'IA remplace un des Humains"
-      },
-      "vote": {
-        "title": "3. Vote",
-        "description": "Lancez un vote quand vous trouvez l'IA"
-      },
-      "repeat": {
-        "title": "4. Répéter",
-        "description": "L'IA part, un nouveau tour commence"
-      }
-    },
     "scoring": {
-      "humansVoteAi": "+1 🧠 aux Humains qui votent pour l'IA",
-      "aiAvoidsMajority": "+1 🧠 à l'IA qui évite la majorité des votes",
-      "humansGetVotes": "+1 🧠 aux Humains qui reçoivent le plus de votes",
+      "findAi": "+1 🧠 si vous trouvez l'IA parmi les humains",
+      "confuseHuman": "-1 🧠 si vous confondez un humain avec l'IA",
       "winCondition": "Gagnez 5 🧠 pour gagner"
     }
   },

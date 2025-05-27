@@ -110,7 +110,17 @@ const checkAndTransitionToHunt = async (
     await postSystemMessage(
       supabase,
       game.id,
-      `🤖 ${t("messages.aiTookControl")}`,
+      `${t("messages.aiTookControl1")}`,
+    );
+    await postSystemMessage(
+      supabase,
+      game.id,
+      `${t("messages.aiTookControl2")}`,
+    );
+    await postSystemMessage(
+      supabase,
+      game.id,
+      `${t("messages.aiTookControl3")}`,
     );
   }
 };

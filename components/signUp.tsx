@@ -81,30 +81,8 @@ export const SignUp: React.FC = () => {
       </Box>
 
       <Box sx={{ alignSelf: "center" }}>
-        <Typography>
-          <strong>{t("game.steps.warmup.title")}</strong>{" "}
-          {t("game.steps.warmup.description")}
-        </Typography>
-        <Typography>
-          <strong>{t("game.steps.hunt.title")}</strong>{" "}
-          {t("game.steps.hunt.description")}
-        </Typography>
-        <Typography>
-          <strong>{t("game.steps.vote.title")}</strong>{" "}
-          {t("game.steps.vote.description")}
-        </Typography>
-        <Typography>
-          <strong>{t("game.steps.repeat.title")}</strong>{" "}
-          {t("game.steps.repeat.description")}
-        </Typography>
-      </Box>
-
-      <Box sx={{ my: 2 }} />
-
-      <Box sx={{ alignSelf: "center" }}>
-        <Typography>{t("game.scoring.humansVoteAi")}</Typography>
-        <Typography>{t("game.scoring.aiAvoidsMajority")}</Typography>
-        <Typography>{t("game.scoring.humansGetVotes")}</Typography>
+        <Typography>{t("game.scoring.findAi")}</Typography>
+        <Typography>{t("game.scoring.confuseHuman")}</Typography>
       </Box>
 
       <Box sx={{ my: 2 }} />

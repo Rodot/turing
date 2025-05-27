@@ -1,7 +1,9 @@
 export const en = {
   messages: {
     startedVote: "{{player}} started a vote",
-    aiTookControl: "The AI took control of someone, find who and start a vote!",
+    aiTookControl1: "🤖 The AI took control of someone!",
+    aiTookControl2: "Find who is the AI to earn a 🧠",
+    aiTookControl3: "Pretend to be the AI to make players loose their 🧠",
     aiIsGone: "The AI is gone, let's change the topic",
     resultsIn: "Results are in!",
     andTheAiWas: "And the AI was...",

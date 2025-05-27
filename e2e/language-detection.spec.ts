@@ -31,11 +31,13 @@ test("browser language detection for French", async ({ browser }) => {
   // Test form labels (this should be translated)
   await expect(page.getByLabel("Votre nom")).toBeVisible();
 
-  // Test game steps (these should be translated)
-  await expect(page.getByText("1. Échauffement")).toBeVisible();
-  await expect(page.getByText("2. Chasse")).toBeVisible();
-  await expect(page.getByText("3. Vote")).toBeVisible();
-  await expect(page.getByText("4. Répéter")).toBeVisible();
+  // Test scoring rules (these should be translated)
+  await expect(
+    page.getByText("+1 🧠 si vous trouvez l'IA parmi les humains"),
+  ).toBeVisible();
+  await expect(
+    page.getByText("-1 🧠 si vous confondez un humain avec l'IA"),
+  ).toBeVisible();
 
   await context.close();
 });
@@ -69,11 +71,13 @@ test("browser language detection for English (default)", async ({
   // Test form labels (this should be in English)
   await expect(page.getByLabel("Your name")).toBeVisible();
 
-  // Test game steps (these should be in English)
-  await expect(page.getByText("1. Warmup")).toBeVisible();
-  await expect(page.getByText("2. Hunt")).toBeVisible();
-  await expect(page.getByText("3. Vote")).toBeVisible();
-  await expect(page.getByText("4. Repeat")).toBeVisible();
+  // Test scoring rules (these should be in English)
+  await expect(
+    page.getByText("+1 🧠 if you find the AI among humans"),
+  ).toBeVisible();
+  await expect(
+    page.getByText("-1 🧠 if you confuse a human for the AI"),
+  ).toBeVisible();
 
   await context.close();
 });

@@ -6,9 +6,9 @@
 /// <reference types="https://esm.sh/@supabase/functions-js@2.4.4/src/edge-runtime.d.ts" />
 
 import {
+  fetchMessages,
   postIcebreakerMessage,
   postSystemMessage,
-  fetchMessages,
 } from "../_queries/messages.query.ts";
 import {
   fetchGameAndCheckStatus,
@@ -83,9 +83,6 @@ Deno.serve(async (req) => {
         gameAfterVote.lang,
       );
 
-      const t = getTranslationFunction(gameAfterVote.lang);
-      await postSystemMessage(supa, gameId, `💬 ${t("messages.aiIsGone")}`);
-
       // Get updated game data for end game check
       const gameAfterPoints = await fetchGameAndCheckStatus(
         supa,
@@ -151,6 +148,9 @@ Deno.serve(async (req) => {
         }
       } else {
         // Next round
+        const t = getTranslationFunction(gameAfterVote.lang);
+        await postSystemMessage(supa, gameId, `💬 ${t("messages.aiIsGone")}`);
+
         console.log("Next round", gameId);
 
         // Set up next vote
