@@ -13,7 +13,7 @@ export const ButtonStartVote: React.FC = () => {
 
   return (
     <Button
-      color="secondary"
+      color="primary"
       variant="contained"
       size="small"
       onClick={() => startVoteMutation.mutate(gameId)}

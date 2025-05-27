@@ -68,13 +68,18 @@ export const Chat: React.FC = () => {
             alignItems: "center",
             px: 1,
             borderRadius: 0,
-            backgroundColor: "primary.main",
+            backgroundColor: isHuntingPhase ? "secondary.main" : "primary.main",
           }}
         >
           <ButtonGoHome />
 
-          <Typography sx={{ color: "primary.contrastText" }}>
-            <strong>{getStatusText()}</strong>
+          <Typography
+            sx={{
+              color: isHuntingPhase ? "primary.main" : "primary.contrastText",
+              fontWeight: 900,
+            }}
+          >
+            {getStatusText()}
           </Typography>
 
           {isHuntingPhase && <ButtonStartVote />}
