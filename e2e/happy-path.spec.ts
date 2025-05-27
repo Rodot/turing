@@ -68,6 +68,10 @@ test("multi-user game flow", async ({ browser }) => {
   await host.page.getByLabel("Start Game").waitFor();
   await host.page.getByLabel("Start Game").click();
 
+  // Handle the start game confirmation modal
+  await host.page.getByText("Yes, let's go!").waitFor();
+  await host.page.getByText("Yes, let's go!").click();
+
   await host.page.waitForTimeout(3000);
 
   // Check initial warmup phase status

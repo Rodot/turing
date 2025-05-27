@@ -50,6 +50,10 @@ test("smart chat scrolling behavior", async ({ browser }) => {
   await host.page.getByLabel("Start Game").waitFor();
   await host.page.getByLabel("Start Game").click();
 
+  // Handle the start game confirmation modal
+  await host.page.getByText("Yes, let's go!").waitFor();
+  await host.page.getByText("Yes, let's go!").click();
+
   // Wait for the chat phase (warmup talking)
   await expect(host.page.getByText("Warming up")).toBeVisible();
 
@@ -80,7 +84,6 @@ test("smart chat scrolling behavior", async ({ browser }) => {
 
   await chatInput.fill(longMessage);
   await sendButton.click();
-  await host.page.waitForTimeout(500); // Wait for message to appear
 
   // Test 1: When at bottom, new messages should auto-scroll
   // Verify we can see the latest message (should be auto-scrolled)
@@ -129,8 +132,6 @@ test("smart chat scrolling behavior", async ({ browser }) => {
     );
   });
 
-  await host.page.waitForTimeout(500);
-
   // Take screenshots after scrolling
   await host.page.screenshot({
     path: "test-results/page0-after-manual-scroll.png",
@@ -155,7 +156,6 @@ test("smart chat scrolling behavior", async ({ browser }) => {
   await expect(
     host.page.getByText("New message after scroll up"),
   ).toBeVisible();
-  await host.page.waitForTimeout(500); // Additional wait for mutation to complete
 
   // Take screenshots after receiving message
   await host.page.screenshot({
@@ -234,7 +234,6 @@ test("smart chat scrolling behavior", async ({ browser }) => {
   ).toBeEnabled();
 
   await host.page.getByRole("button", { name: "Send message button" }).click();
-  await host.page.waitForTimeout(500);
 
   // Host should see their own message (auto-scrolled)
   await expect(

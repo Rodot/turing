@@ -6,6 +6,8 @@ You must run `npm run quality` after each modification.
 
 If it fails, find the issue, fix it, and run `npm run quality` again.
 
+If e2e fail, fix them as well. You can see the browser console output when you run the command, and the screenshots in the `test-results` folder.
+
 ## Architecture Overview
 
 This is "The Turing Trial" - a multiplayer party game where players try to distinguish humans from AI in a chat environment.
