@@ -19,10 +19,10 @@
     "gameAlreadyStarted": "This game already started"
   },
   "status": {
-    "warmingUp": "Warming up",
-    "findTheAi": "Find the AI",
-    "voteNow": "Vote now",
-    "gameOver": "Game over",
+    "warmingUp": "Warming up without AI 💬",
+    "findTheAi": "Found the AI? 🤖",
+    "voteNow": "Vote for the AI 🗳️",
+    "gameOver": "Game over 🏁",
     "inProgress": "In progress"
   },
   "voting": {

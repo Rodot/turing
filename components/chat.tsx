@@ -74,7 +74,7 @@ export const Chat: React.FC = () => {
           <ButtonGoHome />
 
           <Typography sx={{ color: "primary.contrastText" }}>
-            {getStatusText()}
+            <strong>{getStatusText()}</strong>
           </Typography>
 
           {isHuntingPhase && <ButtonStartVote />}

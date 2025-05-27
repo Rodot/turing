@@ -19,10 +19,10 @@
     "gameAlreadyStarted": "Cette partie a déjà commencé"
   },
   "status": {
-    "warmingUp": "Échauffement",
-    "findTheAi": "Trouvez l'IA",
-    "voteNow": "Votez maintenant",
-    "gameOver": "Partie terminée",
+    "warmingUp": "Échauffement sans IA 💬",
+    "findTheAi": "Vous avez trouvé l'IA ? 🤖",
+    "voteNow": "Votez pour l'IA 🗳️",
+    "gameOver": "Partie terminée 🏁",
     "inProgress": "En cours"
   },
   "voting": {
