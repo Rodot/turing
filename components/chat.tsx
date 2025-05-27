@@ -81,9 +81,33 @@ export const Chat: React.FC = () => {
         </Paper>
 
         <WarmupProgressBar />
+      </Paper>
 
+      <Box
+        sx={{
+          overflowY: "auto",
+          overflowX: "hidden",
+          flexGrow: 1,
+        }}
+      >
+        <ChatHistory />
+      </Box>
+
+      <Paper
+        elevation={8}
+        sx={{
+          borderRadius: 0,
+          zIndex: 2,
+          position: "sticky",
+          bottom: 0,
+          minHeight: "100px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+        }}
+      >
         {/* players line */}
-        <Paper
+        <Box
           sx={{
             display: "flex",
             flexDirection: "row",
@@ -124,36 +148,21 @@ export const Chat: React.FC = () => {
                 </motion.div>
               </motion.div>
             ))}
-        </Paper>
-      </Paper>
-
-      <Box
-        sx={{
-          overflowY: "auto",
-          overflowX: "hidden",
-          flexGrow: 1,
-        }}
-      >
-        <ChatHistory />
-      </Box>
-
-      <Paper
-        elevation={8}
-        sx={{
-          borderRadius: 0,
-          zIndex: 2,
-          position: "sticky",
-          bottom: 0,
-          minHeight: "80px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          p: 1,
-        }}
-      >
-        {isTalkingPhase && <ChatInput />}
-        {isVotingPhase && <ChatVote />}
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            flexGrow: 1,
+            p: 1,
+            pt: 0,
+          }}
+        >
+          {isTalkingPhase && <ChatInput />}
+          {isVotingPhase && <ChatVote />}
+        </Box>
       </Paper>
     </Container>
   );

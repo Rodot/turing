@@ -1,7 +1,8 @@
 export const fr = {
   messages: {
     startedVote: "{{player}} a commencé un vote",
-    aiTookControl: "L'IA a pris le contrôle de quelqu'un, trouvez qui !",
+    aiTookControl:
+      "L'IA a pris le contrôle de quelqu'un, trouvez qui et lancez un vote !",
     aiIsGone: "L'IA est partie, changeons de sujet",
     resultsIn: "Les résultats sont là !",
     andTheAiWas: "Et l'IA était...",
