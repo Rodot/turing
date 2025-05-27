@@ -19,7 +19,6 @@ export const useProfileQuery = () => {
       if (profile === undefined) {
         throw new Error("Profile not found");
       }
-      console.log("profileQuery", profile);
       return profile;
     },
     enabled: !!userId,

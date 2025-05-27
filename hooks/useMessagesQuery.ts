@@ -16,7 +16,6 @@ export const useMessagesQuery = () => {
     queryFn: async (): Promise<MessageData[]> => {
       if (!gameIdFromUrl) return [];
       const messages = await fetchMessages(supabase, gameIdFromUrl);
-      console.log("messagesQuery", messages);
       return messages;
     },
     enabled: !!gameIdFromUrl,

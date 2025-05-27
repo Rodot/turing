@@ -44,7 +44,6 @@ export const SignUp: React.FC = () => {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitting name", name);
     if (name.length >= 3) {
       profileNameMutation.mutate(name);
     }

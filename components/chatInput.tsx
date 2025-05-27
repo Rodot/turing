@@ -58,7 +58,6 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
         playerName: me.name,
         lang: gameQuery?.data?.lang ?? "en",
       });
-      console.log(req);
       receivedAnswers = (req?.possibleNextMessages ?? []).map(cleanAnswer);
     }
     setBotAnswers(receivedAnswers);

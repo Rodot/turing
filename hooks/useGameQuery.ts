@@ -19,7 +19,6 @@ export const useGameQuery = () => {
       if (!gameIdFromUrl) return undefined;
       try {
         const game = await fetchGame(supabase, gameIdFromUrl);
-        console.log("gameQuery", game);
         if (!game) {
           throw new Error("Game not found");
         }

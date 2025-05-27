@@ -18,7 +18,6 @@ const getOrCreateUser = async (): Promise<User> => {
         "getOrCreateUser: No profile returned from fetchUserProfile",
       );
     }
-    console.log("existing user:", profile.id, profile.name);
     return userData.user;
   } catch (error) {
     console.error("getUser:", error);
@@ -26,15 +25,14 @@ const getOrCreateUser = async (): Promise<User> => {
 
   // If no user exists, sign up anonymously
   try {
-    const { data: signupData, error: signupError } =
-      await supabase.auth.signInAnonymously();
+    const { data: signupData, error: signupError } = await supabase.auth
+      .signInAnonymously();
     if (signupError) {
       throw new Error("signupError: " + signupError.message);
     }
     if (!signupData?.user) {
       throw new Error("No user returned from sign up");
     }
-    console.log("new user:", signupData.user.id);
     return signupData.user;
   } catch (error) {
     console.error("signInAnonymously:", error);

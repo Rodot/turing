@@ -8,7 +8,6 @@ export const useGameIdFromUrl = () => {
   useEffect(() => {
     const newGameId = searchParams.get("game") ?? null;
     if (newGameId !== gameId) {
-      console.log("gameId from URL", newGameId);
       setGameId(newGameId);
     }
   }, [searchParams, gameId]);
