@@ -25,7 +25,7 @@ export const ButtonJoinGame: React.FC = () => {
       return;
     }
 
-    if (game.status !== "lobby") {
+    if (game.status === "over") {
       show(t("errors.gameAlreadyStarted"), "error");
       router.push("/");
       return;

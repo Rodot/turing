@@ -1,5 +1,6 @@
 export const en = {
   messages: {
+    joinedGame: "👋 {{player}} has joined the game",
     startedVote: "{{player}} started a vote",
     aiTookControl1: "🤖 The AI took control of someone!",
     aiTookControl2: "Find who is the AI to earn a 🧠",

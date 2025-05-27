@@ -9,6 +9,8 @@ import {
   fetchProfile,
   updateProfileGameId,
 } from "../_queries/profiles.query.ts";
+import { postSystemMessage } from "../_queries/messages.query.ts";
+import { getTranslationFunction } from "../_shared/i18n.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -25,7 +27,12 @@ Deno.serve(async (req) => {
     const supabase = createSupabaseClient(req);
 
     // Check that game exists and is in lobby status
-    await fetchGameAndCheckStatus(supabase, gameId, "lobby");
+    const game = await fetchGameAndCheckStatus(supabase, gameId, [
+      "lobby",
+      "talking_warmup",
+      "talking_hunt",
+      "voting",
+    ]);
 
     const userResponse = await supabase.auth.getUser();
     if (userResponse.error) {
@@ -48,6 +55,15 @@ Deno.serve(async (req) => {
       is_bot: false,
       score: 0,
     });
+
+    if (game.status !== "lobby") {
+      const t = getTranslationFunction(game.lang);
+      postSystemMessage(
+        supabase,
+        gameId,
+        t("messages.joinedGame", { player: profile.name }),
+      );
+    }
 
     const data = JSON.stringify({ profileId: user.id, gameId });
     return new Response(data, { headers, status: 200 });

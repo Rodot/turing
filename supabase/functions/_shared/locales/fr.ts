@@ -1,5 +1,6 @@
 export const fr = {
   messages: {
+    joinedGame: "👋 {{player}} a rejoint la partie",
     startedVote: "{{player}} a commencé un vote",
     aiTookControl1: "🤖 L'IA a pris le contrôle de quelqu'un !",
     aiTookControl2: "Trouvez qui est l'IA pour gagner un 🧠",
