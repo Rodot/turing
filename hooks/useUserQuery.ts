@@ -25,8 +25,8 @@ const getOrCreateUser = async (): Promise<User> => {
 
   // If no user exists, sign up anonymously
   try {
-    const { data: signupData, error: signupError } = await supabase.auth
-      .signInAnonymously();
+    const { data: signupData, error: signupError } =
+      await supabase.auth.signInAnonymously();
     if (signupError) {
       throw new Error("signupError: " + signupError.message);
     }

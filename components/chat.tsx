@@ -105,7 +105,7 @@ export const Chat: React.FC = () => {
           zIndex: 2,
           position: "sticky",
           bottom: 0,
-          minHeight: "100px",
+          minHeight: "120px",
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-start",

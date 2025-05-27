@@ -151,8 +151,11 @@ test("smart chat scrolling behavior", async ({ browser }) => {
     .fill("New message after scroll up");
   await host.page.getByRole("button", { name: "Send message button" }).click();
 
-  // Wait a moment for the message to appear
-  await host.page.waitForTimeout(1000);
+  // Wait for the message to appear and mutation to complete
+  await expect(
+    host.page.getByText("New message after scroll up"),
+  ).toBeVisible();
+  await host.page.waitForTimeout(500); // Additional wait for mutation to complete
 
   // Take screenshots after receiving message
   await host.page.screenshot({
@@ -224,6 +227,12 @@ test("smart chat scrolling behavior", async ({ browser }) => {
   await host.page
     .getByRole("textbox", { name: "Send message" })
     .fill("Host message while scrolled up");
+
+  // Wait for send button to be enabled before clicking
+  await expect(
+    host.page.getByRole("button", { name: "Send message button" }),
+  ).toBeEnabled();
+
   await host.page.getByRole("button", { name: "Send message button" }).click();
   await host.page.waitForTimeout(500);
 
