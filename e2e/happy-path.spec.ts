@@ -99,7 +99,7 @@ test("multi-user game flow", async ({ browser }) => {
     await player.page.getByText(message).waitFor();
   }
 
-  await expect(host.page.getByText("Find the AI")).toBeVisible();
+  await expect(host.page.getByText("Found the AI? 🤖")).toBeVisible();
 
   // Now determine which players are humans vs AI (after transition to hunt phase)
   for (const player of testPlayers) {
@@ -155,7 +155,7 @@ test("multi-user game flow", async ({ browser }) => {
 
   // Wait for voting phase and check status changed
   await human1.page.waitForTimeout(4000); // Wait for the 3 second delay + transition
-  await expect(human1.page.getByText("Vote now")).toBeVisible();
+  await expect(human1.page.getByText("Vote for the AI 🗳️")).toBeVisible();
 
   // Verify voting interface is available for humans
   await expect(human1.page.getByText("Who was the AI? 🤖")).toBeVisible();

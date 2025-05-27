@@ -8,10 +8,11 @@ export const en = {
     aiPlayerReveal: "{{player}}",
     nobodyWasAi: "Nobody",
     playersWon: "{{players}} won! 🏆",
-    foundBot: "+1 🧠 to {{player}} for finding the AI",
-    botAvoided: "+1 🧠 to {{player}} for pretenting to be Human",
-    bestActing: "+1 🧠 to {{player}} for best AI impression",
-    correctlyGuessedNoBot: "+1 🧠 to {{player}} who sensed there was no AI",
+    foundAI: "+1 🧠 for {{player}} who found the AI 🤖",
+    convincedVoter:
+      "+1 🧠 for {{player}} who convinced {{voter}} they were the AI 🎭",
+    realizedNoAI: "+1 🧠 for {{player}} who realized there was no AI ❌",
+    missedAI: "no 🧠 for {{player}} who thought there was no AI",
     tieAtWinningScore:
       "🤝 It's a tie at {{score}} 🧠! Starting another round...",
   },

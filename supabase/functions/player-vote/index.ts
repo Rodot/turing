@@ -223,19 +223,20 @@ async function processVotingOutcomes(
     const t = getTranslationFunction(lang);
     let message = "";
     switch (outcome.rewardReason) {
-      case "foundBot":
-        message = t("messages.foundBot", { player: outcome.playerName });
+      case "foundAI":
+        message = t("messages.foundAI", { player: outcome.playerName });
         break;
-      case "botAvoided":
-        message = t("messages.botAvoided", { player: outcome.playerName });
-        break;
-      case "bestActing":
-        message = t("messages.bestActing", { player: outcome.playerName });
-        break;
-      case "correctlyGuessedNoBot":
-        message = t("messages.correctlyGuessedNoBot", {
+      case "convincedVoter":
+        message = t("messages.convincedVoter", {
           player: outcome.playerName,
+          voter: outcome.votedForName || "someone",
         });
+        break;
+      case "realizedNoAI":
+        message = t("messages.realizedNoAI", { player: outcome.playerName });
+        break;
+      case "missedAI":
+        message = t("messages.missedAI", { player: outcome.playerName });
         break;
     }
 

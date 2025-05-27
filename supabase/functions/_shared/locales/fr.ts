@@ -9,11 +9,12 @@ export const fr = {
     aiPlayerReveal: "{{player}}",
     nobodyWasAi: "Personne",
     playersWon: "{{players}} a gagné ! 🏆",
-    foundBot: "+1 🧠 à {{player}} pour avoir trouvé l'IA",
-    botAvoided: "+1 🧠 à {{player}} pour s'être fait passer pour Humain",
-    bestActing: "+1 🧠 à {{player}} pour la meilleure imitation d'IA",
-    correctlyGuessedNoBot:
-      "+1 🧠 à {{player}} qui a deviné qu'il n'y avait pas d'IA",
+    foundAI: "+1 🧠 pour {{player}} qui a trouvé l'IA 🤖",
+    convincedVoter:
+      "+1 🧠 pour {{player}} qui a convaincu {{voter}} qu'iel était l'IA 🎭",
+    realizedNoAI:
+      "+1 🧠 pour {{player}} qui a réalisé qu'il n'y avait pas d'IA ❌",
+    missedAI: "pas de 🧠 pour {{player}} qui pensait qu'il n'y avait pas d'IA",
     tieAtWinningScore: "🤝 Égalité à {{score}} 🧠 ! On continue...",
   },
 };
