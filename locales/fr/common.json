@@ -33,7 +33,7 @@
     "nobody": "Personne❌"
   },
   "lobby": {
-    "playersRequired": "3+ joueurs requis",
+    "playersRequired": "3+ joueurs requis, invitez des gens !",
     "waitingForStart": "En attente de {{player}} pour commencer la partie.",
     "conversationLanguage": "Langue de Conversation",
     "inviteLink": "Lien d'Invitation",

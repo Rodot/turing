@@ -72,7 +72,7 @@ export const Lobby: React.FC = () => {
 
       {!enoughPlayers && (
         <Typography>
-          <strong>{t("lobby.playersRequired")}</strong>, invite people!
+          <strong>{t("lobby.playersRequired")}</strong>
         </Typography>
       )}
       {enoughPlayers && !isHost && (
