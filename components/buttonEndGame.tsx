@@ -1,5 +1,4 @@
 import React from "react";
-import { Close } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { useEndGameMutation } from "@/hooks/useFunctionsMutation";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
@@ -19,8 +18,7 @@ export const ButtonEndGame: React.FC = () => {
       onClick={() => endGameMutation.mutate(gameId)}
       disabled={isAnything}
     >
-      <Close />
-      {t("buttons.endGame")}
+      ❌&nbsp;{t("buttons.endGame")}
     </Button>
   );
 };

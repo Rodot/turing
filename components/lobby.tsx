@@ -91,7 +91,7 @@ export const Lobby: React.FC = () => {
           disabled={isAnythingLoading || !enoughPlayers}
           aria-label="Start Game"
         >
-          {t("buttons.startGame")}
+          🏁&nbsp;{t("buttons.startGame")}
         </Button>
       )}
 

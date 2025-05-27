@@ -12,25 +12,15 @@ import {
 import { PlayerList } from "./playerList";
 import { useAllGamesQuery } from "@/hooks/useAllGamesQuery";
 import { GameData } from "@/supabase/functions/_types/Database.type";
+import { useRouter } from "next/navigation";
 
 export const AdminGames: React.FC = () => {
-  const { data: games, isLoading, error } = useAllGamesQuery();
+  const { data: games } = useAllGamesQuery();
+  const router = useRouter();
 
-  if (isLoading) {
-    return (
-      <Container>
-        <Typography>Loading...</Typography>
-      </Container>
-    );
-  }
-
-  if (error) {
-    return (
-      <Container>
-        <Typography color="error">Error: {error.message}</Typography>
-      </Container>
-    );
-  }
+  const handleGameClick = (gameId: string) => {
+    router.push(`/spectate?game=${gameId}`);
+  };
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -40,7 +30,17 @@ export const AdminGames: React.FC = () => {
 
       <Box sx={{ mt: 3 }}>
         {games?.map((game: GameData) => (
-          <Card key={game.id} sx={{ mb: 2 }}>
+          <Card
+            key={game.id}
+            sx={{
+              mb: 2,
+              cursor: "pointer",
+              "&:hover": {
+                backgroundColor: "action.hover",
+              },
+            }}
+            onClick={() => handleGameClick(game.id)}
+          >
             <CardContent>
               <Box
                 sx={{

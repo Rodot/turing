@@ -1,4 +1,3 @@
-import { Check, ContentCopy as ContentCopyIcon } from "@mui/icons-material";
 import { Box, Button, TextField } from "@mui/material";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -35,12 +34,7 @@ export const ButtonShare: React.FC<Props> = ({ url: urlToCopy }) => {
           onClick={share}
           disabled={clicked}
         >
-          {clicked ? (
-            <Check sx={{ mr: 0.5 }} />
-          ) : (
-            <ContentCopyIcon data-testid="ContentCopyIcon" sx={{ mr: 0.5 }} />
-          )}
-          {clicked ? t("buttons.copied") : t("buttons.copy")}
+          📋&nbsp;{clicked ? t("buttons.copied") : t("buttons.copy")}
         </Button>
       </Box>
     </>

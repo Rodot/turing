@@ -34,6 +34,10 @@ export const ButtonJoinGame: React.FC = () => {
     joinGameMutation.mutate(gameIdFromUrl);
   };
 
+  const handleSpectate = () => {
+    router.push(`/spectate?game=${gameIdFromUrl}`);
+  };
+
   return (
     <>
       <PlayerList players={game?.players ?? []} />
@@ -47,9 +51,21 @@ export const ButtonJoinGame: React.FC = () => {
         disabled={isAnythingLoading}
         aria-label="Join Game"
       >
+        👋&nbsp;
         {game?.players?.[0]?.name
           ? t("buttons.joinPlayerGame", { player: game.players[0].name })
           : t("buttons.joinGame")}
+      </Button>
+
+      <Button
+        color="secondary"
+        variant="text"
+        onClick={handleSpectate}
+        disabled={isAnythingLoading}
+        aria-label="Spectate Game"
+        sx={{ mt: 1 }}
+      >
+        👁️&nbsp;{t("buttons.spectate")}
       </Button>
     </>
   );

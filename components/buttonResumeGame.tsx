@@ -22,7 +22,7 @@ export const ButtonResumeGame: React.FC = () => {
       onClick={startNewGame}
       disabled={isAnythingLoading}
     >
-      {t("buttons.resume")}
+      🏁&nbsp;{t("buttons.resume")}
     </Button>
   );
 };

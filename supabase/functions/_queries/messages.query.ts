@@ -61,7 +61,7 @@ export const postIcebreakerMessage = async (
   const availableQuestions = iceBreakers[game.lang];
   const usedQuestions = messages
     .filter((msg) => msg.type === "icebreaker")
-    .map((msg) => msg.content.replace("💡 ", ""));
+    .map((msg) => msg.content.replace("🤔 ", ""));
 
   let selectedQuestion: string;
   let attempts = 0;
@@ -79,7 +79,7 @@ export const postIcebreakerMessage = async (
   await insertMessage(supabase, {
     author_name: "",
     type: "icebreaker",
-    content: "💡 " + selectedQuestion,
+    content: "🤔 " + selectedQuestion,
     game_id: game.id,
   });
 };

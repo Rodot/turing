@@ -4,11 +4,12 @@
     "endGame": "Terminer la Partie",
     "joinGame": "Rejoindre la Partie",
     "joinPlayerGame": "Rejoindre la partie de {{player}}",
+    "spectate": "Regarder sans jouer",
     "resume": "Reprendre",
     "copy": "Copier",
     "copied": "Copié",
     "startVote": "Voter",
-    "generateAiAnswers": "Générer des Réponses IA 🤖",
+    "generateAiAnswers": "Générer des Réponses IA",
     "sendMessage": "Envoyer un message",
     "startGame": "Commencer la Partie",
     "submit": "Envoyer",
@@ -19,6 +20,7 @@
     "gameAlreadyStarted": "Cette partie a déjà commencé"
   },
   "status": {
+    "lobby": "Lobby 🏠",
     "warmingUp": "Échauffement sans IA 💬",
     "findTheAi": "Vous avez trouvé l'IA ? 🤖",
     "voteNow": "Votez pour l'IA 🗳️",

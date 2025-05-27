@@ -120,7 +120,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
               disabled={generateAnswersMutation.isPending}
               aria-label="AI Answers"
             >
-              {t("buttons.generateAiAnswers")}
+              🤖&nbsp;{t("buttons.generateAiAnswers")}
               {generateAnswersMutation.isPending && <Spinner />}
             </Button>
           </Box>

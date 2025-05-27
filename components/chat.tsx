@@ -23,6 +23,8 @@ export const Chat: React.FC = () => {
 
   const getStatusText = () => {
     switch (gameStatus) {
+      case "lobby":
+        return t("status.lobby");
       case "talking_warmup":
         return t("status.warmingUp");
       case "talking_hunt":

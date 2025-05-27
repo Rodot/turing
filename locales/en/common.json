@@ -4,11 +4,12 @@
     "endGame": "End Game",
     "joinGame": "Join Game",
     "joinPlayerGame": "Join {{player}}'s game",
+    "spectate": "Spectate without playing",
     "resume": "Resume",
     "copy": "Copy",
     "copied": "Copied",
     "startVote": "Start Vote",
-    "generateAiAnswers": "Generate AI Answers 🤖",
+    "generateAiAnswers": "Generate AI Answers",
     "sendMessage": "Send message",
     "startGame": "Start Game",
     "submit": "Submit",
@@ -19,6 +20,7 @@
     "gameAlreadyStarted": "This game already started"
   },
   "status": {
+    "lobby": "Lobby 🏠",
     "warmingUp": "Warming up without AI 💬",
     "findTheAi": "Found the AI? 🤖",
     "voteNow": "Vote for the AI 🗳️",
