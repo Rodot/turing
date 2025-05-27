@@ -10,11 +10,11 @@ export const fr = {
     nobodyWasAi: "Personne",
     playersWon: "{{players}} a gagné ! 🏆",
     foundAI: "+1 🧠 pour {{player}} qui a trouvé l'IA 🤖",
-    convincedVoter:
-      "+1 🧠 pour {{player}} qui a convaincu {{voter}} qu'iel était l'IA 🎭",
+    wronglyAccusedHuman:
+      "-1 🧠 pour {{player}} qui a pensé que {{accused}} était l'IA 🎭",
     realizedNoAI:
       "+1 🧠 pour {{player}} qui a réalisé qu'il n'y avait pas d'IA ❌",
-    missedAI: "pas de 🧠 pour {{player}} qui pensait qu'il n'y avait pas d'IA",
+    missedAI: "-1 🧠 pour {{player}} qui pensait qu'il n'y avait pas d'IA",
     tieAtWinningScore: "🤝 Égalité à {{score}} 🧠 ! On continue...",
   },
 };

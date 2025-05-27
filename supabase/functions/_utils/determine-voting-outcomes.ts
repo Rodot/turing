@@ -2,7 +2,7 @@ import type { GameData } from "../_types/Database.type.ts";
 
 export type RewardReason =
   | "foundAI"
-  | "convincedVoter"
+  | "wronglyAccusedHuman"
   | "realizedNoAI"
   | "missedAI";
 
@@ -15,10 +15,11 @@ export type VotingOutcome = {
 };
 
 // Determine voting outcomes using the new scoring logic:
-// - If human votes for AI: human gets 1 point "foundAI"
-// - If human votes for human: voted human gets 1 point "convincedVoter"
-// - If human votes blank with AI present: 0 points "missedAI"
-// - If human votes blank with no AI: 1 point "realizedNoAI"
+// - If human votes for AI: human gets +1 point "foundAI"
+// - If human votes for human: voter gets -1 point "wronglyAccusedHuman"
+// - If human votes blank with AI present: voter gets -1 point "missedAI"
+// - If human votes blank with no AI: voter gets +1 point "realizedNoAI"
+// - Player scores cannot go below 0
 export function determineVotingOutcomes(game: GameData): VotingOutcome[] {
   const votingOutcomes: VotingOutcome[] = [];
   const activePlayerIds = new Set(game.players.map((p) => p.id));
@@ -31,7 +32,7 @@ export function determineVotingOutcomes(game: GameData): VotingOutcome[] {
       if (player.is_bot) continue; // Skip the AI player
 
       if (player.vote === botPlayer.id) {
-        // Human voted for the AI - give them 1 point for finding it
+        // Human voted for the AI - give voter 1 point for finding it
         votingOutcomes.push({
           playerId: player.id,
           playerName: player.name,
@@ -44,23 +45,23 @@ export function determineVotingOutcomes(game: GameData): VotingOutcome[] {
         activePlayerIds.has(player.vote) &&
         player.vote !== botPlayer.id
       ) {
-        // Human voted for another human - give the voted human 1 point
+        // Human voted for another human - voter loses 1 point for wrong accusation
         const votedPlayer = game.players.find((p) => p.id === player.vote);
         if (votedPlayer && !votedPlayer.is_bot) {
           votingOutcomes.push({
-            playerId: votedPlayer.id,
-            playerName: votedPlayer.name,
-            pointsEarned: 1,
-            rewardReason: "convincedVoter",
-            votedForName: player.name,
+            playerId: player.id,
+            playerName: player.name,
+            pointsEarned: -1,
+            rewardReason: "wronglyAccusedHuman",
+            votedForName: votedPlayer.name,
           });
         }
       } else if (player.vote_blank === true) {
-        // Human voted blank when AI exists - 0 points for missing the AI
+        // Human voted blank when AI exists - voter loses 1 point for missing the AI
         votingOutcomes.push({
           playerId: player.id,
           playerName: player.name,
-          pointsEarned: 0,
+          pointsEarned: -1,
           rewardReason: "missedAI",
         });
       }
@@ -70,7 +71,7 @@ export function determineVotingOutcomes(game: GameData): VotingOutcome[] {
 
     for (const player of game.players) {
       if (player.vote_blank === true) {
-        // Human voted blank and there's no AI - give them 1 point for realizing it
+        // Human voted blank and there's no AI - give voter 1 point for realizing it
         votingOutcomes.push({
           playerId: player.id,
           playerName: player.name,
@@ -82,15 +83,15 @@ export function determineVotingOutcomes(game: GameData): VotingOutcome[] {
         !player.vote_blank &&
         activePlayerIds.has(player.vote)
       ) {
-        // Human voted for another human - give the voted human 1 point
+        // Human voted for another human when no AI exists - voter loses 1 point for wrong accusation
         const votedPlayer = game.players.find((p) => p.id === player.vote);
         if (votedPlayer) {
           votingOutcomes.push({
-            playerId: votedPlayer.id,
-            playerName: votedPlayer.name,
-            pointsEarned: 1,
-            rewardReason: "convincedVoter",
-            votedForName: player.name,
+            playerId: player.id,
+            playerName: player.name,
+            pointsEarned: -1,
+            rewardReason: "wronglyAccusedHuman",
+            votedForName: votedPlayer.name,
           });
         }
       }

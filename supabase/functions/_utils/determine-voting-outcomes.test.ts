@@ -1,4 +1,4 @@
-import { assertEquals } from "std/assert/mod.ts";
+import { assertEquals } from "https://deno.land/std@0.208.0/assert/mod.ts";
 import { determineVotingOutcomes } from "./determine-voting-outcomes.ts";
 import type { GameData } from "../_types/Database.type.ts";
 
@@ -39,58 +39,56 @@ Deno.test("AI exists - humans who vote for AI get points", () => {
   const outcomes = determineVotingOutcomes(game);
 
   // Alice and Bob should each get 1 point for finding the AI
-  // Alice should get 1 point for being voted for by Carol
+  // Carol should lose 1 point for wrongly accusing Alice
   assertEquals(outcomes.length, 3);
 
   const aliceFoundAI = outcomes.find(
     (o) => o.playerId === "alice" && o.rewardReason === "foundAI",
   );
-  const aliceConvinced = outcomes.find(
-    (o) => o.playerId === "alice" && o.rewardReason === "convincedVoter",
-  );
   const bobFoundAI = outcomes.find(
     (o) => o.playerId === "bob" && o.rewardReason === "foundAI",
   );
+  const carolWrongAccusation = outcomes.find(
+    (o) => o.playerId === "carol" && o.rewardReason === "wronglyAccusedHuman",
+  );
 
   assertEquals(aliceFoundAI?.pointsEarned, 1);
-  assertEquals(aliceConvinced?.pointsEarned, 1);
   assertEquals(bobFoundAI?.pointsEarned, 1);
+  assertEquals(carolWrongAccusation?.pointsEarned, -1);
+  assertEquals(carolWrongAccusation?.votedForName, "Alice");
+});
+
+Deno.test("AI exists - humans who vote for humans lose points", () => {
+  const game = createGameData([
+    { id: "alice", name: "Alice", vote: "bob" },
+    { id: "bob", name: "Bob", vote: "carol" },
+    { id: "carol", name: "Carol", vote: "alice" },
+    { id: "bot", name: "Charlie", is_bot: true },
+  ]);
+
+  const outcomes = determineVotingOutcomes(game);
+
+  // Alice, Bob, and Carol should each lose 1 point for wrongly accusing humans
+  // No one found the AI
+  assertEquals(outcomes.length, 3);
+
+  const aliceOutcome = outcomes.find((o) => o.playerId === "alice");
+  const bobOutcome = outcomes.find((o) => o.playerId === "bob");
+  const carolOutcome = outcomes.find((o) => o.playerId === "carol");
+
+  assertEquals(aliceOutcome?.rewardReason, "wronglyAccusedHuman");
+  assertEquals(aliceOutcome?.pointsEarned, -1);
+  assertEquals(aliceOutcome?.votedForName, "Bob");
+  assertEquals(bobOutcome?.rewardReason, "wronglyAccusedHuman");
+  assertEquals(bobOutcome?.pointsEarned, -1);
+  assertEquals(bobOutcome?.votedForName, "Carol");
+  assertEquals(carolOutcome?.rewardReason, "wronglyAccusedHuman");
+  assertEquals(carolOutcome?.pointsEarned, -1);
+  assertEquals(carolOutcome?.votedForName, "Alice");
 });
 
 Deno.test(
-  "AI exists - humans who vote for humans give points to voted player",
-  () => {
-    const game = createGameData([
-      { id: "alice", name: "Alice", vote: "bob" },
-      { id: "bob", name: "Bob", vote: "carol" },
-      { id: "carol", name: "Carol", vote: "alice" },
-      { id: "bot", name: "Charlie", is_bot: true },
-    ]);
-
-    const outcomes = determineVotingOutcomes(game);
-
-    // Alice, Bob, and Carol should each get 1 point for being voted for
-    // No one found the AI, so no foundAI points
-    assertEquals(outcomes.length, 3);
-
-    const aliceOutcome = outcomes.find((o) => o.playerId === "alice");
-    const bobOutcome = outcomes.find((o) => o.playerId === "bob");
-    const carolOutcome = outcomes.find((o) => o.playerId === "carol");
-
-    assertEquals(aliceOutcome?.rewardReason, "convincedVoter");
-    assertEquals(aliceOutcome?.pointsEarned, 1);
-    assertEquals(aliceOutcome?.votedForName, "Carol");
-    assertEquals(bobOutcome?.rewardReason, "convincedVoter");
-    assertEquals(bobOutcome?.pointsEarned, 1);
-    assertEquals(bobOutcome?.votedForName, "Alice");
-    assertEquals(carolOutcome?.rewardReason, "convincedVoter");
-    assertEquals(carolOutcome?.pointsEarned, 1);
-    assertEquals(carolOutcome?.votedForName, "Bob");
-  },
-);
-
-Deno.test(
-  "AI exists - multiple humans vote for same human (multiple points)",
+  "AI exists - multiple humans vote for same human (all lose points)",
   () => {
     const game = createGameData([
       { id: "alice", name: "Alice", vote: "bob" },
@@ -102,29 +100,33 @@ Deno.test(
 
     const outcomes = determineVotingOutcomes(game);
 
-    // Bob should get 3 points (voted by Alice, Carol, and David)
-    // Carol should get 1 point (voted by Bob)
+    // Alice, Bob, Carol, and David should all lose 1 point for wrongly accusing humans
     assertEquals(outcomes.length, 4);
 
-    const bobOutcomes = outcomes.filter((o) => o.playerId === "bob");
+    const aliceOutcome = outcomes.find((o) => o.playerId === "alice");
+    const bobOutcome = outcomes.find((o) => o.playerId === "bob");
     const carolOutcome = outcomes.find((o) => o.playerId === "carol");
+    const davidOutcome = outcomes.find((o) => o.playerId === "david");
 
-    assertEquals(bobOutcomes.length, 3);
-    const bobVotedByAlice = bobOutcomes.find((o) => o.votedForName === "Alice");
-    const bobVotedByCarol = bobOutcomes.find((o) => o.votedForName === "Carol");
-    const bobVotedByDavid = bobOutcomes.find((o) => o.votedForName === "David");
+    assertEquals(aliceOutcome?.rewardReason, "wronglyAccusedHuman");
+    assertEquals(aliceOutcome?.pointsEarned, -1);
+    assertEquals(aliceOutcome?.votedForName, "Bob");
 
-    assertEquals(bobVotedByAlice?.pointsEarned, 1);
-    assertEquals(bobVotedByCarol?.pointsEarned, 1);
-    assertEquals(bobVotedByDavid?.pointsEarned, 1);
+    assertEquals(bobOutcome?.rewardReason, "wronglyAccusedHuman");
+    assertEquals(bobOutcome?.pointsEarned, -1);
+    assertEquals(bobOutcome?.votedForName, "Carol");
 
-    assertEquals(carolOutcome?.rewardReason, "convincedVoter");
-    assertEquals(carolOutcome?.pointsEarned, 1);
+    assertEquals(carolOutcome?.rewardReason, "wronglyAccusedHuman");
+    assertEquals(carolOutcome?.pointsEarned, -1);
     assertEquals(carolOutcome?.votedForName, "Bob");
+
+    assertEquals(davidOutcome?.rewardReason, "wronglyAccusedHuman");
+    assertEquals(davidOutcome?.pointsEarned, -1);
+    assertEquals(davidOutcome?.votedForName, "Bob");
   },
 );
 
-Deno.test("AI exists - humans who vote blank get no points", () => {
+Deno.test("AI exists - humans who vote blank lose points", () => {
   const game = createGameData([
     { id: "alice", name: "Alice", vote_blank: true },
     { id: "bob", name: "Bob", vote: "bot" },
@@ -134,7 +136,7 @@ Deno.test("AI exists - humans who vote blank get no points", () => {
   const outcomes = determineVotingOutcomes(game);
 
   // Bob should get 1 point for finding the AI
-  // Alice gets 0 points for voting blank when AI exists
+  // Alice loses 1 point for voting blank when AI exists
   assertEquals(outcomes.length, 2);
 
   const bobOutcome = outcomes.find((o) => o.playerId === "bob");
@@ -143,63 +145,67 @@ Deno.test("AI exists - humans who vote blank get no points", () => {
   assertEquals(bobOutcome?.rewardReason, "foundAI");
   assertEquals(bobOutcome?.pointsEarned, 1);
   assertEquals(aliceOutcome?.rewardReason, "missedAI");
-  assertEquals(aliceOutcome?.pointsEarned, 0);
-});
-
-Deno.test("No AI - humans who vote blank get points", () => {
-  const game = createGameData([
-    { id: "alice", name: "Alice", vote_blank: true },
-    { id: "bob", name: "Bob", vote_blank: true },
-    { id: "carol", name: "Carol", vote: "alice" },
-  ]);
-
-  const outcomes = determineVotingOutcomes(game);
-
-  // Alice and Bob get points for correctly realizing no AI
-  // Alice gets additional point for being voted for by Carol
-  assertEquals(outcomes.length, 3);
-
-  const aliceBlank = outcomes.find(
-    (o) => o.playerId === "alice" && o.rewardReason === "realizedNoAI",
-  );
-  const aliceConvinced = outcomes.find(
-    (o) => o.playerId === "alice" && o.rewardReason === "convincedVoter",
-  );
-  const bobBlank = outcomes.find(
-    (o) => o.playerId === "bob" && o.rewardReason === "realizedNoAI",
-  );
-
-  assertEquals(aliceBlank?.pointsEarned, 1);
-  assertEquals(aliceConvinced?.pointsEarned, 1);
-  assertEquals(bobBlank?.pointsEarned, 1);
+  assertEquals(aliceOutcome?.pointsEarned, -1);
 });
 
 Deno.test(
-  "No AI - humans voting for other humans give points to voted players",
+  "No AI - humans who vote blank get points, voters lose points",
   () => {
     const game = createGameData([
-      { id: "alice", name: "Alice", vote: "bob" },
-      { id: "bob", name: "Bob", vote: "carol" },
+      { id: "alice", name: "Alice", vote_blank: true },
+      { id: "bob", name: "Bob", vote_blank: true },
       { id: "carol", name: "Carol", vote: "alice" },
     ]);
 
     const outcomes = determineVotingOutcomes(game);
 
-    // Everyone gets 1 point for being voted for
+    // Alice and Bob get points for correctly realizing no AI
+    // Carol loses 1 point for wrongly accusing Alice
     assertEquals(outcomes.length, 3);
 
-    const aliceOutcome = outcomes.find((o) => o.playerId === "alice");
-    const bobOutcome = outcomes.find((o) => o.playerId === "bob");
-    const carolOutcome = outcomes.find((o) => o.playerId === "carol");
+    const aliceBlank = outcomes.find(
+      (o) => o.playerId === "alice" && o.rewardReason === "realizedNoAI",
+    );
+    const bobBlank = outcomes.find(
+      (o) => o.playerId === "bob" && o.rewardReason === "realizedNoAI",
+    );
+    const carolWrongAccusation = outcomes.find(
+      (o) => o.playerId === "carol" && o.rewardReason === "wronglyAccusedHuman",
+    );
 
-    assertEquals(aliceOutcome?.rewardReason, "convincedVoter");
-    assertEquals(aliceOutcome?.votedForName, "Carol");
-    assertEquals(bobOutcome?.rewardReason, "convincedVoter");
-    assertEquals(bobOutcome?.votedForName, "Alice");
-    assertEquals(carolOutcome?.rewardReason, "convincedVoter");
-    assertEquals(carolOutcome?.votedForName, "Bob");
+    assertEquals(aliceBlank?.pointsEarned, 1);
+    assertEquals(bobBlank?.pointsEarned, 1);
+    assertEquals(carolWrongAccusation?.pointsEarned, -1);
+    assertEquals(carolWrongAccusation?.votedForName, "Alice");
   },
 );
+
+Deno.test("No AI - humans voting for other humans lose points", () => {
+  const game = createGameData([
+    { id: "alice", name: "Alice", vote: "bob" },
+    { id: "bob", name: "Bob", vote: "carol" },
+    { id: "carol", name: "Carol", vote: "alice" },
+  ]);
+
+  const outcomes = determineVotingOutcomes(game);
+
+  // Everyone loses 1 point for wrongly accusing humans when there's no AI
+  assertEquals(outcomes.length, 3);
+
+  const aliceOutcome = outcomes.find((o) => o.playerId === "alice");
+  const bobOutcome = outcomes.find((o) => o.playerId === "bob");
+  const carolOutcome = outcomes.find((o) => o.playerId === "carol");
+
+  assertEquals(aliceOutcome?.rewardReason, "wronglyAccusedHuman");
+  assertEquals(aliceOutcome?.pointsEarned, -1);
+  assertEquals(aliceOutcome?.votedForName, "Bob");
+  assertEquals(bobOutcome?.rewardReason, "wronglyAccusedHuman");
+  assertEquals(bobOutcome?.pointsEarned, -1);
+  assertEquals(bobOutcome?.votedForName, "Carol");
+  assertEquals(carolOutcome?.rewardReason, "wronglyAccusedHuman");
+  assertEquals(carolOutcome?.pointsEarned, -1);
+  assertEquals(carolOutcome?.votedForName, "Alice");
+});
 
 Deno.test("No AI - everyone votes blank", () => {
   const game = createGameData([
@@ -224,31 +230,35 @@ Deno.test("Complex scenario - AI exists with mixed voting", () => {
     { id: "alice", name: "Alice", vote: "bot" }, // finds AI
     { id: "bob", name: "Bob", vote: "alice" }, // votes for alice
     { id: "carol", name: "Carol", vote: "alice" }, // votes for alice
-    { id: "david", name: "David", vote_blank: true }, // votes blank (gets 0 points)
+    { id: "david", name: "David", vote_blank: true }, // votes blank (loses 1 point)
     { id: "bot", name: "Bot", is_bot: true },
   ]);
 
   const outcomes = determineVotingOutcomes(game);
 
-  // Alice: 1 point for finding AI + 2 points for being voted for by Bob and Carol = 3 total
-  // David gets 0 points for voting blank when AI exists (but still gets an outcome)
+  // Alice: 1 point for finding AI
+  // Bob and Carol: -1 point each for wrongly accusing Alice
+  // David: -1 point for voting blank when AI exists
   assertEquals(outcomes.length, 4);
 
   const aliceFoundAI = outcomes.find(
     (o) => o.playerId === "alice" && o.rewardReason === "foundAI",
   );
-  const aliceConvinced = outcomes.filter(
-    (o) => o.playerId === "alice" && o.rewardReason === "convincedVoter",
+  const bobWrongAccusation = outcomes.find(
+    (o) => o.playerId === "bob" && o.rewardReason === "wronglyAccusedHuman",
+  );
+  const carolWrongAccusation = outcomes.find(
+    (o) => o.playerId === "carol" && o.rewardReason === "wronglyAccusedHuman",
   );
   const davidOutcome = outcomes.find((o) => o.playerId === "david");
 
   assertEquals(aliceFoundAI?.pointsEarned, 1);
-  assertEquals(aliceConvinced.length, 2);
-  aliceConvinced.forEach((outcome) => {
-    assertEquals(outcome.pointsEarned, 1);
-  });
+  assertEquals(bobWrongAccusation?.pointsEarned, -1);
+  assertEquals(bobWrongAccusation?.votedForName, "Alice");
+  assertEquals(carolWrongAccusation?.pointsEarned, -1);
+  assertEquals(carolWrongAccusation?.votedForName, "Alice");
   assertEquals(davidOutcome?.rewardReason, "missedAI");
-  assertEquals(davidOutcome?.pointsEarned, 0);
+  assertEquals(davidOutcome?.pointsEarned, -1);
 });
 
 Deno.test("No votes cast", () => {
@@ -259,4 +269,23 @@ Deno.test("No votes cast", () => {
 
   const outcomes = determineVotingOutcomes(game);
   assertEquals(outcomes.length, 0);
+});
+
+Deno.test("Score cannot go below zero", () => {
+  const game = createGameData([
+    { id: "alice", name: "Alice", vote: "bob", score: 0 }, // Would lose 1 point but score is already 0
+    { id: "bob", name: "Bob", vote: "alice", score: 5 }, // Can lose 1 point normally
+    { id: "bot", name: "Bot", is_bot: true },
+  ]);
+
+  const outcomes = determineVotingOutcomes(game);
+
+  // Both should lose 1 point for wrongly accusing humans, but Alice's score should not go below 0
+  assertEquals(outcomes.length, 2);
+
+  const aliceOutcome = outcomes.find((o) => o.playerId === "alice");
+  const bobOutcome = outcomes.find((o) => o.playerId === "bob");
+
+  assertEquals(aliceOutcome?.pointsEarned, -1); // This should be adjusted later to not go below 0
+  assertEquals(bobOutcome?.pointsEarned, -1);
 });

@@ -214,9 +214,10 @@ async function processVotingOutcomes(
     const player = game.players.find((p) => p.id === outcome.playerId);
     if (!player) throw new Error(`Player ${outcome.playerId} not found`);
 
-    // Update player score
+    // Update player score, ensuring it doesn't go below 0
+    const newScore = Math.max(0, player.score + outcome.pointsEarned);
     await updatePlayerInGame(supabase, game.id, outcome.playerId, {
-      score: player.score + outcome.pointsEarned,
+      score: newScore,
     });
 
     // Post message for this outcome
@@ -226,10 +227,10 @@ async function processVotingOutcomes(
       case "foundAI":
         message = t("messages.foundAI", { player: outcome.playerName });
         break;
-      case "convincedVoter":
-        message = t("messages.convincedVoter", {
+      case "wronglyAccusedHuman":
+        message = t("messages.wronglyAccusedHuman", {
           player: outcome.playerName,
-          voter: outcome.votedForName || "someone",
+          accused: outcome.votedForName || "someone",
         });
         break;
       case "realizedNoAI":
