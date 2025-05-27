@@ -7,6 +7,7 @@ import { useGameIdFromUrl } from "./useGameIdFromUrl";
 import { useProfileQuery } from "./useProfileQuery";
 import { useRouter } from "next/navigation";
 import { extractSupabaseError } from "@/utils/supabase/errorHandling";
+import { useTranslation } from "react-i18next";
 
 export const useStartGameMutation = () => {
   const gameIdFromUrl = useGameIdFromUrl();
@@ -34,10 +35,16 @@ export const useCreateGameMutation = () => {
   const profileQuery = useProfileQuery();
   const profile = profileQuery.data;
   const router = useRouter();
+  const { i18n } = useTranslation();
 
   return useMutation({
     mutationFn: async () => {
-      const response = await supabase.functions.invoke("create-game");
+      // Get the detected language from i18next, fallback to 'en'
+      const detectedLang = i18n.language.startsWith("fr") ? "fr" : "en";
+
+      const response = await supabase.functions.invoke("create-game", {
+        body: { lang: detectedLang },
+      });
       if (response.error) {
         console.error(response.error);
         const errorMessage = await extractSupabaseError(

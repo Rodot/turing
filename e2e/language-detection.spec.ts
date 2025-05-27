@@ -10,14 +10,12 @@ test("browser language detection for French", async ({ browser }) => {
   const page = await context.newPage();
 
   // Setup console logging
-  setupConsoleLogging([page], "LANG_DETECT");
+  setupConsoleLogging([page], "LANG_DETECT_FR");
 
   // Navigate to the home page
   await page.goto("/");
 
   // Check that the page displays French text
-  // Note: The title "The Turing Trial" is hardcoded and not translated
-
   // Test the game subtitle (this should be translated)
   await expect(
     page.getByText("Une IA contrôle quelqu'un dans le chat."),
@@ -31,13 +29,25 @@ test("browser language detection for French", async ({ browser }) => {
   // Test form labels (this should be translated)
   await expect(page.getByLabel("Votre nom")).toBeVisible();
 
-  // Test scoring rules (these should be translated)
-  await expect(
-    page.getByText("+1 🧠 si vous trouvez l'IA parmi les humains"),
-  ).toBeVisible();
-  await expect(
-    page.getByText("-1 🧠 si vous confondez un humain avec l'IA"),
-  ).toBeVisible();
+  // Now test conversation language button in lobby
+  await page.getByLabel("Votre nom").fill("Host");
+  await page.getByLabel("Submit").click();
+  await page.getByLabel("New Game").waitFor();
+  await page.getByLabel("New Game").click();
+
+  // Wait for lobby to load
+  await page.getByText("Langue de Conversation").waitFor();
+
+  // Check that French button is selected (contained variant) and English is not
+  const frenchButton = page.getByRole("button", { name: "Français" });
+  const englishButton = page.getByRole("button", { name: "Anglais" });
+
+  await expect(frenchButton).toBeVisible();
+  await expect(englishButton).toBeVisible();
+
+  // Check that French button has the contained variant (selected state)
+  await expect(frenchButton).toHaveClass(/MuiButton-contained/);
+  await expect(englishButton).toHaveClass(/MuiButton-text/);
 
   await context.close();
 });
@@ -52,12 +62,13 @@ test("browser language detection for English (default)", async ({
 
   const page = await context.newPage();
 
+  // Setup console logging
+  setupConsoleLogging([page], "LANG_DETECT_EN");
+
   // Navigate to the home page
   await page.goto("/");
 
   // Check that the page displays English text
-  // Note: The title "The Turing Trial" is hardcoded and always in English
-
   // Test the game subtitle (this should be in English)
   await expect(
     page.getByText("An AI controls someone in the chat."),
@@ -71,13 +82,25 @@ test("browser language detection for English (default)", async ({
   // Test form labels (this should be in English)
   await expect(page.getByLabel("Your name")).toBeVisible();
 
-  // Test scoring rules (these should be in English)
-  await expect(
-    page.getByText("+1 🧠 if you find the AI among humans"),
-  ).toBeVisible();
-  await expect(
-    page.getByText("-1 🧠 if you confuse a human for the AI"),
-  ).toBeVisible();
+  // Now test conversation language button in lobby
+  await page.getByLabel("Your name").fill("Host");
+  await page.getByLabel("Submit").click();
+  await page.getByLabel("New Game").waitFor();
+  await page.getByLabel("New Game").click();
+
+  // Wait for lobby to load
+  await page.getByText("Conversation Language").waitFor();
+
+  // Check that English button is selected (contained variant) and French is not
+  const englishButton = page.getByRole("button", { name: "English" });
+  const frenchButton = page.getByRole("button", { name: "French" });
+
+  await expect(englishButton).toBeVisible();
+  await expect(frenchButton).toBeVisible();
+
+  // Check that English button has the contained variant (selected state)
+  await expect(englishButton).toHaveClass(/MuiButton-contained/);
+  await expect(frenchButton).toHaveClass(/MuiButton-text/);
 
   await context.close();
 });

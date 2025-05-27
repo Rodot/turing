@@ -11,8 +11,14 @@ export const fetchGame = async (supabase: SupabaseClient, id: string) => {
   return game;
 };
 
-export const insertGame = async (supabase: SupabaseClient) => {
-  const req = await supabase.from("games").insert({}).select();
+export const insertGame = async (
+  supabase: SupabaseClient,
+  gameData?: Partial<GameData>,
+) => {
+  const req = await supabase
+    .from("games")
+    .insert(gameData || {})
+    .select();
   if (req.error) {
     throw new Error(req.error.message);
   }

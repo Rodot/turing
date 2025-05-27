@@ -30,8 +30,12 @@ Deno.serve(async (req) => {
     // Get user profile to get name
     const profile = await fetchProfile(supabase, user.id);
 
-    // Create new game
-    const game = await insertGame(supabase);
+    // Get language from request body, default to 'en'
+    const body = req.method === "POST" ? await req.json() : {};
+    const lang = body.lang === "fr" ? "fr" : "en";
+
+    // Create new game with detected language
+    const game = await insertGame(supabase, { lang });
 
     // Update profile to join the game
     await updateProfileGameId(supabase, user.id, game.id);
