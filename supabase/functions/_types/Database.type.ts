@@ -33,6 +33,7 @@ export type GameStatus =
 
 export type GameData = {
   id: string;
+  created_at: string;
   lang: "en" | "fr";
   status: GameStatus;
   players: PlayerData[];

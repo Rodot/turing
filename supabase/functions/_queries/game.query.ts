@@ -133,6 +133,20 @@ export const updateAllPlayersInGame = async (
   await updateGame(supabase, gameId, { players: game.players });
 };
 
+export const fetchAllGames = async (supabase: SupabaseClient) => {
+  const req = await supabase
+    .from("games")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (req.error) {
+    throw new Error(req.error.message);
+  }
+
+  const games: GameData[] = req?.data ?? [];
+  return games;
+};
+
 export const fetchGameAndCheckStatus = async (
   supabase: SupabaseClient,
   gameId: string,

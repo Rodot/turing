@@ -15,8 +15,10 @@ function createGameData(
 ): GameData {
   return {
     id: "test-game-id",
+    created_at: "2024-01-01T00:00:00Z",
     status: "voting",
     lang: "en",
+    last_bot_id: null,
     players: players.map((p) => ({
       id: p.id,
       name: p.name,
@@ -25,7 +27,7 @@ function createGameData(
       vote_blank: p.vote_blank || false,
       score: p.score || 0,
     })),
-  } as GameData;
+  };
 }
 
 Deno.test("AI exists - humans who vote for AI get points", () => {

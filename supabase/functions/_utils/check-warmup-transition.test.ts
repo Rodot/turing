@@ -13,6 +13,7 @@ function createGameData(
 ): GameData {
   return {
     id: "test-game-id",
+    created_at: "2024-01-01T00:00:00Z",
     status: "talking_warmup",
     lang: "en",
     last_bot_id: null,
