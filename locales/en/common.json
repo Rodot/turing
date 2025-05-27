@@ -39,6 +39,11 @@
     "languages": {
       "english": "English",
       "french": "French"
+    },
+    "startGameConfirmation": {
+      "question": "Has everyone joined the game?",
+      "confirm": "Yes, let's go!",
+      "cancel": "Not yet"
     }
   },
   "game": {

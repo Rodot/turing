@@ -1,14 +1,13 @@
 import React from "react";
 import { ChatHistory } from "./chatHistory";
 import { ChatInput } from "./chatInput";
-import { Box, Chip, Container, Paper, Typography } from "@mui/material";
+import { Box, Container, Paper, Typography } from "@mui/material";
 import { ChatVote } from "./chatVotes";
 import { ButtonGoHome } from "./buttonGoHome";
 import { ButtonStartVote } from "./buttonStartVote";
 import { WarmupProgressBar } from "./warmupProgressBar";
+import { PlayerList } from "./playerList";
 import { useGameQuery } from "@/hooks/useGameQuery";
-import { PlayerData } from "@/supabase/functions/_types/Database.type";
-import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
 export const Chat: React.FC = () => {
@@ -114,45 +113,12 @@ export const Chat: React.FC = () => {
         {/* players line */}
         <Box
           sx={{
-            display: "flex",
-            flexDirection: "row",
-            alignContent: "center",
-            overflowX: "auto",
-            gap: 1,
             p: 1,
             width: "100%",
             borderRadius: 0,
           }}
         >
-          {players
-            .sort((a: PlayerData, b: PlayerData) => b.score - a.score)
-            .map((player: PlayerData) => (
-              <motion.div
-                key={player.id}
-                layoutId={player.id}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <motion.div
-                  key={player.score}
-                  initial={{ scale: player.score > 0 ? 1.5 : 1 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 1.0 }}
-                >
-                  <Chip
-                    size="small"
-                    label={
-                      player.score === 0
-                        ? player.name
-                        : player.name + " " + player.score + " 🧠"
-                    }
-                  />
-                </motion.div>
-              </motion.div>
-            ))}
+          <PlayerList players={players} />
         </Box>
         <Box
           sx={{

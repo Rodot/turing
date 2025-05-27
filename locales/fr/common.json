@@ -39,6 +39,11 @@
     "languages": {
       "english": "Anglais",
       "french": "Français"
+    },
+    "startGameConfirmation": {
+      "question": "Tout le monde a rejoint la partie ?",
+      "confirm": "Oui, c'est parti !",
+      "cancel": "Pas encore"
     }
   },
   "game": {

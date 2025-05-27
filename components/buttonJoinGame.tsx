@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Chip, Box } from "@mui/material";
+import { Button, Box } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useGameIdFromUrl } from "../hooks/useGameIdFromUrl";
 import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
@@ -7,6 +7,7 @@ import { useJoinGameMutation } from "@/hooks/useFunctionsMutation";
 import { useSnackbar } from "./snackbarContext";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { useTranslation } from "react-i18next";
+import { PlayerList } from "./playerList";
 
 export const ButtonJoinGame: React.FC = () => {
   const { t } = useTranslation();
@@ -35,20 +36,7 @@ export const ButtonJoinGame: React.FC = () => {
 
   return (
     <>
-      {game?.players && game.players.length > 0 && (
-        <Box
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 1,
-            justifyContent: "center",
-          }}
-        >
-          {game.players.map((player, index) => (
-            <Chip key={index} label={player.name} size="small" />
-          ))}
-        </Box>
-      )}
+      <PlayerList players={game?.players ?? []} />
 
       <Box sx={{ my: 1 }} />
 

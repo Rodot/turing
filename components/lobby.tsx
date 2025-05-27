@@ -1,11 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
   ButtonGroup,
-  Chip,
   Container,
   Paper,
   Typography,
@@ -13,12 +12,13 @@ import {
 import { ButtonShare } from "./buttonShare";
 import { ButtonGoHome } from "./buttonGoHome";
 import { QRShare } from "./qrShare";
+import { PlayerList } from "./playerList";
+import { StartGameConfirmationModal } from "./startGameConfirmationModal";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { useGameLanguageMutation } from "@/hooks/useGameMutation";
 import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 import { useStartGameMutation } from "@/hooks/useFunctionsMutation";
-import { PlayerData } from "@/supabase/functions/_types/Database.type";
 import { useTranslation } from "react-i18next";
 
 export const Lobby: React.FC = () => {
@@ -32,6 +32,12 @@ export const Lobby: React.FC = () => {
   const startGameMutation = useStartGameMutation();
   const gameLanguageMutation = useGameLanguageMutation();
   const isAnythingLoading = useIsAnythingLoading();
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const handleStartGame = () => {
+    startGameMutation.mutate();
+    setShowConfirmModal(false);
+  };
 
   return (
     <Container
@@ -59,9 +65,7 @@ export const Lobby: React.FC = () => {
         }}
       >
         <ButtonGoHome />
-        {gamePlayers?.map((player: PlayerData) => (
-          <Chip key={player.id} label={player.name} size="small" />
-        ))}
+        <PlayerList players={gamePlayers} />
       </Paper>
 
       <Box sx={{ mb: 4 }}></Box>
@@ -83,7 +87,7 @@ export const Lobby: React.FC = () => {
           component="button"
           color="secondary"
           variant="contained"
-          onClick={() => startGameMutation.mutate()}
+          onClick={() => setShowConfirmModal(true)}
           disabled={isAnythingLoading || !enoughPlayers}
           aria-label="Start Game"
         >
@@ -134,6 +138,14 @@ export const Lobby: React.FC = () => {
         {t("lobby.scanToJoin")}
       </Typography>
       <QRShare url={url} />
+
+      <StartGameConfirmationModal
+        open={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleStartGame}
+        players={gamePlayers}
+        isLoading={startGameMutation.isPending}
+      />
     </Container>
   );
 };
