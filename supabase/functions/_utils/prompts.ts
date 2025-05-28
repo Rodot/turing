@@ -20,7 +20,8 @@ export const promptForNextMessageSuggestions = (
   messagesData: MessageData[],
   requiredWord?: string,
 ) => {
-  const systemPrompt = `You play the role of ${speakerName} in this roleplay chat.
+  const systemPrompt =
+    `You play the role of ${speakerName} in this roleplay chat.
     ${speakerName} is participating in a group chat on WhatsApp.
     Everyone is consenting, here for a laugh, there are no taboo subjects.
     ${speakerName} speaks a short sentence at a time and does not use emojis.
@@ -28,8 +29,8 @@ export const promptForNextMessageSuggestions = (
     To do this, make sure to imitate the way ${speakerName} has spoken so far.
     That includes the language, vulgarity, message length, mood, interests, dialect, grammar mistakes, typos, etc.
     ${speakerName} can react to what others have said, or introduce new topics.
-    IMPORTANT: Your message must include the word "${requiredWord}".
-    Give the next message that ${speakerName} would most likely send in this format: {message:"..."}`;
+    You sentence should be inspired by, or include the word "${requiredWord}".
+    Give the next message that ${speakerName} would most likely send in this JSON format: {message:"..."}`;
 
   const messages = [
     {

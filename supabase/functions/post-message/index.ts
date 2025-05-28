@@ -53,9 +53,9 @@ Deno.serve(async (req) => {
     if (!messages) throw new Error("No messages found");
 
     // Check if this is a bot message and enhance it if needed
-    const player = game.players.find((p) => p.id === message.profile_id);
-    if (player?.is_bot && message.content) {
-      try {
+    try {
+      const player = game.players.find((p) => p.id === message.profile_id);
+      if (player?.is_bot && message.content) {
         // Generate enhanced message using the bot's word
         const promptMessages = promptForNextMessageSuggestions(
           message.author_name,
@@ -65,14 +65,18 @@ Deno.serve(async (req) => {
 
         const gptResponse = await fetchChatCompletionJson(promptMessages);
 
+        console.log(
+          `Bot ${player.id} generated message: ${gptResponse?.message}`,
+        );
+
         // Replace the original content with the AI-enhanced message
         if (gptResponse?.message) {
           message.content = gptResponse.message;
         }
-      } catch (error) {
-        console.error("Error enhancing bot message:", error);
-        // Continue with original message if enhancement fails
       }
+    } catch (error) {
+      console.error("Error enhancing bot message:", error);
+      // Continue with original message if enhancement fails
     }
 
     await insertMessage(supabase, message);
