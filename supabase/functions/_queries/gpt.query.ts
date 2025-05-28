@@ -14,7 +14,8 @@ export const fetchChatCompletionJson = async (
       body: JSON.stringify({
         model: "o4-mini",
         response_format: { type: "json_object" },
-        temperature: 1.0,
+        reasoning: { effort: "low" },
+        temperature: 1.5,
         messages,
       }),
     },
