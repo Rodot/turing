@@ -99,9 +99,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
                 type="submit"
                 variant="contained"
                 color="secondary"
-                disabled={
-                  postMessageMutation.isPending || content.trim().length === 0
-                }
+                disabled={postMessageMutation.isPending}
                 aria-label="Send word"
               >
                 <Send />
