@@ -221,7 +221,6 @@ test("smart chat scrolling behavior", async ({ browser }) => {
   await host.page.evaluate(() => {
     window.scrollTo(0, 0);
   });
-  await host.page.waitForTimeout(500);
 
   // Host sends a message while scrolled up
   await host.page

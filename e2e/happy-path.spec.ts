@@ -72,8 +72,6 @@ test("multi-user game flow", async ({ browser }) => {
   await host.page.getByText("Yes, let's go!").waitFor();
   await host.page.getByText("Yes, let's go!").click();
 
-  await host.page.waitForTimeout(3000);
-
   // Check initial warmup phase status
   await expect(host.page.getByText("Warming up")).toBeVisible();
 
@@ -158,10 +156,12 @@ test("multi-user game flow", async ({ browser }) => {
   await human1.page.getByLabel("Start Vote").click();
 
   // Wait for voting phase and check status changed
-  await human1.page.waitForTimeout(4000); // Wait for the 3 second delay + transition
   await expect(human1.page.getByText("Vote for the AI 🗳️")).toBeVisible();
 
   // Verify voting interface is available for humans
   await expect(human1.page.getByText("Who was the AI? 🤖")).toBeVisible();
   await expect(human2.page.getByText("Who was the AI? 🤖")).toBeVisible();
+
+  // cleanup
+  await Promise.all(contexts.map((context) => context.close()));
 });

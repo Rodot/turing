@@ -38,10 +38,10 @@ test("snackbar should auto-hide after timeout", async ({ page }) => {
   await expect(alertMessage).toContainText("Game not found");
 
   // Wait longer than the autoHideDuration
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(4000);
 
   // Verify the snackbar is NOT visible after the timeout
-  await expect(snackbar).not.toBeVisible({ timeout: 1000 });
+  await expect(snackbar).not.toBeVisible();
 });
 
 test("snackbar should not close on clickaway", async ({ page }) => {
