@@ -31,8 +31,8 @@ export function getWarmupProgress(
     (m) => m.type === "user",
   ) as MessageData[];
 
-  // Calculate threshold: 3 messages per player
-  const messageThreshold = game.players.length * 3;
+  // Calculate threshold: 1 message per player
+  const messageThreshold = game.players.length * 1;
 
   // Calculate progress (capped at 1.0)
   const progress = Math.min(

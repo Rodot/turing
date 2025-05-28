@@ -81,9 +81,9 @@ test("multi-user game flow", async ({ browser }) => {
   await expect(host.page.getByText(/🤔/).first()).toBeVisible();
 
   // During warmup phase, all players should be human and able to send messages
-  // Need total of 3 × number of players messages to trigger transition to hunt phase
-  // With 3 players, that's 9 total messages needed
-  const totalMessagesNeeded = 3 * testPlayers.length;
+  // Need total of 1 × number of players messages to trigger transition to hunt phase
+  // With 3 players, that's 3 total messages needed
+  const totalMessagesNeeded = 1 * testPlayers.length;
   for (
     let messageIndex = 0;
     messageIndex < totalMessagesNeeded;
