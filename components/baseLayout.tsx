@@ -14,7 +14,7 @@ import I18nProvider from "./i18nProvider";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 200,
+      staleTime: 3000,
     },
   },
 });
