@@ -87,9 +87,9 @@ test("multi-user game flow", async ({ browser }) => {
   });
 
   // During warmup phase, all players should be human and able to send messages
-  // Need total of 1 × number of players messages to trigger transition to hunt phase
-  // With 3 players, that's 3 total messages needed
-  const totalMessagesNeeded = 1 * testPlayers.length;
+  // Need total of 2 × number of players messages to trigger transition to hunt phase
+  // With 3 players, that's 6 total messages needed
+  const totalMessagesNeeded = 2 * testPlayers.length;
   for (
     let messageIndex = 0;
     messageIndex < totalMessagesNeeded;

@@ -63,7 +63,7 @@ Deno.test("checkWarmupTransition - no warmup status message", () => {
 });
 
 Deno.test(
-  "checkWarmupTransition - not enough total messages (need 1x players)",
+  "checkWarmupTransition - not enough total messages (need 2x players)",
   () => {
     const game = createGameData([
       { id: "player1", name: "Alice" },
@@ -72,7 +72,7 @@ Deno.test(
 
     const messages: MessageData[] = [
       createMessage("1", "system", "talking_warmup", "status"),
-      createMessage("2", "player1", "Hello"), // Only 1 message, need 2 (1 × 2 players)
+      createMessage("2", "player1", "Hello"), // Only 1 message, need 4 (2 × 2 players)
     ];
 
     const result = checkWarmupTransition(game, messages);
@@ -81,7 +81,7 @@ Deno.test(
   },
 );
 
-Deno.test("checkWarmupTransition - enough total messages (1x players)", () => {
+Deno.test("checkWarmupTransition - enough total messages (2x players)", () => {
   const game = createGameData([
     { id: "player1", name: "Alice" },
     { id: "player2", name: "Bob" },
@@ -94,7 +94,7 @@ Deno.test("checkWarmupTransition - enough total messages (1x players)", () => {
     createMessage("4", "player2", "Hi there"),
     createMessage("5", "player2", "I'm good"),
     createMessage("6", "player1", "Great!"),
-    createMessage("5", "player2", "I'm good"), // 2 messages total = 1 × 2 players
+    createMessage("7", "player2", "Another message"), // 4 messages total = 2 × 2 players
   ];
 
   const result = checkWarmupTransition(game, messages);
@@ -113,7 +113,9 @@ Deno.test(
     const messages: MessageData[] = [
       createMessage("1", "system", "talking_warmup", "status"),
       createMessage("2", "player1", "Hello"),
-      createMessage("3", "player2", "Hi there"), // 2nd user message reaches 1 × 2 = 2 threshold
+      createMessage("3", "player2", "Hi there"),
+      createMessage("4", "player1", "How are you?"),
+      createMessage("5", "player2", "I'm good"), // 4th user message reaches 2 × 2 = 4 threshold
     ];
 
     const result = checkWarmupTransition(game, messages);
@@ -132,7 +134,9 @@ Deno.test("checkWarmupTransition - ignores non-user messages", () => {
     createMessage("1", "system", "talking_warmup", "status"),
     createMessage("2", "player1", "Hello"),
     createMessage("3", "system", "System message", "system"),
-    createMessage("4", "player2", "Hi there"), // 2 user messages = 1 × 2 players
+    createMessage("4", "player2", "Hi there"),
+    createMessage("5", "player1", "How are you?"),
+    createMessage("6", "player2", "I'm good"), // 4 user messages = 2 × 2 players
   ];
 
   const result = checkWarmupTransition(game, messages);
@@ -155,12 +159,13 @@ Deno.test(
       createMessage("4", "system", "talking_warmup", "status"), // Second warmup (should use this)
       createMessage("5", "player1", "Hello from second warmup"),
       createMessage("6", "player2", "Hi from second warmup"),
-      createMessage("7", "player2", "Second message in second warmup"),
+      createMessage("7", "player1", "Second message in second warmup"),
+      createMessage("8", "player2", "Another message from second warmup"),
     ];
 
     const result = checkWarmupTransition(game, messages);
 
-    assertEquals(result, true); // 3 messages since last warmup, need 2 (1 × 2 players)
+    assertEquals(result, true); // 4 messages since last warmup, need 4 (2 × 2 players)
   },
 );
 
@@ -178,12 +183,14 @@ Deno.test(
       createMessage("3", "player1", "Another from first warmup"),
       createMessage("4", "system", "talking_warmup", "status"), // Second warmup (should use this)
       createMessage("5", "player1", "Hello from second warmup"),
-      createMessage("6", "player2", "Hi from second warmup"), // 2 messages since last warmup = 1 × 2 players
+      createMessage("6", "player2", "Hi from second warmup"),
+      createMessage("7", "player1", "Third warmup message"),
+      createMessage("8", "player2", "Fourth warmup message"), // 4 messages since last warmup = 2 × 2 players
     ];
 
     const result = checkWarmupTransition(game, messages);
 
-    assertEquals(result, true); // 2 total messages since last warmup
+    assertEquals(result, true); // 4 total messages since last warmup
   },
 );
 
@@ -198,7 +205,10 @@ Deno.test("checkWarmupTransition - three players scenario", () => {
     createMessage("1", "system", "talking_warmup", "status"),
     createMessage("2", "player1", "Hello"),
     createMessage("3", "player2", "Hi there"),
-    createMessage("4", "player3", "Hey everyone"), // 3 messages total = 1 × 3 players
+    createMessage("4", "player3", "Hey everyone"),
+    createMessage("5", "player1", "How are you?"),
+    createMessage("6", "player2", "I'm good"),
+    createMessage("7", "player3", "Great to meet you"), // 6 messages total = 2 × 3 players
   ];
 
   const result = checkWarmupTransition(game, messages);
@@ -218,7 +228,7 @@ Deno.test(
     const messages: MessageData[] = [
       createMessage("1", "system", "talking_warmup", "status"),
       createMessage("2", "player1", "Hello"),
-      createMessage("3", "player2", "Hi there"), // Only 2 messages, need 3 (1 × 3 players)
+      createMessage("3", "player2", "Hi there"), // Only 2 messages, need 6 (2 × 3 players)
     ];
 
     const result = checkWarmupTransition(game, messages);
@@ -245,14 +255,16 @@ Deno.test(
       createMessage("6", "player2", "Sixth lobby message"),
       // Warmup starts here
       createMessage("7", "system", "talking_warmup", "status"),
-      // Only these messages should count towards the 1x players threshold
+      // Only these messages should count towards the 2x players threshold
       createMessage("8", "player1", "First warmup message"),
-      createMessage("9", "player2", "Second warmup message"), // 2 messages = 1 × 2 players
+      createMessage("9", "player2", "Second warmup message"),
+      createMessage("10", "player1", "Third warmup message"),
+      createMessage("11", "player2", "Fourth warmup message"), // 4 messages = 2 × 2 players
     ];
 
     const result = checkWarmupTransition(game, messages);
 
-    assertEquals(result, true); // Should transition despite having many messages before warmup
+    assertEquals(result, true); // Should transition with 4 messages after warmup
   },
 );
 
@@ -275,7 +287,7 @@ Deno.test(
       // Warmup starts here
       createMessage("7", "system", "talking_warmup", "status"),
       // Not enough messages after warmup
-      createMessage("8", "player1", "First warmup message"), // Only 1 message, need 2 (1 × 2 players)
+      createMessage("8", "player1", "First warmup message"), // Only 1 message, need 4 (2 × 2 players)
     ];
 
     const result = checkWarmupTransition(game, messages);
