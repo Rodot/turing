@@ -35,7 +35,7 @@ export const Lobby: React.FC = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const handleStartGame = () => {
-    startGameMutation.mutate();
+    startGameMutation.mutate(gameQuery.data?.id ?? "");
     setShowConfirmModal(false);
   };
 

@@ -3,20 +3,17 @@
 import { MessageData } from "@/supabase/functions/_types/Database.type";
 import { supabase } from "@/utils/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useGameIdFromUrl } from "./useGameIdFromUrl";
-import { useProfileQuery } from "./useProfileQuery";
 import { useRouter } from "next/navigation";
 import { extractSupabaseError } from "@/utils/supabase/errorHandling";
 import { useTranslation } from "react-i18next";
 
 export const useStartGameMutation = () => {
-  const gameIdFromUrl = useGameIdFromUrl();
-
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async () => {
-      if (!gameIdFromUrl) throw new Error("No game joined");
+    mutationFn: async (gameId: string) => {
+      if (!gameId) throw new Error("No game joined");
       const response = await supabase.functions.invoke("start-game", {
-        body: { gameId: gameIdFromUrl },
+        body: { gameId: gameId },
       });
       if (response.error) {
         const errorMessage = await extractSupabaseError(
@@ -25,15 +22,17 @@ export const useStartGameMutation = () => {
         );
         throw new Error(errorMessage);
       }
-      return { gameId: gameIdFromUrl };
+      return { gameId: gameId };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["game"] });
     },
   });
 };
 
 export const useCreateGameMutation = () => {
   const queryClient = useQueryClient();
-  const profileQuery = useProfileQuery();
-  const profile = profileQuery.data;
   const router = useRouter();
   const { i18n } = useTranslation();
 
@@ -56,8 +55,9 @@ export const useCreateGameMutation = () => {
       return response?.data?.game_id as string | undefined;
     },
     onSuccess: (gameId) => {
-      if (gameId && profile?.id) {
-        queryClient.invalidateQueries({ queryKey: ["profile", profile.id] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["game"] });
+      if (gameId) {
         router.push(`/?game=${gameId}`);
       }
     },
@@ -65,6 +65,7 @@ export const useCreateGameMutation = () => {
 };
 
 export const usePlayerVoteMutation = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (params: {
       gameId: string;
@@ -83,6 +84,10 @@ export const usePlayerVoteMutation = () => {
         throw new Error(errorMessage);
       }
       return params;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["game"] });
     },
   });
 };
@@ -108,9 +113,6 @@ export const usePostMessageMutation = () => {
 
 export const useEndGameMutation = () => {
   const queryClient = useQueryClient();
-  const profileQuery = useProfileQuery();
-  const userId = profileQuery.data?.id;
-
   return useMutation({
     mutationFn: async (gameId: string) => {
       const response = await supabase.functions.invoke("end-game", {
@@ -126,12 +128,14 @@ export const useEndGameMutation = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profile", userId] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["game"] });
     },
   });
 };
 
 export const useStartVoteMutation = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (gameId: string) => {
       const response = await supabase.functions.invoke("start-vote", {
@@ -145,6 +149,10 @@ export const useStartVoteMutation = () => {
         );
         throw new Error(errorMessage);
       }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["game"] });
     },
   });
 };
@@ -176,12 +184,9 @@ export const useGenerateAnswersMutation = () => {
 
 export const useJoinGameMutation = () => {
   const queryClient = useQueryClient();
-  const profileQuery = useProfileQuery();
-  const profile = profileQuery.data;
 
   return useMutation({
     mutationFn: async (gameId: string) => {
-      if (!profile?.id) throw new Error("User not authenticated");
       const response = await supabase.functions.invoke("join-game", {
         body: { gameId },
       });
@@ -193,10 +198,11 @@ export const useJoinGameMutation = () => {
         );
         throw new Error(errorMessage);
       }
-      return { profileId: profile.id, gameId };
+      return;
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["profile", data.profileId] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["game"] });
     },
   });
 };
