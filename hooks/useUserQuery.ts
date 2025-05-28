@@ -10,7 +10,11 @@ const getOrCreateUser = async (): Promise<User> => {
   try {
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError) {
-      throw Error("userError:", userError);
+      // Don't log "Auth session missing" as it's expected behavior during initialization
+      if (!userError.message.includes("Auth session missing")) {
+        console.error("getUser: unexpected error:", userError.message);
+      }
+      throw new Error(`userError: ${userError.message}`);
     }
     const profile = await fetchUserProfile(supabase, userData.user.id);
     if (profile === undefined) {
@@ -20,7 +24,13 @@ const getOrCreateUser = async (): Promise<User> => {
     }
     return userData.user;
   } catch (error) {
-    console.error("getUser:", error);
+    // Only log unexpected errors, not the expected "Auth session missing" flow
+    if (
+      error instanceof Error &&
+      !error.message.includes("Auth session missing")
+    ) {
+      console.error("getUser:", error);
+    }
   }
 
   // If no user exists, sign up anonymously

@@ -10,7 +10,7 @@ test("browser language detection for French", async ({ browser }) => {
   const page = await context.newPage();
 
   // Setup console logging
-  setupConsoleLogging([page], "LANG_DETECT_FR");
+  const consoleHandler = setupConsoleLogging([page], "LANG_DETECT_FR");
 
   // Navigate to the home page
   await page.goto("/");
@@ -49,6 +49,9 @@ test("browser language detection for French", async ({ browser }) => {
   await expect(frenchButton).toHaveClass(/MuiButton-contained/);
   await expect(englishButton).toHaveClass(/MuiButton-text/);
 
+  // Check for console errors
+  consoleHandler.checkForConsoleErrors();
+
   await context.close();
 });
 
@@ -63,7 +66,7 @@ test("browser language detection for English (default)", async ({
   const page = await context.newPage();
 
   // Setup console logging
-  setupConsoleLogging([page], "LANG_DETECT_EN");
+  const consoleHandler2 = setupConsoleLogging([page], "LANG_DETECT_EN");
 
   // Navigate to the home page
   await page.goto("/");
@@ -101,6 +104,9 @@ test("browser language detection for English (default)", async ({
   // Check that English button has the contained variant (selected state)
   await expect(englishButton).toHaveClass(/MuiButton-contained/);
   await expect(frenchButton).toHaveClass(/MuiButton-text/);
+
+  // Check for console errors
+  consoleHandler2.checkForConsoleErrors();
 
   await context.close();
 });

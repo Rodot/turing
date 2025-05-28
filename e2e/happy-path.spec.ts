@@ -14,7 +14,7 @@ test("multi-user game flow", async ({ browser }) => {
   const pages = await Promise.all(contexts.map((context) => context.newPage()));
 
   // Setup console logging for all pages
-  setupConsoleLogging(pages, "HAPPY_PATH");
+  const consoleHandler = setupConsoleLogging(pages, "HAPPY_PATH");
 
   const testPlayers: TestPlayer[] = pages.map((page, index) => ({
     name: `Player${index}`,
@@ -171,6 +171,9 @@ test("multi-user game flow", async ({ browser }) => {
   // Verify voting interface is available for humans
   await expect(human1.page.getByText("Who was the AI? 🤖")).toBeVisible();
   await expect(human2.page.getByText("Who was the AI? 🤖")).toBeVisible();
+
+  // Check for console errors
+  consoleHandler.checkForConsoleErrors();
 
   // cleanup
   await Promise.all(contexts.map((context) => context.close()));

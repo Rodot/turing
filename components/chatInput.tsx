@@ -34,12 +34,10 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   const postMessageMutation = usePostMessageMutation();
 
   if (!userQuery.data) {
-    console.error("User data not available");
     return null;
   }
   const gameId = gameQuery?.data?.id;
   if (!gameId || !gameQuery.data) {
-    console.error("Game ID not available");
     return null;
   }
   const me = getPlayerFromGame(gameQuery.data, userQuery.data.id);

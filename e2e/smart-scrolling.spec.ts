@@ -12,7 +12,7 @@ test("smart chat scrolling behavior", async ({ browser }) => {
   const pages = await Promise.all(contexts.map((context) => context.newPage()));
 
   // Setup console logging for all pages
-  setupConsoleLogging(pages, "SMART_SCROLL");
+  const consoleHandler = setupConsoleLogging(pages, "SMART_SCROLL");
 
   const testPlayers: TestPlayer[] = pages.map((page, index) => ({
     name: `Player${index}`,
@@ -238,6 +238,9 @@ test("smart chat scrolling behavior", async ({ browser }) => {
   await expect(
     host.page.getByText("Host message while scrolled up"),
   ).toBeVisible();
+
+  // Check for console errors
+  consoleHandler.checkForConsoleErrors();
 
   // Cleanup
   await Promise.all(contexts.map((context) => context.close()));
