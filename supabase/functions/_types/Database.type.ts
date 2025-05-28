@@ -1,4 +1,9 @@
-export type MessageType = "system" | "icebreaker" | "user" | "status";
+export type MessageType =
+  | "system"
+  | "icebreaker"
+  | "user"
+  | "status"
+  | "bot_picked";
 
 export type MessageData = {
   id: string;

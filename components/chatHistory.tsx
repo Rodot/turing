@@ -19,7 +19,9 @@ export const ChatHistory: React.FC = () => {
   const messagesQuery = useMessagesQuery();
   const messages = useMemo(
     () =>
-      (messagesQuery.data || []).filter((message) => message.type !== "status"),
+      (messagesQuery.data || []).filter((message) =>
+        ["user", "system", "icebreaker"].includes(message.type),
+      ),
     [messagesQuery.data],
   );
   const gameQuery = useGameQuery();

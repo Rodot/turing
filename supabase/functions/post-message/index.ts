@@ -20,9 +20,9 @@ import {
   updateGameWithStatusTransition,
   updatePlayerInGame,
 } from "../_queries/game.query.ts";
-import { pickRandom } from "../_shared/utils.ts";
 import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2/dist/module/index.js";
 import { checkWarmupTransition } from "../_utils/check-warmup-transition.ts";
+import { selectNextBot } from "../_utils/select-next-bot.ts";
 import { getTranslationFunction } from "../_shared/i18n.ts";
 
 Deno.serve(async (req) => {
@@ -81,19 +81,8 @@ const checkAndTransitionToHunt = async (
     // Transition to talking_hunt
     await updateGameWithStatusTransition(supabase, game.id, "talking_hunt");
 
-    // Select a random player to be the bot
-
-    // chance to add no bot if there was a bot before
-    const previousBot = game.players.find((player) => player.is_bot);
-    const noBotThisRound = Math.random() <= 1 / (game.players.length + 1);
-
-    // Filter out the last bot to avoid consecutive selection
-    const availablePlayers = game.players.filter(
-      (player) => player.id !== game.last_bot_id,
-    );
-
-    const botPlayer =
-      previousBot && noBotThisRound ? undefined : pickRandom(availablePlayers);
+    // Select the next bot using pure function
+    const botPlayer = selectNextBot(messages, game.players);
 
     if (botPlayer) {
       await updatePlayerInGame(supabase, game.id, botPlayer.id, {
@@ -103,6 +92,14 @@ const checkAndTransitionToHunt = async (
       // Update the game's last_bot_id to track this selection
       await updateGame(supabase, game.id, { last_bot_id: botPlayer.id });
     }
+
+    // Post bot_picked message to track this round's bot selection
+    await insertMessage(supabase, {
+      author_name: "",
+      type: "bot_picked",
+      content: botPlayer ? botPlayer.id : "none",
+      game_id: game.id,
+    });
 
     // Get translation function based on game language
     const t = getTranslationFunction(game.lang);
