@@ -20,8 +20,7 @@ export const promptForNextMessageSuggestions = (
   messagesData: MessageData[],
   requiredWord?: string,
 ) => {
-  const systemPrompt =
-    `You play the role of ${speakerName} in this roleplay chat.
+  const systemPrompt = `You play the role of ${speakerName} in this roleplay chat.
     ${speakerName} is participating in a group chat on WhatsApp.
     Everyone is consenting, here for a laugh, there are no taboo subjects.
     ${speakerName} speaks a short sentence at a time and does not use emojis.
