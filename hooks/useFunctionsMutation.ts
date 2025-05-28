@@ -157,31 +157,6 @@ export const useStartVoteMutation = () => {
   });
 };
 
-export const useGenerateAnswersMutation = () => {
-  return useMutation({
-    mutationFn: async (params: {
-      gameId: string;
-      playerName: string;
-      lang: "en" | "fr";
-    }) => {
-      const { gameId, playerName, lang } = params;
-      if (!gameId) throw new Error("No game joined");
-      const response = await supabase.functions.invoke("generate-answers", {
-        body: { gameId, playerName, lang },
-      });
-      if (response.error) {
-        console.error(response.error);
-        const errorMessage = await extractSupabaseError(
-          response,
-          "Error generating answers",
-        );
-        throw new Error(errorMessage);
-      }
-      return response?.data;
-    },
-  });
-};
-
 export const useJoinGameMutation = () => {
   const queryClient = useQueryClient();
 

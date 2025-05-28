@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@mui/material";
 import { useCreateGameMutation } from "@/hooks/useFunctionsMutation";
 import { useTranslation } from "react-i18next";
+import { Spinner } from "./spinner";
 
 export const ButtonCreateGame: React.FC = () => {
   const { t } = useTranslation();
@@ -16,6 +17,7 @@ export const ButtonCreateGame: React.FC = () => {
       aria-label="New Game"
     >
       🏁&nbsp;{t("buttons.newGame")}
+      {createGameMutation.isPending && <Spinner />}
     </Button>
   );
 };

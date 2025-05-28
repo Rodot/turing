@@ -4,6 +4,7 @@ import { useEndGameMutation } from "@/hooks/useFunctionsMutation";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
 import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 import { useTranslation } from "react-i18next";
+import { Spinner } from "./spinner";
 
 export const ButtonEndGame: React.FC = () => {
   const { t } = useTranslation();
@@ -19,6 +20,7 @@ export const ButtonEndGame: React.FC = () => {
       disabled={isAnything}
     >
       ❌&nbsp;{t("buttons.endGame")}
+      {endGameMutation.isPending && <Spinner />}
     </Button>
   );
 };

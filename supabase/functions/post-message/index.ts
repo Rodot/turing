@@ -24,6 +24,8 @@ import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2
 import { checkWarmupTransition } from "../_utils/check-warmup-transition.ts";
 import { selectNextBot } from "../_utils/select-next-bot.ts";
 import { getTranslationFunction } from "../_shared/i18n.ts";
+import { fetchChatCompletionJson } from "../_queries/gpt.query.ts";
+import { promptForNextMessageSuggestions } from "../_utils/prompts.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -49,6 +51,29 @@ Deno.serve(async (req) => {
     ]);
 
     if (!messages) throw new Error("No messages found");
+
+    // Check if this is a bot message and enhance it if needed
+    const player = game.players.find((p) => p.id === message.profile_id);
+    if (player?.is_bot && message.content) {
+      try {
+        // Generate enhanced message using the bot's word
+        const promptMessages = promptForNextMessageSuggestions(
+          message.author_name,
+          messages,
+          message.content,
+        );
+
+        const gptResponse = await fetchChatCompletionJson(promptMessages);
+
+        // Replace the original content with the AI-enhanced message
+        if (gptResponse?.message) {
+          message.content = gptResponse.message;
+        }
+      } catch (error) {
+        console.error("Error enhancing bot message:", error);
+        // Continue with original message if enhancement fails
+      }
+    }
 
     await insertMessage(supabase, message);
 

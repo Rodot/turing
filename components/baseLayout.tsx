@@ -1,7 +1,6 @@
 "use client";
 import React, { Suspense } from "react";
 import { Spinner } from "./spinner";
-import { QueryLoadingBar } from "./queryLoadingBar";
 import { QueryErrorReporter } from "./queryErrorReporter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
@@ -28,7 +27,6 @@ export function BaseLayout({ children }: React.PropsWithChildren) {
             <ThemeProvider theme={theme}>
               <SnackbarProvider>
                 <QueryErrorReporter />
-                <QueryLoadingBar />
                 {children}
               </SnackbarProvider>
             </ThemeProvider>

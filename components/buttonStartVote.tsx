@@ -3,6 +3,7 @@ import { Button } from "@mui/material";
 import { useStartVoteMutation } from "@/hooks/useFunctionsMutation";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
 import { useTranslation } from "react-i18next";
+import { Spinner } from "./spinner";
 
 export const ButtonStartVote: React.FC = () => {
   const { t } = useTranslation();
@@ -20,6 +21,7 @@ export const ButtonStartVote: React.FC = () => {
       aria-label="Start Vote"
     >
       🗳️&nbsp;{t("buttons.startVote")}
+      {startVoteMutation.isPending && <Spinner />}
     </Button>
   );
 };

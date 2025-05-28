@@ -8,6 +8,7 @@ import { useSnackbar } from "./snackbarContext";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { useTranslation } from "react-i18next";
 import { PlayerList } from "./playerList";
+import { Spinner } from "./spinner";
 
 export const ButtonJoinGame: React.FC = () => {
   const { t } = useTranslation();
@@ -55,6 +56,7 @@ export const ButtonJoinGame: React.FC = () => {
         {game?.players?.[0]?.name
           ? t("buttons.joinPlayerGame", { player: game.players[0].name })
           : t("buttons.joinGame")}
+        {joinGameMutation.isPending && <Spinner />}
       </Button>
 
       <Button

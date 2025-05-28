@@ -9,7 +9,6 @@
     "copy": "Copier",
     "copied": "Copié",
     "startVote": "Voter",
-    "generateAiAnswers": "Générer des Réponses IA",
     "sendMessage": "Envoyer un message",
     "startGame": "Commencer la Partie",
     "submit": "Envoyer",
@@ -59,6 +58,7 @@
     }
   },
   "forms": {
-    "yourName": "Votre nom"
+    "yourName": "Votre nom",
+    "botWordInput": "🤖 Envoyer un mot à l'IA qui vous contrôle"
   }
 }

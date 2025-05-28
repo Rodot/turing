@@ -120,7 +120,7 @@ test("multi-user game flow", async ({ browser }) => {
       }
     } catch {}
     try {
-      if (await player.page.getByLabel("AI Answers").isVisible()) {
+      if (await player.page.getByLabel("Bot word input").isVisible()) {
         console.log(`Found AI: ${player.name}`);
         player.isAI = true;
       }

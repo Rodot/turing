@@ -9,7 +9,6 @@
     "copy": "Copy",
     "copied": "Copied",
     "startVote": "Start Vote",
-    "generateAiAnswers": "Generate AI Answers",
     "sendMessage": "Send message",
     "startGame": "Start Game",
     "submit": "Submit",
@@ -59,6 +58,7 @@
     }
   },
   "forms": {
-    "yourName": "Your name"
+    "yourName": "Your name",
+    "botWordInput": "🤖 Send a word to the AI that controls you"
   }
 }
