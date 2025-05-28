@@ -149,7 +149,11 @@ Deno.serve(async (req) => {
       } else {
         // Next round
         const t = getTranslationFunction(gameAfterVote.lang);
-        await postSystemMessage(supa, gameId, `💬 ${t("messages.aiIsGone")}`);
+        await postSystemMessage(
+          supa,
+          gameId,
+          `💬 ${t("messages.roundEndNewTopic")}`,
+        );
 
         console.log("Next round", gameId);
 
@@ -181,20 +185,28 @@ async function announceBotReveal(
   const botPlayer = game.players.find((player) => player.is_bot);
   const t = getTranslationFunction(game.lang);
 
-  await postSystemMessage(supabase, game.id, `😱 ${t("messages.resultsIn")}`);
-  await postSystemMessage(supabase, game.id, `🥁 ${t("messages.andTheAiWas")}`);
+  await postSystemMessage(
+    supabase,
+    game.id,
+    `😱 ${t("messages.voteResultsAnnouncement")}`,
+  );
+  await postSystemMessage(
+    supabase,
+    game.id,
+    `🥁 ${t("messages.aiIdentityReveal")}`,
+  );
 
   if (botPlayer) {
     await postSystemMessage(
       supabase,
       game.id,
-      `🤖 ${t("messages.aiPlayerReveal", { player: botPlayer.name })}`,
+      `🤖 ${t("messages.revealedPlayerName", { player: botPlayer.name })}`,
     );
   } else {
     await postSystemMessage(
       supabase,
       game.id,
-      `❌ ${t("messages.nobodyWasAi")}`,
+      `❌ ${t("messages.noAiThisRound")}`,
     );
   }
 }

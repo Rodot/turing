@@ -16,7 +16,9 @@ import { createErrorResponse } from "../_utils/error.ts";
 import {
   postIcebreakerMessage,
   fetchMessages,
+  postSystemMessage,
 } from "../_queries/messages.query.ts";
+import { getTranslationFunction } from "../_shared/i18n.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -44,6 +46,10 @@ Deno.serve(async (req) => {
       is_bot: false,
       score: 0,
     });
+
+    // Get translation function and post warmup intro message
+    const t = getTranslationFunction(game.lang);
+    await postSystemMessage(supabase, gameId, t("messages.warmupPhaseMessage"));
 
     const messages = await fetchMessages(supabase, gameId);
     await postIcebreakerMessage(supabase, game, messages);

@@ -2,11 +2,10 @@
 
 ## Commands
 
-You must run `npm run quality` after each modification.
-
-If it fails, find the issue, fix it, and run `npm run quality` again.
-
-If e2e fail, fix them as well. You can see the browser console output when you run the command, and the screenshots in the `test-results` folder.
+- You must run `npm run quality` after each modification.
+- If it fails, find the issue, fix it, and run `npm run quality` again.
+- If e2e tests fail, you must always fix them.
+- You must take screenshots and add console logs before the failing assertion and look at them to see what went wrong.
 
 ## Architecture Overview
 

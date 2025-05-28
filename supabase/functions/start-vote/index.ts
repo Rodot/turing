@@ -48,6 +48,18 @@ Deno.serve(async (req) => {
       `🗳️ ${t("messages.startedVote", { player: player.name })}`,
     );
 
+    // Post AI control instructions after vote announcement
+    await postSystemMessage(
+      supabase,
+      gameId,
+      `${t("messages.voteInstructionsHunting")}`,
+    );
+    await postSystemMessage(
+      supabase,
+      gameId,
+      `${t("messages.voteInstructionsDeception")}`,
+    );
+
     // Set the game status to "voting"
     await updateGameWithStatusTransition(supabase, gameId, "voting");
 

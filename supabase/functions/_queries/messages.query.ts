@@ -47,7 +47,7 @@ export const postSystemMessage = async (
     content: message,
     game_id: gameId,
   });
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 };
 
 export const postIcebreakerMessage = async (

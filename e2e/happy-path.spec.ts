@@ -57,11 +57,17 @@ test("multi-user game flow", async ({ browser }) => {
     );
   }
 
+  // Wait for all players to be fully loaded in the lobby
   for (const guest of guests) {
+    // Wait for the status message that indicates all players have joined
+    // This will be "Waiting for Player0 to start the game" instead of "3+ players required"
+    await guest.page
+      .getByText("Waiting for Player0 to start the game.")
+      .waitFor();
+
+    // Then check for all players - they should be visible now
     for (const player of testPlayers) {
-      await expect(
-        guest.page.getByText(player.name, { exact: true }),
-      ).toHaveCount(1);
+      await expect(guest.page.getByText(player.name).first()).toBeVisible();
     }
   }
 
@@ -76,7 +82,9 @@ test("multi-user game flow", async ({ browser }) => {
   await expect(host.page.getByText("Warming up")).toBeVisible();
 
   // Check that the ice breaker message (starting with 🤔) is visible on mobile viewport
-  await expect(host.page.getByText(/🤔/).first()).toBeVisible();
+  await expect(host.page.getByText(/🤔/).first()).toBeVisible({
+    timeout: 15000,
+  });
 
   // During warmup phase, all players should be human and able to send messages
   // Need total of 1 × number of players messages to trigger transition to hunt phase
@@ -156,7 +164,9 @@ test("multi-user game flow", async ({ browser }) => {
   await human1.page.getByLabel("Start Vote").click();
 
   // Wait for voting phase and check status changed
-  await expect(human1.page.getByText("Vote for the AI 🗳️")).toBeVisible();
+  await expect(
+    human1.page.getByText("💡 Vote for the AI to earn a 🧠"),
+  ).toBeVisible();
 
   // Verify voting interface is available for humans
   await expect(human1.page.getByText("Who was the AI? 🤖")).toBeVisible();

@@ -16,7 +16,7 @@ export const PlayerList: React.FC<PlayerListProps> = ({ players }) => {
         display: "flex",
         flexDirection: "row",
         overflowX: "auto",
-        justifyContent: "fex-start",
+        justifyContent: "flex-start",
         maxWidth: "100%",
         gap: 1,
       }}
