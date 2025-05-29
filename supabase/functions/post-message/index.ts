@@ -13,7 +13,7 @@ import {
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { createErrorResponse } from "../_utils/error.ts";
-import { cleanAnswer } from "../_shared/utils.ts";
+import { cleanAnswer } from "../_shared/clean-answer.ts";
 import { GameData, MessageData } from "../_types/Database.type.ts";
 import {
   fetchGameAndCheckStatus,

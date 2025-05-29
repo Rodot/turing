@@ -51,54 +51,6 @@ export const pickRandom = <T>(array: Array<T>): T => {
   return result;
 };
 
-export const cleanAnswer = (str: string) => {
-  let prev = "";
-  let current = str;
-
-  // Keep applying transformations until no more changes occur
-  while (prev !== current) {
-    prev = current;
-
-    // Trim whitespace and convert to lowercase
-    current = current.trim().toLowerCase();
-
-    // Remove surrounding single quotes
-    if (current.startsWith("'") && current.endsWith("'")) {
-      current = current.slice(1, -1);
-    }
-    // Remove surrounding double quotes
-    if (current.startsWith('"') && current.endsWith('"')) {
-      current = current.slice(1, -1);
-    }
-    // Remove surrounding backticks
-    if (current.startsWith("`") && current.endsWith("`")) {
-      current = current.slice(1, -1);
-    }
-    // Remove leading ellipsis
-    if (current.startsWith("...")) {
-      current = current.slice(3);
-    }
-    // Remove trailing ellipsis
-    if (current.endsWith("...")) {
-      current = current.slice(0, -3);
-    }
-    // Remove trailing period
-    if (current.endsWith(".")) {
-      current = current.slice(0, -1);
-    }
-    // Remove em dashes
-    current = current.replace(/—/g, "");
-    // Remove all commas
-    current = current.replace(/,/g, "");
-    // Replace multiple spaces with single space
-    current = current.replace(/\s+/g, " ");
-    // Trim again after space normalization
-    current = current.trim();
-  }
-
-  return current;
-};
-
 export const getProfilesWithLeastMessages = (
   profiles: ProfileData[],
   messages: MessageData[],
