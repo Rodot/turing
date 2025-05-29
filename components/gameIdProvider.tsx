@@ -18,7 +18,6 @@ export const GameIdProvider: React.FC<React.PropsWithChildren> = ({
     const newGameId = searchParams.get("game") ?? null;
     if (newGameId !== gameId) {
       setGameId(newGameId);
-      console.log("Game ID updated:", gameId, newGameId);
     }
   }, [searchParams, gameId]);
 

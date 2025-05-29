@@ -9,6 +9,7 @@ import { theme } from "../theme";
 import { SnackbarProvider } from "./snackbarContext";
 import I18nProvider from "./i18nProvider";
 import { GameIdProvider } from "./gameIdProvider";
+import { RealtimeSubscriptions } from "./realtimeSubscriptions";
 
 // Create QueryClient instance
 const queryClient = new QueryClient({
@@ -29,6 +30,7 @@ export function BaseLayout({ children }: React.PropsWithChildren) {
             <ThemeProvider theme={theme}>
               <SnackbarProvider>
                 <GameIdProvider>
+                  <RealtimeSubscriptions />
                   <QueryErrorReporter />
                   {children}
                 </GameIdProvider>
