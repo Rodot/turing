@@ -52,39 +52,51 @@ export const pickRandom = <T>(array: Array<T>): T => {
 };
 
 export const cleanAnswer = (str: string) => {
-  // Trim whitespace and convert to lowercase
-  str = str.trim();
-  str = str.toLowerCase();
+  let prev = "";
+  let current = str;
 
-  // Remove surrounding single quotes
-  if (str.startsWith("'") && str.endsWith("'")) {
-    return str.slice(1, -1);
+  // Keep applying transformations until no more changes occur
+  while (prev !== current) {
+    prev = current;
+
+    // Trim whitespace and convert to lowercase
+    current = current.trim().toLowerCase();
+
+    // Remove surrounding single quotes
+    if (current.startsWith("'") && current.endsWith("'")) {
+      current = current.slice(1, -1);
+    }
+    // Remove surrounding double quotes
+    if (current.startsWith('"') && current.endsWith('"')) {
+      current = current.slice(1, -1);
+    }
+    // Remove surrounding backticks
+    if (current.startsWith("`") && current.endsWith("`")) {
+      current = current.slice(1, -1);
+    }
+    // Remove leading ellipsis
+    if (current.startsWith("...")) {
+      current = current.slice(3);
+    }
+    // Remove trailing ellipsis
+    if (current.endsWith("...")) {
+      current = current.slice(0, -3);
+    }
+    // Remove trailing period
+    if (current.endsWith(".")) {
+      current = current.slice(0, -1);
+    }
+    // Remove em dashes
+    current = current.replace(/—/g, "");
+    // Remove all commas
+    current = current.replace(/,/g, "");
+    // Replace multiple spaces with single space
+    current = current.replace(/\s+/g, " ");
+    // Trim again after space normalization
+    current = current.trim();
   }
-  // Remove surrounding double quotes
-  if (str.startsWith('"') && str.endsWith('"')) {
-    return str.slice(1, -1);
-  }
-  // Remove surrounding backticks
-  if (str.startsWith("`") && str.endsWith("`")) {
-    return str.slice(1, -1);
-  }
-  // Remove leading ellipsis
-  if (str.startsWith("...")) {
-    return str.slice(3);
-  }
-  // Remove trailing ellipsis
-  if (str.endsWith("...")) {
-    return str.slice(0, -3);
-  }
-  // Remove trailing period
-  if (str.endsWith(".")) {
-    return str.slice(0, -1);
-  }
-  // Remove em dashes
-  str = str.replace(/—/g, "");
-  // Remove all commas
-  str = str.replace(/,/g, "");
-  return str;
+
+  return current;
 };
 
 export const getProfilesWithLeastMessages = (

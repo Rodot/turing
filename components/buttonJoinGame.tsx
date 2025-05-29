@@ -2,7 +2,6 @@ import React from "react";
 import { Button, Box } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useGameIdFromUrl } from "../hooks/useGameIdFromUrl";
-import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 import { useJoinGameMutation } from "@/hooks/useFunctionsMutation";
 import { useSnackbar } from "./snackbarContext";
 import { useGameQuery } from "@/hooks/useGameQuery";
@@ -14,7 +13,6 @@ export const ButtonJoinGame: React.FC = () => {
   const { t } = useTranslation();
   const gameIdFromUrl = useGameIdFromUrl() ?? "";
   const joinGameMutation = useJoinGameMutation();
-  const isAnythingLoading = useIsAnythingLoading();
   const { show } = useSnackbar();
   const router = useRouter();
   const { data: game } = useGameQuery();
@@ -49,7 +47,7 @@ export const ButtonJoinGame: React.FC = () => {
         color="secondary"
         variant="contained"
         onClick={handleJoinGame}
-        disabled={isAnythingLoading}
+        disabled={joinGameMutation.isPending}
         aria-label="Join Game"
       >
         👋&nbsp;
@@ -63,7 +61,6 @@ export const ButtonJoinGame: React.FC = () => {
         color="secondary"
         variant="text"
         onClick={handleSpectate}
-        disabled={isAnythingLoading}
         aria-label="Spectate Game"
         sx={{ mt: 1 }}
       >

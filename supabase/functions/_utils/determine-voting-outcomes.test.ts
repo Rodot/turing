@@ -46,20 +46,33 @@ Deno.test("AI exists - humans who vote for AI get points", () => {
   // AI gets 2 votes so no invisibleAI bonus
   assertEquals(outcomes.length, 4);
 
-  const aliceFoundAI = outcomes.find(
-    (o) => o.playerId === "alice" && o.rewardReason === "foundAI",
+  // Find outcomes by type, regardless of order
+  const foundAIOutcomes = outcomes.filter((o) => o.rewardReason === "foundAI");
+  const wrongAccusationOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "wronglyAccusedHuman",
   );
-  const bobFoundAI = outcomes.find(
-    (o) => o.playerId === "bob" && o.rewardReason === "foundAI",
-  );
-  const carolWrongAccusation = outcomes.find(
-    (o) => o.playerId === "carol" && o.rewardReason === "wronglyAccusedHuman",
+  const mostVotedOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "mostVotedHuman",
   );
 
-  assertEquals(aliceFoundAI?.pointsEarned, 1);
-  assertEquals(bobFoundAI?.pointsEarned, 1);
-  assertEquals(carolWrongAccusation?.pointsEarned, 0);
-  assertEquals(carolWrongAccusation?.votedForName, "Alice");
+  // Verify foundAI outcomes
+  assertEquals(foundAIOutcomes.length, 2);
+  assertEquals(
+    foundAIOutcomes.every((o) => o.pointsEarned === 1),
+    true,
+  );
+  assertEquals(foundAIOutcomes.map((o) => o.playerId).sort(), ["alice", "bob"]);
+
+  // Verify wrongAccusation outcome
+  assertEquals(wrongAccusationOutcomes.length, 1);
+  assertEquals(wrongAccusationOutcomes[0].playerId, "carol");
+  assertEquals(wrongAccusationOutcomes[0].pointsEarned, 0);
+  assertEquals(wrongAccusationOutcomes[0].votedForName, "Alice");
+
+  // Verify mostVoted outcome
+  assertEquals(mostVotedOutcomes.length, 1);
+  assertEquals(mostVotedOutcomes[0].playerId, "alice");
+  assertEquals(mostVotedOutcomes[0].pointsEarned, 1);
 });
 
 Deno.test("AI exists - humans who vote for humans get no points", () => {
@@ -78,19 +91,50 @@ Deno.test("AI exists - humans who vote for humans get no points", () => {
   // AI gets zero votes, so +2 bonus
   assertEquals(outcomes.length, 7);
 
-  const aliceOutcome = outcomes.find((o) => o.playerId === "alice");
-  const bobOutcome = outcomes.find((o) => o.playerId === "bob");
-  const carolOutcome = outcomes.find((o) => o.playerId === "carol");
+  const wrongAccusationOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "wronglyAccusedHuman",
+  );
+  const mostVotedOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "mostVotedHuman",
+  );
+  const invisibleAIOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "invisibleAI",
+  );
 
-  assertEquals(aliceOutcome?.rewardReason, "wronglyAccusedHuman");
-  assertEquals(aliceOutcome?.pointsEarned, 0);
-  assertEquals(aliceOutcome?.votedForName, "Bob");
-  assertEquals(bobOutcome?.rewardReason, "wronglyAccusedHuman");
-  assertEquals(bobOutcome?.pointsEarned, 0);
-  assertEquals(bobOutcome?.votedForName, "Carol");
-  assertEquals(carolOutcome?.rewardReason, "wronglyAccusedHuman");
-  assertEquals(carolOutcome?.pointsEarned, 0);
-  assertEquals(carolOutcome?.votedForName, "Alice");
+  // Verify wrong accusation outcomes
+  assertEquals(wrongAccusationOutcomes.length, 3);
+  assertEquals(
+    wrongAccusationOutcomes.every((o) => o.pointsEarned === 0),
+    true,
+  );
+
+  const aliceWrong = wrongAccusationOutcomes.find(
+    (o) => o.playerId === "alice",
+  );
+  const bobWrong = wrongAccusationOutcomes.find((o) => o.playerId === "bob");
+  const carolWrong = wrongAccusationOutcomes.find(
+    (o) => o.playerId === "carol",
+  );
+
+  assertEquals(aliceWrong?.votedForName, "Bob");
+  assertEquals(bobWrong?.votedForName, "Carol");
+  assertEquals(carolWrong?.votedForName, "Alice");
+
+  // Verify most voted outcomes (3-way tie)
+  assertEquals(mostVotedOutcomes.length, 3);
+  assertEquals(
+    mostVotedOutcomes.every((o) => o.pointsEarned === 1),
+    true,
+  );
+  assertEquals(mostVotedOutcomes.map((o) => o.playerId).sort(), [
+    "alice",
+    "bob",
+    "carol",
+  ]);
+
+  // Verify invisible AI outcome
+  assertEquals(invisibleAIOutcomes.length, 1);
+  assertEquals(invisibleAIOutcomes[0].pointsEarned, 2);
 });
 
 Deno.test(
@@ -111,26 +155,47 @@ Deno.test(
     // AI gets zero votes, so +2 bonus
     assertEquals(outcomes.length, 6);
 
-    const aliceOutcome = outcomes.find((o) => o.playerId === "alice");
-    const bobOutcome = outcomes.find((o) => o.playerId === "bob");
-    const carolOutcome = outcomes.find((o) => o.playerId === "carol");
-    const davidOutcome = outcomes.find((o) => o.playerId === "david");
+    const wrongAccusationOutcomes = outcomes.filter(
+      (o) => o.rewardReason === "wronglyAccusedHuman",
+    );
+    const mostVotedOutcomes = outcomes.filter(
+      (o) => o.rewardReason === "mostVotedHuman",
+    );
+    const invisibleAIOutcomes = outcomes.filter(
+      (o) => o.rewardReason === "invisibleAI",
+    );
 
-    assertEquals(aliceOutcome?.rewardReason, "wronglyAccusedHuman");
-    assertEquals(aliceOutcome?.pointsEarned, 0);
-    assertEquals(aliceOutcome?.votedForName, "Bob");
+    // Verify wrong accusation outcomes
+    assertEquals(wrongAccusationOutcomes.length, 4);
+    assertEquals(
+      wrongAccusationOutcomes.every((o) => o.pointsEarned === 0),
+      true,
+    );
 
-    assertEquals(bobOutcome?.rewardReason, "wronglyAccusedHuman");
-    assertEquals(bobOutcome?.pointsEarned, 0);
-    assertEquals(bobOutcome?.votedForName, "Carol");
+    const aliceWrong = wrongAccusationOutcomes.find(
+      (o) => o.playerId === "alice",
+    );
+    const bobWrong = wrongAccusationOutcomes.find((o) => o.playerId === "bob");
+    const carolWrong = wrongAccusationOutcomes.find(
+      (o) => o.playerId === "carol",
+    );
+    const davidWrong = wrongAccusationOutcomes.find(
+      (o) => o.playerId === "david",
+    );
 
-    assertEquals(carolOutcome?.rewardReason, "wronglyAccusedHuman");
-    assertEquals(carolOutcome?.pointsEarned, 0);
-    assertEquals(carolOutcome?.votedForName, "Bob");
+    assertEquals(aliceWrong?.votedForName, "Bob");
+    assertEquals(bobWrong?.votedForName, "Carol");
+    assertEquals(carolWrong?.votedForName, "Bob");
+    assertEquals(davidWrong?.votedForName, "Bob");
 
-    assertEquals(davidOutcome?.rewardReason, "wronglyAccusedHuman");
-    assertEquals(davidOutcome?.pointsEarned, 0);
-    assertEquals(davidOutcome?.votedForName, "Bob");
+    // Verify most voted outcome (Bob gets 3 votes)
+    assertEquals(mostVotedOutcomes.length, 1);
+    assertEquals(mostVotedOutcomes[0].playerId, "bob");
+    assertEquals(mostVotedOutcomes[0].pointsEarned, 1);
+
+    // Verify invisible AI outcome
+    assertEquals(invisibleAIOutcomes.length, 1);
+    assertEquals(invisibleAIOutcomes[0].pointsEarned, 2);
   },
 );
 
@@ -147,13 +212,18 @@ Deno.test("AI exists - humans who vote blank lose points", () => {
   // Alice gets 0 points for voting blank when AI exists
   assertEquals(outcomes.length, 2);
 
-  const bobOutcome = outcomes.find((o) => o.playerId === "bob");
-  const aliceOutcome = outcomes.find((o) => o.playerId === "alice");
+  const foundAIOutcomes = outcomes.filter((o) => o.rewardReason === "foundAI");
+  const missedAIOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "missedAI",
+  );
 
-  assertEquals(bobOutcome?.rewardReason, "foundAI");
-  assertEquals(bobOutcome?.pointsEarned, 1);
-  assertEquals(aliceOutcome?.rewardReason, "missedAI");
-  assertEquals(aliceOutcome?.pointsEarned, 0);
+  assertEquals(foundAIOutcomes.length, 1);
+  assertEquals(foundAIOutcomes[0].playerId, "bob");
+  assertEquals(foundAIOutcomes[0].pointsEarned, 1);
+
+  assertEquals(missedAIOutcomes.length, 1);
+  assertEquals(missedAIOutcomes[0].playerId, "alice");
+  assertEquals(missedAIOutcomes[0].pointsEarned, 0);
 });
 
 Deno.test(
@@ -172,20 +242,37 @@ Deno.test(
     // Alice gets most votes (1 vote), so +1 bonus
     assertEquals(outcomes.length, 4);
 
-    const aliceBlank = outcomes.find(
-      (o) => o.playerId === "alice" && o.rewardReason === "realizedNoAI",
+    const realizedNoAIOutcomes = outcomes.filter(
+      (o) => o.rewardReason === "realizedNoAI",
     );
-    const bobBlank = outcomes.find(
-      (o) => o.playerId === "bob" && o.rewardReason === "realizedNoAI",
+    const wrongAccusationOutcomes = outcomes.filter(
+      (o) => o.rewardReason === "wronglyAccusedHuman",
     );
-    const carolWrongAccusation = outcomes.find(
-      (o) => o.playerId === "carol" && o.rewardReason === "wronglyAccusedHuman",
+    const mostVotedOutcomes = outcomes.filter(
+      (o) => o.rewardReason === "mostVotedHuman",
     );
 
-    assertEquals(aliceBlank?.pointsEarned, 1);
-    assertEquals(bobBlank?.pointsEarned, 1);
-    assertEquals(carolWrongAccusation?.pointsEarned, 0);
-    assertEquals(carolWrongAccusation?.votedForName, "Alice");
+    // Verify realizedNoAI outcomes
+    assertEquals(realizedNoAIOutcomes.length, 2);
+    assertEquals(
+      realizedNoAIOutcomes.every((o) => o.pointsEarned === 1),
+      true,
+    );
+    assertEquals(realizedNoAIOutcomes.map((o) => o.playerId).sort(), [
+      "alice",
+      "bob",
+    ]);
+
+    // Verify wrong accusation outcome
+    assertEquals(wrongAccusationOutcomes.length, 1);
+    assertEquals(wrongAccusationOutcomes[0].playerId, "carol");
+    assertEquals(wrongAccusationOutcomes[0].pointsEarned, 0);
+    assertEquals(wrongAccusationOutcomes[0].votedForName, "Alice");
+
+    // Verify most voted outcome
+    assertEquals(mostVotedOutcomes.length, 1);
+    assertEquals(mostVotedOutcomes[0].playerId, "alice");
+    assertEquals(mostVotedOutcomes[0].pointsEarned, 1);
   },
 );
 
@@ -202,19 +289,43 @@ Deno.test("No AI - humans voting for other humans get no points", () => {
   // Everyone gets 1 vote, so all tie for most votes (+1 each)
   assertEquals(outcomes.length, 6);
 
-  const aliceOutcome = outcomes.find((o) => o.playerId === "alice");
-  const bobOutcome = outcomes.find((o) => o.playerId === "bob");
-  const carolOutcome = outcomes.find((o) => o.playerId === "carol");
+  const wrongAccusationOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "wronglyAccusedHuman",
+  );
+  const mostVotedOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "mostVotedHuman",
+  );
 
-  assertEquals(aliceOutcome?.rewardReason, "wronglyAccusedHuman");
-  assertEquals(aliceOutcome?.pointsEarned, 0);
-  assertEquals(aliceOutcome?.votedForName, "Bob");
-  assertEquals(bobOutcome?.rewardReason, "wronglyAccusedHuman");
-  assertEquals(bobOutcome?.pointsEarned, 0);
-  assertEquals(bobOutcome?.votedForName, "Carol");
-  assertEquals(carolOutcome?.rewardReason, "wronglyAccusedHuman");
-  assertEquals(carolOutcome?.pointsEarned, 0);
-  assertEquals(carolOutcome?.votedForName, "Alice");
+  // Verify wrong accusation outcomes
+  assertEquals(wrongAccusationOutcomes.length, 3);
+  assertEquals(
+    wrongAccusationOutcomes.every((o) => o.pointsEarned === 0),
+    true,
+  );
+
+  const aliceWrong = wrongAccusationOutcomes.find(
+    (o) => o.playerId === "alice",
+  );
+  const bobWrong = wrongAccusationOutcomes.find((o) => o.playerId === "bob");
+  const carolWrong = wrongAccusationOutcomes.find(
+    (o) => o.playerId === "carol",
+  );
+
+  assertEquals(aliceWrong?.votedForName, "Bob");
+  assertEquals(bobWrong?.votedForName, "Carol");
+  assertEquals(carolWrong?.votedForName, "Alice");
+
+  // Verify most voted outcomes (3-way tie)
+  assertEquals(mostVotedOutcomes.length, 3);
+  assertEquals(
+    mostVotedOutcomes.every((o) => o.pointsEarned === 1),
+    true,
+  );
+  assertEquals(mostVotedOutcomes.map((o) => o.playerId).sort(), [
+    "alice",
+    "bob",
+    "carol",
+  ]);
 });
 
 Deno.test("No AI - everyone votes blank", () => {
@@ -252,24 +363,46 @@ Deno.test("Complex scenario - AI exists with mixed voting", () => {
   // Alice gets most votes (2 votes), so +1 bonus
   assertEquals(outcomes.length, 5);
 
-  const aliceFoundAI = outcomes.find(
-    (o) => o.playerId === "alice" && o.rewardReason === "foundAI",
+  const foundAIOutcomes = outcomes.filter((o) => o.rewardReason === "foundAI");
+  const wrongAccusationOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "wronglyAccusedHuman",
   );
-  const bobWrongAccusation = outcomes.find(
-    (o) => o.playerId === "bob" && o.rewardReason === "wronglyAccusedHuman",
+  const missedAIOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "missedAI",
   );
-  const carolWrongAccusation = outcomes.find(
-    (o) => o.playerId === "carol" && o.rewardReason === "wronglyAccusedHuman",
+  const mostVotedOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "mostVotedHuman",
   );
-  const davidOutcome = outcomes.find((o) => o.playerId === "david");
 
-  assertEquals(aliceFoundAI?.pointsEarned, 1);
-  assertEquals(bobWrongAccusation?.pointsEarned, 0);
-  assertEquals(bobWrongAccusation?.votedForName, "Alice");
-  assertEquals(carolWrongAccusation?.pointsEarned, 0);
-  assertEquals(carolWrongAccusation?.votedForName, "Alice");
-  assertEquals(davidOutcome?.rewardReason, "missedAI");
-  assertEquals(davidOutcome?.pointsEarned, 0);
+  // Verify foundAI outcome
+  assertEquals(foundAIOutcomes.length, 1);
+  assertEquals(foundAIOutcomes[0].playerId, "alice");
+  assertEquals(foundAIOutcomes[0].pointsEarned, 1);
+
+  // Verify wrong accusation outcomes
+  assertEquals(wrongAccusationOutcomes.length, 2);
+  assertEquals(
+    wrongAccusationOutcomes.every((o) => o.pointsEarned === 0),
+    true,
+  );
+  assertEquals(
+    wrongAccusationOutcomes.every((o) => o.votedForName === "Alice"),
+    true,
+  );
+  assertEquals(wrongAccusationOutcomes.map((o) => o.playerId).sort(), [
+    "bob",
+    "carol",
+  ]);
+
+  // Verify missedAI outcome
+  assertEquals(missedAIOutcomes.length, 1);
+  assertEquals(missedAIOutcomes[0].playerId, "david");
+  assertEquals(missedAIOutcomes[0].pointsEarned, 0);
+
+  // Verify most voted outcome
+  assertEquals(mostVotedOutcomes.length, 1);
+  assertEquals(mostVotedOutcomes[0].playerId, "alice");
+  assertEquals(mostVotedOutcomes[0].pointsEarned, 1);
 });
 
 Deno.test("No votes cast", () => {
@@ -296,11 +429,41 @@ Deno.test("Score cannot go below zero", () => {
   // AI gets zero votes, so gets invisible bonus
   assertEquals(outcomes.length, 5);
 
-  const aliceOutcome = outcomes.find((o) => o.playerId === "alice");
-  const bobOutcome = outcomes.find((o) => o.playerId === "bob");
+  const wrongAccusationOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "wronglyAccusedHuman",
+  );
+  const mostVotedOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "mostVotedHuman",
+  );
+  const invisibleAIOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "invisibleAI",
+  );
 
-  assertEquals(aliceOutcome?.pointsEarned, 0);
-  assertEquals(bobOutcome?.pointsEarned, 0);
+  // Verify wrong accusation outcomes
+  assertEquals(wrongAccusationOutcomes.length, 2);
+  assertEquals(
+    wrongAccusationOutcomes.every((o) => o.pointsEarned === 0),
+    true,
+  );
+  assertEquals(wrongAccusationOutcomes.map((o) => o.playerId).sort(), [
+    "alice",
+    "bob",
+  ]);
+
+  // Verify most voted outcomes (tie)
+  assertEquals(mostVotedOutcomes.length, 2);
+  assertEquals(
+    mostVotedOutcomes.every((o) => o.pointsEarned === 1),
+    true,
+  );
+  assertEquals(mostVotedOutcomes.map((o) => o.playerId).sort(), [
+    "alice",
+    "bob",
+  ]);
+
+  // Verify invisible AI outcome
+  assertEquals(invisibleAIOutcomes.length, 1);
+  assertEquals(invisibleAIOutcomes[0].pointsEarned, 2);
 });
 
 Deno.test("New bonus scoring - AI gets zero votes", () => {
@@ -318,15 +481,32 @@ Deno.test("New bonus scoring - AI gets zero votes", () => {
   // Carol should get 0 for wrongly accusing alice
   // AI should get +2 for getting zero votes
 
-  const aiOutcome = outcomes.find(
-    (o) => o.playerId === "ai" && o.rewardReason === "invisibleAI",
+  const invisibleAIOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "invisibleAI",
   );
-  const aliceMostVoted = outcomes.find(
-    (o) => o.playerId === "alice" && o.rewardReason === "mostVotedHuman",
+  const mostVotedOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "mostVotedHuman",
+  );
+  const wrongAccusationOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "wronglyAccusedHuman",
   );
 
-  assertEquals(aiOutcome?.pointsEarned, 2);
-  assertEquals(aliceMostVoted?.pointsEarned, 1);
+  // Verify invisible AI outcome
+  assertEquals(invisibleAIOutcomes.length, 1);
+  assertEquals(invisibleAIOutcomes[0].playerId, "ai");
+  assertEquals(invisibleAIOutcomes[0].pointsEarned, 2);
+
+  // Verify most voted outcome
+  assertEquals(mostVotedOutcomes.length, 1);
+  assertEquals(mostVotedOutcomes[0].playerId, "alice");
+  assertEquals(mostVotedOutcomes[0].pointsEarned, 1);
+
+  // Verify wrong accusation outcomes
+  assertEquals(wrongAccusationOutcomes.length, 3);
+  assertEquals(
+    wrongAccusationOutcomes.every((o) => o.pointsEarned === 0),
+    true,
+  );
 });
 
 Deno.test("New bonus scoring - AI gets votes (no bonus)", () => {
@@ -344,15 +524,37 @@ Deno.test("New bonus scoring - AI gets votes (no bonus)", () => {
   // Carol should get 0 for wrongly accusing alice
   // AI should get NO bonus (got votes)
 
-  const aiOutcome = outcomes.find(
-    (o) => o.playerId === "ai" && o.rewardReason === "invisibleAI",
+  const foundAIOutcomes = outcomes.filter((o) => o.rewardReason === "foundAI");
+  const wrongAccusationOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "wronglyAccusedHuman",
   );
-  const aliceMostVoted = outcomes.find(
-    (o) => o.playerId === "alice" && o.rewardReason === "mostVotedHuman",
+  const mostVotedOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "mostVotedHuman",
+  );
+  const invisibleAIOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "invisibleAI",
   );
 
-  assertEquals(aiOutcome, undefined); // AI should get no bonus
-  assertEquals(aliceMostVoted?.pointsEarned, 1); // Alice gets most votes bonus
+  // Verify foundAI outcomes
+  assertEquals(foundAIOutcomes.length, 2);
+  assertEquals(
+    foundAIOutcomes.every((o) => o.pointsEarned === 1),
+    true,
+  );
+  assertEquals(foundAIOutcomes.map((o) => o.playerId).sort(), ["alice", "bob"]);
+
+  // Verify wrong accusation outcome
+  assertEquals(wrongAccusationOutcomes.length, 1);
+  assertEquals(wrongAccusationOutcomes[0].playerId, "carol");
+  assertEquals(wrongAccusationOutcomes[0].pointsEarned, 0);
+
+  // Verify most voted outcome
+  assertEquals(mostVotedOutcomes.length, 1);
+  assertEquals(mostVotedOutcomes[0].playerId, "alice");
+  assertEquals(mostVotedOutcomes[0].pointsEarned, 1);
+
+  // AI should get no bonus (got votes)
+  assertEquals(invisibleAIOutcomes.length, 0);
 });
 
 Deno.test("New bonus scoring - Multiple humans tie for most votes", () => {
@@ -369,27 +571,40 @@ Deno.test("New bonus scoring - Multiple humans tie for most votes", () => {
   // Everyone should get 1 vote each, so all humans should get most-votes bonus
   // AI should get invisible bonus
 
-  const aliceMostVoted = outcomes.find(
-    (o) => o.playerId === "alice" && o.rewardReason === "mostVotedHuman",
+  const wrongAccusationOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "wronglyAccusedHuman",
   );
-  const bobMostVoted = outcomes.find(
-    (o) => o.playerId === "bob" && o.rewardReason === "mostVotedHuman",
+  const mostVotedOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "mostVotedHuman",
   );
-  const carolMostVoted = outcomes.find(
-    (o) => o.playerId === "carol" && o.rewardReason === "mostVotedHuman",
-  );
-  const davidMostVoted = outcomes.find(
-    (o) => o.playerId === "david" && o.rewardReason === "mostVotedHuman",
-  );
-  const aiInvisible = outcomes.find(
-    (o) => o.playerId === "ai" && o.rewardReason === "invisibleAI",
+  const invisibleAIOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "invisibleAI",
   );
 
-  assertEquals(aliceMostVoted?.pointsEarned, 1);
-  assertEquals(bobMostVoted?.pointsEarned, 1);
-  assertEquals(carolMostVoted?.pointsEarned, 1);
-  assertEquals(davidMostVoted?.pointsEarned, 1);
-  assertEquals(aiInvisible?.pointsEarned, 2);
+  // Verify wrong accusation outcomes
+  assertEquals(wrongAccusationOutcomes.length, 4);
+  assertEquals(
+    wrongAccusationOutcomes.every((o) => o.pointsEarned === 0),
+    true,
+  );
+
+  // Verify most voted outcomes (4-way tie)
+  assertEquals(mostVotedOutcomes.length, 4);
+  assertEquals(
+    mostVotedOutcomes.every((o) => o.pointsEarned === 1),
+    true,
+  );
+  assertEquals(mostVotedOutcomes.map((o) => o.playerId).sort(), [
+    "alice",
+    "bob",
+    "carol",
+    "david",
+  ]);
+
+  // Verify invisible AI outcome
+  assertEquals(invisibleAIOutcomes.length, 1);
+  assertEquals(invisibleAIOutcomes[0].playerId, "ai");
+  assertEquals(invisibleAIOutcomes[0].pointsEarned, 2);
 });
 
 Deno.test("New bonus scoring - No AI scenario with most voted human", () => {
@@ -404,11 +619,24 @@ Deno.test("New bonus scoring - No AI scenario with most voted human", () => {
   // Bob gets 2 votes, should get most-voted bonus
   // Others get wrongly accused outcomes
 
-  const bobMostVoted = outcomes.find(
-    (o) => o.playerId === "bob" && o.rewardReason === "mostVotedHuman",
+  const wrongAccusationOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "wronglyAccusedHuman",
+  );
+  const mostVotedOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "mostVotedHuman",
   );
 
-  assertEquals(bobMostVoted?.pointsEarned, 1);
+  // Verify wrong accusation outcomes
+  assertEquals(wrongAccusationOutcomes.length, 3);
+  assertEquals(
+    wrongAccusationOutcomes.every((o) => o.pointsEarned === 0),
+    true,
+  );
+
+  // Verify most voted outcome
+  assertEquals(mostVotedOutcomes.length, 1);
+  assertEquals(mostVotedOutcomes[0].playerId, "bob");
+  assertEquals(mostVotedOutcomes[0].pointsEarned, 1);
 });
 
 Deno.test("New bonus scoring - Everyone votes for AI (no human votes)", () => {
@@ -425,15 +653,31 @@ Deno.test("New bonus scoring - Everyone votes for AI (no human votes)", () => {
   // No human gets votes, so no most-voted bonus
   // AI gets votes, so no invisible bonus
 
+  const foundAIOutcomes = outcomes.filter((o) => o.rewardReason === "foundAI");
   const mostVotedOutcomes = outcomes.filter(
     (o) => o.rewardReason === "mostVotedHuman",
   );
-  const invisibleAiOutcome = outcomes.find(
+  const invisibleAIOutcomes = outcomes.filter(
     (o) => o.rewardReason === "invisibleAI",
   );
 
-  assertEquals(mostVotedOutcomes.length, 0); // No most-voted bonuses
-  assertEquals(invisibleAiOutcome, undefined); // No invisible AI bonus
+  // Verify foundAI outcomes
+  assertEquals(foundAIOutcomes.length, 3);
+  assertEquals(
+    foundAIOutcomes.every((o) => o.pointsEarned === 1),
+    true,
+  );
+  assertEquals(foundAIOutcomes.map((o) => o.playerId).sort(), [
+    "alice",
+    "bob",
+    "carol",
+  ]);
+
+  // No most-voted bonuses (no humans got votes)
+  assertEquals(mostVotedOutcomes.length, 0);
+
+  // No invisible AI bonus (AI got votes)
+  assertEquals(invisibleAIOutcomes.length, 0);
 });
 
 Deno.test("New bonus scoring - Complex scenario with all bonuses", () => {
@@ -452,15 +696,39 @@ Deno.test("New bonus scoring - Complex scenario with all bonuses", () => {
   // Carol: +1 for getting most votes (2 votes)
   // AI: no bonus (got 1 vote)
 
-  const aliceFoundAi = outcomes.find(
-    (o) => o.playerId === "alice" && o.rewardReason === "foundAI",
+  const foundAIOutcomes = outcomes.filter((o) => o.rewardReason === "foundAI");
+  const wrongAccusationOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "wronglyAccusedHuman",
   );
-  const carolMostVoted = outcomes.find(
-    (o) => o.playerId === "carol" && o.rewardReason === "mostVotedHuman",
+  const mostVotedOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "mostVotedHuman",
   );
-  const aiInvisible = outcomes.find((o) => o.rewardReason === "invisibleAI");
+  const invisibleAIOutcomes = outcomes.filter(
+    (o) => o.rewardReason === "invisibleAI",
+  );
 
-  assertEquals(aliceFoundAi?.pointsEarned, 1);
-  assertEquals(carolMostVoted?.pointsEarned, 1);
-  assertEquals(aiInvisible, undefined); // AI got votes, no bonus
+  // Verify foundAI outcome
+  assertEquals(foundAIOutcomes.length, 1);
+  assertEquals(foundAIOutcomes[0].playerId, "alice");
+  assertEquals(foundAIOutcomes[0].pointsEarned, 1);
+
+  // Verify wrong accusation outcomes
+  assertEquals(wrongAccusationOutcomes.length, 3);
+  assertEquals(
+    wrongAccusationOutcomes.every((o) => o.pointsEarned === 0),
+    true,
+  );
+  assertEquals(wrongAccusationOutcomes.map((o) => o.playerId).sort(), [
+    "bob",
+    "carol",
+    "david",
+  ]);
+
+  // Verify most voted outcome
+  assertEquals(mostVotedOutcomes.length, 1);
+  assertEquals(mostVotedOutcomes[0].playerId, "carol");
+  assertEquals(mostVotedOutcomes[0].pointsEarned, 1);
+
+  // AI got votes, no bonus
+  assertEquals(invisibleAIOutcomes.length, 0);
 });

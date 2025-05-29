@@ -1,8 +1,7 @@
 export const fr = {
   messages: {
     // Game start/setup
-    warmupPhaseMessage:
-      "💬 Discutons un peu avant que l'IA prenne le contrôle d'un joueur...",
+    warmupPhaseMessage: "💬 Discutons un peu avant que l'IA n'arrive...",
     joinedGame: "👋 {{player}} a rejoint la partie",
 
     // Warmup to Hunt transition
@@ -11,13 +10,12 @@ export const fr = {
       "💡 Enquêtez pour identifier l'IA, puis lancez un vote 🗳️",
 
     // Vote phase
-    startedVote: "{{player}} a commencé un vote",
-    voteInstructionsHunting: "💡 Trouvez qui est l'IA pour gagner un 🧠",
-    voteInstructionsDeception: "💡 Prétendez être l'IA pour gagner un 🧠",
+    startedVote: "{{player}} a lancé un vote, dépêchez-vous !",
+    voteInstructionsHunting: "💡 Trouvez l'IA = +1 🧠",
+    voteInstructionsDeception: "💡 Passez pour l'IA = +1 🧠",
 
     // Results/Scoring
-    voteResultsAnnouncement: "Les résultats sont là !",
-    aiIdentityReveal: "Et l'IA était...",
+    aiIdentityReveal: "Les résultats sont là ! Et l'IA était...",
     revealedPlayerName: "{{player}}",
     noAiThisRound: "Personne",
     foundAI: "+1 🧠 pour {{player}} qui a trouvé l'IA 🤖",

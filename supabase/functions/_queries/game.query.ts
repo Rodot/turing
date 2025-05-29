@@ -1,5 +1,5 @@
 import { SupabaseClient } from "https://esm.sh/v135/@supabase/supabase-js@2.43.2/dist/module/index.js";
-import { GameData, PlayerData, GameStatus } from "../_types/Database.type.ts";
+import { GameData, GameStatus, PlayerData } from "../_types/Database.type.ts";
 import { insertMessage } from "./messages.query.ts";
 
 export const fetchGame = async (supabase: SupabaseClient, id: string) => {
@@ -61,7 +61,9 @@ export const updateGameWithStatusTransition = async (
   if (!allowedNextStates.includes(newStatus)) {
     throw new Error(
       `Invalid status transition: ${currentStatus} -> ${newStatus}. ` +
-        `Allowed transitions from ${currentStatus}: ${allowedNextStates.join(", ")}`,
+        `Allowed transitions from ${currentStatus}: ${allowedNextStates.join(
+          ", ",
+        )}`,
     );
   }
 
@@ -70,7 +72,8 @@ export const updateGameWithStatusTransition = async (
     .from("games")
     .update({ status: newStatus })
     .eq("id", id)
-    .eq("status", currentStatus);
+    .eq("status", currentStatus)
+    .select();
 
   if (req.error) {
     throw new Error(req.error.message);
@@ -83,12 +86,16 @@ export const updateGameWithStatusTransition = async (
     );
   }
 
+  const updatedGame: GameData = req.data[0];
+
   // Post status message after successful state change
   await insertMessage(supabase, {
     game_id: id,
     type: "status",
     content: newStatus,
   });
+
+  return updatedGame;
 };
 
 export const addPlayerToGame = async (

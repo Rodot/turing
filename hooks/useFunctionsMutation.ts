@@ -27,6 +27,7 @@ export const useStartGameMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       queryClient.invalidateQueries({ queryKey: ["game"] });
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
     },
   });
 };
@@ -57,6 +58,7 @@ export const useCreateGameMutation = () => {
     onSuccess: (gameId) => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       queryClient.invalidateQueries({ queryKey: ["game"] });
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
       if (gameId) {
         router.push(`/?game=${gameId}`);
       }
@@ -88,6 +90,7 @@ export const usePlayerVoteMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       queryClient.invalidateQueries({ queryKey: ["game"] });
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
     },
   });
 };
@@ -130,6 +133,7 @@ export const useEndGameMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       queryClient.invalidateQueries({ queryKey: ["game"] });
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
     },
   });
 };
@@ -153,6 +157,7 @@ export const useStartVoteMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       queryClient.invalidateQueries({ queryKey: ["game"] });
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
     },
   });
 };
@@ -178,6 +183,7 @@ export const useJoinGameMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       queryClient.invalidateQueries({ queryKey: ["game"] });
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
     },
   });
 };

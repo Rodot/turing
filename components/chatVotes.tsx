@@ -3,7 +3,6 @@ import { Box, Button, SxProps, Theme, Typography } from "@mui/material";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { usePlayerVoteMutation } from "@/hooks/useFunctionsMutation";
-import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 import { PlayerData } from "@/supabase/functions/_types/Database.type";
 import { getPlayerFromGame } from "@/supabase/functions/_shared/utils";
 import { useTranslation } from "react-i18next";
@@ -17,7 +16,6 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
   const userQuery = useUserQuery();
   const gameQuery = useGameQuery();
   const playerVoteMutation = usePlayerVoteMutation();
-  const isAnythingLoading = useIsAnythingLoading();
 
   if (!gameQuery.data) return null;
   if (!userQuery.data) return null;
@@ -113,7 +111,7 @@ export const ChatVote: React.FC<Props> = ({ sx }) => {
               variant="contained"
               color={option.id === "blank" ? "primary" : "secondary"}
               onClick={() => vote(option.id)}
-              disabled={!canVote(option) || isAnythingLoading}
+              disabled={!canVote(option) || playerVoteMutation.isPending}
               size="small"
             >
               {option.name}

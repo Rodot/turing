@@ -1,8 +1,7 @@
 export const en = {
   messages: {
     // Game start/setup
-    warmupPhaseMessage:
-      "💬 Let's chat a bit before the AI takes control of a player...",
+    warmupPhaseMessage: "💬 Let's chat a bit before the AI comes...",
     joinedGame: "👋 {{player}} has joined the game",
 
     // Warmup to Hunt transition
@@ -11,13 +10,12 @@ export const en = {
       "💡 Investigate to identify the AI, then start a vote 🗳️",
 
     // Vote phase
-    startedVote: "{{player}} started a vote",
-    voteInstructionsHunting: "💡 Vote for the AI to earn a 🧠",
-    voteInstructionsDeception: "💡 Pretend to be the AI to earn a 🧠",
+    startedVote: "{{player}} started a vote, hurry up!",
+    voteInstructionsHunting: "💡 Find the AI = +1 🧠",
+    voteInstructionsDeception: "💡 Pass as the AI = +1 🧠",
 
     // Results/Scoring
-    voteResultsAnnouncement: "Results are in!",
-    aiIdentityReveal: "And the AI was...",
+    aiIdentityReveal: "Results are in! And the AI was...",
     revealedPlayerName: "{{player}}",
     noAiThisRound: "Nobody",
     foundAI: "+1 🧠 for {{player}} who found the AI 🤖",
@@ -26,7 +24,7 @@ export const en = {
     realizedNoAI: "+1 🧠 for {{player}} who realized there was no AI ❌",
     missedAI: "No 🧠 for {{player}} who thought there was no AI",
     mostVotedHuman: "+1 🧠 for {{player}} who passed as the AI 🎭",
-    invisibleAI: "+2 🧠 for {{player}} who perfectly blended in 🥷",
+    invisibleAI: "+2 🧠 for {{player}} who didn't get noticed 🥷",
 
     // Game flow/Round transitions
     roundEndNewTopic: "The AI is gone, let's change the topic",

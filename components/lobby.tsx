@@ -17,7 +17,6 @@ import { StartGameConfirmationModal } from "./startGameConfirmationModal";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { useGameLanguageMutation } from "@/hooks/useGameMutation";
-import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 import { useStartGameMutation } from "@/hooks/useFunctionsMutation";
 import { useTranslation } from "react-i18next";
 
@@ -31,7 +30,6 @@ export const Lobby: React.FC = () => {
   const url = window.location.href;
   const startGameMutation = useStartGameMutation();
   const gameLanguageMutation = useGameLanguageMutation();
-  const isAnythingLoading = useIsAnythingLoading();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const handleStartGame = () => {
@@ -82,13 +80,13 @@ export const Lobby: React.FC = () => {
           </strong>
         </Typography>
       )}
-      {enoughPlayers && isHost && (
+      {isHost && (
         <Button
           component="button"
           color="secondary"
           variant="contained"
           onClick={() => setShowConfirmModal(true)}
-          disabled={isAnythingLoading || !enoughPlayers}
+          disabled={startGameMutation.isPending || !enoughPlayers}
           aria-label="Start Game"
         >
           🏁&nbsp;{t("buttons.startGame")}

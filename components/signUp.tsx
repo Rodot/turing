@@ -17,7 +17,6 @@ import { useProfileQuery } from "@/hooks/useProfileQuery";
 import { useProfileNameMutation } from "@/hooks/useProfileMutation";
 import { ButtonEndGame } from "./buttonEndGame";
 import { useGameIdFromUrl } from "@/hooks/useGameIdFromUrl";
-import { useIsAnythingLoading } from "@/hooks/useIsAnythingLoading";
 import { useTranslation } from "react-i18next";
 
 export const SignUp: React.FC = () => {
@@ -27,7 +26,6 @@ export const SignUp: React.FC = () => {
   const [name, setName] = useState("");
   const isNameSet = (profileQuery?.data?.name?.length ?? 0) > 1;
   const urlGameId = useGameIdFromUrl();
-  const isAnythingLoading = useIsAnythingLoading();
 
   const profileGameId = profileQuery.data?.game_id ?? undefined;
 
@@ -94,7 +92,7 @@ export const SignUp: React.FC = () => {
 
       <Box sx={{ my: 2 }} />
 
-      {!isAnythingLoading && !isNameSet && (
+      {!isNameSet && (
         <form onSubmit={onSubmit} style={{ width: "100%" }}>
           <Box
             sx={{
@@ -127,7 +125,7 @@ export const SignUp: React.FC = () => {
           </Box>
         </form>
       )}
-      {!isAnythingLoading && isNameSet && (
+      {isNameSet && (
         <>
           {isResumeGameVisible && <ButtonResumeGame />}
           {isLeaveGameVisible && <ButtonEndGame />}

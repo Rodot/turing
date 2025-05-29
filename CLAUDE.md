@@ -6,6 +6,7 @@
 - If it fails, find the issue, fix it, and run `npm run quality` again.
 - If e2e tests fail, you must always fix them.
 - You must take screenshots and add console logs before the failing assertion and look at them to see what went wrong.
+- Don't use e2e --debug or any other CLI flag that would trigger GUI tools you can't interact with in the CI environment.
 
 ## Architecture Overview
 

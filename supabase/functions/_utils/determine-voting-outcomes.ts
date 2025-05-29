@@ -29,6 +29,89 @@ export function determineVotingOutcomes(game: GameData): VotingOutcome[] {
   const activePlayerIds = new Set(game.players.map((p) => p.id));
   const botPlayer = game.players.find((player) => player.is_bot);
 
+  // Count votes for each player
+  const voteCounts = new Map<string, number>();
+  for (const player of game.players) {
+    if (player.vote && !player.vote_blank && activePlayerIds.has(player.vote)) {
+      const currentCount = voteCounts.get(player.vote) || 0;
+      voteCounts.set(player.vote, currentCount + 1);
+    }
+  }
+
+  if (botPlayer) {
+    // Scenario: AI exists
+
+    // Check if AI got zero votes - award +2 points to AI
+    const aiVotes = voteCounts.get(botPlayer.id) || 0;
+    if (aiVotes === 0) {
+      votingOutcomes.push({
+        playerId: botPlayer.id,
+        playerName: botPlayer.name,
+        pointsEarned: 2,
+        rewardReason: "invisibleAI",
+      });
+    }
+
+    // Find humans who got the most votes (excluding AI from consideration)
+    const humanPlayers = game.players.filter((p) => !p.is_bot);
+    let maxVotes = 0;
+    const mostVotedHumans: string[] = [];
+
+    for (const human of humanPlayers) {
+      const votes = voteCounts.get(human.id) || 0;
+      if (votes > maxVotes) {
+        maxVotes = votes;
+        mostVotedHumans.length = 0; // Clear array
+        mostVotedHumans.push(human.id);
+      } else if (votes === maxVotes && votes > 0) {
+        mostVotedHumans.push(human.id);
+      }
+    }
+
+    // Award +1 point to most voted humans (if any got votes)
+    for (const humanId of mostVotedHumans) {
+      const human = game.players.find((p) => p.id === humanId);
+      if (human) {
+        votingOutcomes.push({
+          playerId: human.id,
+          playerName: human.name,
+          pointsEarned: 1,
+          rewardReason: "mostVotedHuman",
+        });
+      }
+    }
+  } else {
+    // Scenario: No AI exists - all players are humans
+
+    // Find players who got the most votes
+    let maxVotes = 0;
+    const mostVotedPlayers: string[] = [];
+
+    for (const player of game.players) {
+      const votes = voteCounts.get(player.id) || 0;
+      if (votes > maxVotes) {
+        maxVotes = votes;
+        mostVotedPlayers.length = 0; // Clear array
+        mostVotedPlayers.push(player.id);
+      } else if (votes === maxVotes && votes > 0) {
+        mostVotedPlayers.push(player.id);
+      }
+    }
+
+    // Award +1 point to most voted players (if any got votes)
+    for (const playerId of mostVotedPlayers) {
+      const player = game.players.find((p) => p.id === playerId);
+      if (player) {
+        votingOutcomes.push({
+          playerId: player.id,
+          playerName: player.name,
+          pointsEarned: 1,
+          rewardReason: "mostVotedHuman",
+        });
+      }
+    }
+  }
+
   if (botPlayer) {
     // Scenario: There is an AI in the game
 
@@ -98,89 +181,6 @@ export function determineVotingOutcomes(game: GameData): VotingOutcome[] {
             votedForName: votedPlayer.name,
           });
         }
-      }
-    }
-  }
-
-  // Count votes for each player
-  const voteCounts = new Map<string, number>();
-  for (const player of game.players) {
-    if (player.vote && !player.vote_blank && activePlayerIds.has(player.vote)) {
-      const currentCount = voteCounts.get(player.vote) || 0;
-      voteCounts.set(player.vote, currentCount + 1);
-    }
-  }
-
-  if (botPlayer) {
-    // Scenario: AI exists
-
-    // Find humans who got the most votes (excluding AI from consideration)
-    const humanPlayers = game.players.filter((p) => !p.is_bot);
-    let maxVotes = 0;
-    const mostVotedHumans: string[] = [];
-
-    for (const human of humanPlayers) {
-      const votes = voteCounts.get(human.id) || 0;
-      if (votes > maxVotes) {
-        maxVotes = votes;
-        mostVotedHumans.length = 0; // Clear array
-        mostVotedHumans.push(human.id);
-      } else if (votes === maxVotes && votes > 0) {
-        mostVotedHumans.push(human.id);
-      }
-    }
-
-    // Award +1 point to most voted humans (if any got votes)
-    for (const humanId of mostVotedHumans) {
-      const human = game.players.find((p) => p.id === humanId);
-      if (human) {
-        votingOutcomes.push({
-          playerId: human.id,
-          playerName: human.name,
-          pointsEarned: 1,
-          rewardReason: "mostVotedHuman",
-        });
-      }
-    }
-
-    // Check if AI got zero votes - award +2 points to AI
-    const aiVotes = voteCounts.get(botPlayer.id) || 0;
-    if (aiVotes === 0) {
-      votingOutcomes.push({
-        playerId: botPlayer.id,
-        playerName: botPlayer.name,
-        pointsEarned: 2,
-        rewardReason: "invisibleAI",
-      });
-    }
-  } else {
-    // Scenario: No AI exists - all players are humans
-
-    // Find players who got the most votes
-    let maxVotes = 0;
-    const mostVotedPlayers: string[] = [];
-
-    for (const player of game.players) {
-      const votes = voteCounts.get(player.id) || 0;
-      if (votes > maxVotes) {
-        maxVotes = votes;
-        mostVotedPlayers.length = 0; // Clear array
-        mostVotedPlayers.push(player.id);
-      } else if (votes === maxVotes && votes > 0) {
-        mostVotedPlayers.push(player.id);
-      }
-    }
-
-    // Award +1 point to most voted players (if any got votes)
-    for (const playerId of mostVotedPlayers) {
-      const player = game.players.find((p) => p.id === playerId);
-      if (player) {
-        votingOutcomes.push({
-          playerId: player.id,
-          playerName: player.name,
-          pointsEarned: 1,
-          rewardReason: "mostVotedHuman",
-        });
       }
     }
   }

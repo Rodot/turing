@@ -1,9 +1,9 @@
 import React from "react";
-import { LinearProgress } from "@mui/material";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { useMessagesQuery } from "@/hooks/useMessagesQuery";
 import { getWarmupProgress } from "@/supabase/functions/_shared/warmup-progress";
-import { getVotingProgress } from "@/supabase/functions/_shared/voting-progress";
+import { ProgressTimer } from "./progressTimer";
+import { LinearProgress } from "@mui/material";
 
 export const WarmupProgressBar: React.FC = () => {
   const gameQuery = useGameQuery();
@@ -15,26 +15,30 @@ export const WarmupProgressBar: React.FC = () => {
       ? getWarmupProgress(gameQuery.data, messagesQuery.data)
       : null;
 
-  const votingProgress = gameQuery.data
-    ? getVotingProgress(gameQuery.data)
-    : null;
-
   // Show appropriate progress based on game status
-  const progressValue = (() => {
-    if (gameStatus === "talking_warmup" && warmupProgress !== null) {
-      return warmupProgress * 100;
-    }
-    if (gameStatus === "voting" && votingProgress !== null) {
-      return votingProgress * 100;
-    }
-    // Show 100% progress for other phases to prevent layout shifts
-    return 100;
-  })();
+  if (gameStatus === "talking_warmup" && warmupProgress !== null) {
+    return (
+      <LinearProgress
+        variant="determinate"
+        value={warmupProgress * 100}
+        color="secondary"
+        sx={{
+          height: 4,
+          borderRadius: 0,
+        }}
+      />
+    );
+  }
 
+  if (gameStatus === "voting") {
+    return <ProgressTimer duration={30} />;
+  }
+
+  // Show 100% progress for other phases to prevent layout shifts
   return (
     <LinearProgress
       variant="determinate"
-      value={progressValue}
+      value={100}
       color="secondary"
       sx={{
         height: 4,

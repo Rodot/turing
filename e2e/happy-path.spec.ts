@@ -163,14 +163,12 @@ test("multi-user game flow", async ({ browser }) => {
   // Test voting phase - start a vote
   await human1.page.getByLabel("Start Vote").click();
 
-  // Wait for voting phase and check status changed
-  await expect(
-    human1.page.getByText("💡 Vote for the AI to earn a 🧠"),
-  ).toBeVisible();
+  // Wait for voting phase by checking for the voting interface
+  await expect(human1.page.getByText("Found the AI?")).toBeVisible();
 
   // Verify voting interface is available for humans
-  await expect(human1.page.getByText("Who was the AI? 🤖")).toBeVisible();
-  await expect(human2.page.getByText("Who was the AI? 🤖")).toBeVisible();
+  await expect(human1.page.getByText("Found the AI?")).toBeVisible();
+  await expect(human2.page.getByText("Found the AI?")).toBeVisible();
 
   // Check for console errors
   consoleHandler.checkForConsoleErrors();
