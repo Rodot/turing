@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Box, Button, SxProps, TextField, Theme } from "@mui/material";
 import { usePostMessageMutation } from "@/hooks/useFunctionsMutation";
-import { cleanAnswer } from "@/supabase/functions/_shared/utils";
 import { Send } from "@mui/icons-material";
 import { useUserQuery } from "@/hooks/useUserQuery";
 import { useGameQuery } from "@/hooks/useGameQuery";
@@ -48,7 +47,7 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
       profile_id: me.id,
       author_name: me.name,
       type: "user",
-      content: cleanAnswer(text),
+      content: text,
     });
   };
 

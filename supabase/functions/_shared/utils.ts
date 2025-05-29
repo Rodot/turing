@@ -1,8 +1,8 @@
 import {
-  MessageData,
-  ProfileData,
   GameData,
+  MessageData,
   PlayerData,
+  ProfileData,
 } from "../_types/Database.type.ts";
 
 export const nextVoteLength = (numPlayers: number) => 3 * numPlayers;
@@ -52,27 +52,38 @@ export const pickRandom = <T>(array: Array<T>): T => {
 };
 
 export const cleanAnswer = (str: string) => {
+  // Trim whitespace and convert to lowercase
   str = str.trim();
   str = str.toLowerCase();
+
+  // Remove surrounding single quotes
   if (str.startsWith("'") && str.endsWith("'")) {
     return str.slice(1, -1);
   }
+  // Remove surrounding double quotes
   if (str.startsWith('"') && str.endsWith('"')) {
     return str.slice(1, -1);
   }
+  // Remove surrounding backticks
   if (str.startsWith("`") && str.endsWith("`")) {
     return str.slice(1, -1);
   }
+  // Remove leading ellipsis
   if (str.startsWith("...")) {
     return str.slice(3);
   }
+  // Remove trailing ellipsis
   if (str.endsWith("...")) {
     return str.slice(0, -3);
   }
+  // Remove trailing period
   if (str.endsWith(".")) {
     return str.slice(0, -1);
   }
-  str = str.replace(/—/g, ",");
+  // Remove em dashes
+  str = str.replace(/—/g, "");
+  // Remove all commas
+  str = str.replace(/,/g, "");
   return str;
 };
 

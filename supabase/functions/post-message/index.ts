@@ -13,6 +13,7 @@ import {
 import { headers } from "../_utils/cors.ts";
 import { createSupabaseClient } from "../_utils/supabase.ts";
 import { createErrorResponse } from "../_utils/error.ts";
+import { cleanAnswer } from "../_shared/utils.ts";
 import { GameData, MessageData } from "../_types/Database.type.ts";
 import {
   fetchGameAndCheckStatus,
@@ -77,6 +78,11 @@ Deno.serve(async (req) => {
     } catch (error) {
       console.error("Error enhancing bot message:", error);
       // Continue with original message if enhancement fails
+    }
+
+    // Clean the message content before inserting
+    if (message.content) {
+      message.content = cleanAnswer(message.content);
     }
 
     await insertMessage(supabase, message);
