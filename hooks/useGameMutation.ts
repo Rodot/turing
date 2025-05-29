@@ -3,7 +3,7 @@
 import { supabase } from "@/utils/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateGame } from "@/queries/db/game.query";
-import { useGameIdFromUrl } from "./useGameIdFromUrl";
+import { useGameIdFromUrl } from "../components/gameIdProvider";
 
 export const useGameLanguageMutation = () => {
   const queryClient = useQueryClient();

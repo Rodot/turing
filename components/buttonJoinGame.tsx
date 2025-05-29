@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Box } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useGameIdFromUrl } from "../hooks/useGameIdFromUrl";
+import { useGameIdFromUrl } from "./gameIdProvider";
 import { useJoinGameMutation } from "@/hooks/useFunctionsMutation";
 import { useSnackbar } from "./snackbarContext";
 import { useGameQuery } from "@/hooks/useGameQuery";

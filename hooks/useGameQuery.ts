@@ -5,7 +5,7 @@ import { supabase } from "@/utils/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchGame } from "@/queries/db/game.query";
 import { useRouter } from "next/navigation";
-import { useGameIdFromUrl } from "./useGameIdFromUrl";
+import { useGameIdFromUrl } from "../components/gameIdProvider";
 import { useEffect, useRef } from "react";
 
 export const useGameQuery = () => {

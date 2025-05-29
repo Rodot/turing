@@ -8,6 +8,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../theme";
 import { SnackbarProvider } from "./snackbarContext";
 import I18nProvider from "./i18nProvider";
+import { GameIdProvider } from "./gameIdProvider";
 
 // Create QueryClient instance
 const queryClient = new QueryClient({
@@ -19,6 +20,7 @@ const queryClient = new QueryClient({
 });
 
 export function BaseLayout({ children }: React.PropsWithChildren) {
+  console.log("BaseLayout rendered");
   return (
     <Suspense fallback={<Spinner />}>
       <I18nProvider>
@@ -26,8 +28,10 @@ export function BaseLayout({ children }: React.PropsWithChildren) {
           <AppRouterCacheProvider>
             <ThemeProvider theme={theme}>
               <SnackbarProvider>
-                <QueryErrorReporter />
-                {children}
+                <GameIdProvider>
+                  <QueryErrorReporter />
+                  {children}
+                </GameIdProvider>
               </SnackbarProvider>
             </ThemeProvider>
           </AppRouterCacheProvider>

@@ -3,7 +3,7 @@
 import { MessageData } from "@/supabase/functions/_types/Database.type";
 import { supabase } from "@/utils/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useGameIdFromUrl } from "./useGameIdFromUrl";
+import { useGameIdFromUrl } from "../components/gameIdProvider";
 import { fetchMessages } from "@/queries/db/messages.query";
 import { useEffect } from "react";
 

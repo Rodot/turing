@@ -4,7 +4,7 @@ import { Chat } from "./chat";
 import { Lobby } from "./lobby";
 import { useGameQuery } from "@/hooks/useGameQuery";
 import { SignUp } from "./signUp";
-import { useGameIdFromUrl } from "@/hooks/useGameIdFromUrl";
+import { useGameIdFromUrl } from "./gameIdProvider";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
 
 export const GameRouter = () => {

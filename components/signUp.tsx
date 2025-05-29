@@ -16,7 +16,7 @@ import { ButtonResumeGame } from "./buttonResumeGame";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
 import { useProfileNameMutation } from "@/hooks/useProfileMutation";
 import { ButtonEndGame } from "./buttonEndGame";
-import { useGameIdFromUrl } from "@/hooks/useGameIdFromUrl";
+import { useGameIdFromUrl } from "./gameIdProvider";
 import { useTranslation } from "react-i18next";
 
 export const SignUp: React.FC = () => {
