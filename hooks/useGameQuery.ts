@@ -57,9 +57,7 @@ export const useGameQuery = () => {
           queryClient.invalidateQueries({ queryKey: ["game", gameIdFromUrl] });
         },
       )
-      .subscribe((status) => {
-        console.log("game", status);
-      });
+      .subscribe();
 
     return () => {
       supabase.removeChannel(channel);

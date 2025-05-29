@@ -42,9 +42,7 @@ export const useMessagesQuery = () => {
           });
         },
       )
-      .subscribe((status) => {
-        console.log("game", status);
-      });
+      .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
