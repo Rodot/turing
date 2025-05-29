@@ -6,16 +6,24 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchGame } from "@/queries/db/game.query";
 import { useRouter } from "next/navigation";
 import { useGameIdFromUrl } from "./useGameIdFromUrl";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export const useGameQuery = () => {
   const queryClient = useQueryClient();
   const gameIdFromUrl = useGameIdFromUrl();
   const router = useRouter();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const query = useQuery({
     queryKey: ["game", gameIdFromUrl],
     queryFn: async (): Promise<GameData | undefined> => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      timeoutRef.current = setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["game", gameIdFromUrl] });
+      }, 10000);
+
       if (!gameIdFromUrl) return undefined;
       try {
         const game = await fetchGame(supabase, gameIdFromUrl);
@@ -46,14 +54,18 @@ export const useGameQuery = () => {
           filter: `id=eq.${gameIdFromUrl}`,
         },
         () => {
-          // Invalidate query when changes detected
           queryClient.invalidateQueries({ queryKey: ["game", gameIdFromUrl] });
         },
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log("game", status);
+      });
 
     return () => {
       supabase.removeChannel(channel);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
     };
   }, [gameIdFromUrl, queryClient]);
 
