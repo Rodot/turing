@@ -33,6 +33,10 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
   }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (me.is_bot) {
+      setContent(event.target.value.replace(/\s/g, ""));
+      return;
+    }
     setContent(event.target.value);
   };
 
@@ -97,11 +101,12 @@ export const ChatInput: React.FC<Props> = ({ sx }) => {
               <Button
                 type="submit"
                 variant="contained"
-                color="secondary"
+                color="primary"
                 disabled={postMessageMutation.isPending}
                 aria-label="Send word"
               >
-                <Send />
+                🤖
+                <Send sx={{ ml: 1 }} />
                 {postMessageMutation.isPending && <Spinner />}
               </Button>
             </Box>

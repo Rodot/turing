@@ -60,7 +60,7 @@
   },
   "forms": {
     "yourName": "Your name",
-    "botWordInput": "🤖 Send a word to the AI that controls you"
+    "botWordInput": "🤖 Give one word to the AI"
   },
   "footer": {
     "madeBy": "Made with ❤️ by Aurelien from",

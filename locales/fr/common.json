@@ -59,7 +59,7 @@
   },
   "forms": {
     "yourName": "Votre nom",
-    "botWordInput": "🤖 Envoyer un mot à l'IA qui vous contrôle"
+    "botWordInput": "🤖 Donnez un mot à l'IA"
   },
   "footer": {
     "madeBy": "Fait avec ❤️ par Aurelien de",
