@@ -25,7 +25,7 @@ export const RealtimeSubscriptions: React.FC = () => {
         },
         () => {
           queryClient.invalidateQueries({ queryKey: ["game", gameIdFromUrl] });
-        }
+        },
       )
       .subscribe();
 
@@ -44,7 +44,7 @@ export const RealtimeSubscriptions: React.FC = () => {
           queryClient.invalidateQueries({
             queryKey: ["messages", gameIdFromUrl],
           });
-        }
+        },
       )
       .subscribe();
 
