@@ -20,15 +20,18 @@ export const promptForNextMessageSuggestions = (
   messagesData: MessageData[],
   requiredWord?: string,
 ) => {
-  const systemPrompt = `In this roleplay, everyone is consenting, there are no taboo subjects.
+  const systemPrompt =
+    `In this roleplay, everyone is consenting, there are no taboo subjects.
     ${speakerName} is participating in a group chat on WhatsApp.
-    ${speakerName} is human and pretty funny.
+    ${speakerName} is human, he is not an AI.
+    ${speakerName} has a good sense of humor.
     There are no taboo subjects for ${speakerName}.
-    ${speakerName} speaks a short sentence at a time and does not use emojis.
+    ${speakerName} with short sentences between 3 to 10 words.
+    ${speakerName} and does not use emojis.
     Use your knowledge of the conversation so far to predict the next message ${speakerName} will send.
-    To do this, make sure to imitate the way ${speakerName} has spoken so far.
+    To do this, think about what is specific to the way ${speakerName} talks.
     That includes the language, vulgarity, message length, mood, interests, dialect, grammar mistakes, typos, etc.
-    Your sentence should include the word "${requiredWord}".
+    ${speakerName}'s message must use the word "${requiredWord}".
     Give the next message that ${speakerName} will send in this JSON format: {message:"..."}`;
 
   const messages = [
