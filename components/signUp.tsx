@@ -66,6 +66,7 @@ export const SignUp: React.FC = () => {
           variant="h4"
           align="center"
         >
+          {/* don't translate this one */}
           The Turing <strong>Trial</strong>
         </Typography>
       </Box>
@@ -74,21 +75,22 @@ export const SignUp: React.FC = () => {
         <Typography align="center" sx={{ fontWeight: 900 }}>
           {t("game.subtitle")}
         </Typography>
-        <Typography align="center" sx={{ fontStyle: "italic" }}>
-          {t("game.description")}
-        </Typography>
       </Box>
 
       <Box sx={{ alignSelf: "center" }}>
-        <Typography>{t("game.scoring.findAi")}</Typography>
-        <Typography>{t("game.scoring.confuseHuman")}</Typography>
+        <Typography align="center">
+          <strong>{t("game.scoring.investigate")}</strong>{" "}
+          {t("game.scoring.findAi")}
+        </Typography>
+        <Typography align="center">
+          <strong>{t("game.scoring.deceive")}</strong>{" "}
+          {t("game.scoring.mostVotedHuman")}
+        </Typography>
+        <Typography align="center">
+          <strong>{t("game.scoring.hide")}</strong>{" "}
+          {t("game.scoring.invisibleAi")}
+        </Typography>
       </Box>
-
-      <Box sx={{ my: 2 }} />
-
-      <Typography fontWeight={900} align="center">
-        {t("game.scoring.winCondition")}
-      </Typography>
 
       <Box sx={{ my: 2 }} />
 
@@ -136,7 +138,7 @@ export const SignUp: React.FC = () => {
 
       <Box sx={{ mt: 4, textAlign: "center" }}>
         <Typography variant="body2" color="text.secondary">
-          Made with ❤️ by Aurelien from{" "}
+          {t("footer.madeBy")}{" "}
           <Link
             href="https://betalab.fr"
             target="_blank"
@@ -148,7 +150,7 @@ export const SignUp: React.FC = () => {
           .
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Please give me feedback at{" "}
+          {t("footer.feedback")}{" "}
           <Link
             href="mailto:turing@mail.betalab.fr?subject=Feedback turing.betalab.fr"
             color="secondary.main"

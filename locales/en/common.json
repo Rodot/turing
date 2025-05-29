@@ -11,7 +11,6 @@
     "startVote": "Start Vote",
     "sendMessage": "Send message",
     "startGame": "Start Game",
-    "submit": "Submit",
     "newMessage": "New message"
   },
   "errors": {
@@ -48,17 +47,23 @@
     }
   },
   "game": {
-    "title": "The Turing Trial",
-    "subtitle": "An AI controls someone in the chat.",
-    "description": "Will you tell your friends from the AI?",
+    "subtitle": "🤖 An AI controls someone in the chat",
     "scoring": {
-      "findAi": "+1 🧠 if you find the AI among humans",
-      "confuseHuman": "-1 🧠 if you confuse a human for the AI",
+      "investigate": "🔎 Investigate:",
+      "deceive": "🎭 Deceive:",
+      "hide": "🥷 Hide:",
+      "findAi": "Find the AI among Humans",
+      "mostVotedHuman": "Pretend to be the AI as Human",
+      "invisibleAi": "Pretend to be Human as the AI",
       "winCondition": "Earn 5 🧠 to win"
     }
   },
   "forms": {
     "yourName": "Your name",
     "botWordInput": "🤖 Send a word to the AI that controls you"
+  },
+  "footer": {
+    "madeBy": "Made with ❤️ by Aurelien from",
+    "feedback": "Please give me feedback at"
   }
 }

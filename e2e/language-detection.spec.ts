@@ -21,10 +21,8 @@ test("browser language detection for French", async ({ browser }) => {
     page.getByText("Une IA contrôle quelqu'un dans le chat."),
   ).toBeVisible();
 
-  // Test the game description (this should be translated)
-  await expect(
-    page.getByText("Saurez-vous distinguer vos amis de l'IA ?"),
-  ).toBeVisible();
+  // Test the scoring text (this should be translated)
+  await expect(page.getByText("🔎 Enquêtez :")).toBeVisible();
 
   // Test form labels (this should be translated)
   await expect(page.getByLabel("Votre nom")).toBeVisible();
@@ -74,13 +72,11 @@ test("browser language detection for English (default)", async ({
   // Check that the page displays English text
   // Test the game subtitle (this should be in English)
   await expect(
-    page.getByText("An AI controls someone in the chat."),
+    page.getByText("🤖 An AI controls someone in the chat"),
   ).toBeVisible();
 
-  // Test the game description (this should be in English)
-  await expect(
-    page.getByText("Will you tell your friends from the AI?"),
-  ).toBeVisible();
+  // Test the scoring text (this should be in English)
+  await expect(page.getByText("🔎 Investigate:")).toBeVisible();
 
   // Test form labels (this should be in English)
   await expect(page.getByLabel("Your name")).toBeVisible();

@@ -11,7 +11,6 @@
     "startVote": "Voter",
     "sendMessage": "Envoyer un message",
     "startGame": "Commencer la Partie",
-    "submit": "Envoyer",
     "newMessage": "Nouveau message"
   },
   "errors": {
@@ -48,17 +47,22 @@
     }
   },
   "game": {
-    "title": "Le Procès de Turing",
-    "subtitle": "Une IA contrôle quelqu'un dans le chat.",
-    "description": "Saurez-vous distinguer vos amis de l'IA ?",
+    "subtitle": "🤖 Une IA contrôle quelqu'un dans le chat.",
     "scoring": {
-      "findAi": "+1 🧠 si vous trouvez l'IA parmi les humains",
-      "confuseHuman": "-1 🧠 si vous confondez un humain avec l'IA",
-      "winCondition": "Gagnez 5 🧠 pour gagner"
+      "investigate": "🔎 Enquêtez :",
+      "deceive": "🎭 Trompez :",
+      "hide": "🥷 Cachez-vous :",
+      "findAi": "Trouvez l'IA parmi les humains",
+      "mostVotedHuman": "Prétendez être l'IA en tant qu'Humain",
+      "invisibleAi": "Prétendez être Humain en tant qu'IA"
     }
   },
   "forms": {
     "yourName": "Votre nom",
     "botWordInput": "🤖 Envoyer un mot à l'IA qui vous contrôle"
+  },
+  "footer": {
+    "madeBy": "Fait avec ❤️ par Aurelien de",
+    "feedback": "Merci de me donner vos retours à"
   }
 }
