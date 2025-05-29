@@ -17,6 +17,12 @@ export const cleanAnswer = (str: string) => {
     current = current.replace(/\./g, "");
     // Remove em dashes
     current = current.replace(/—/g, "");
+    // Remove ellipsis
+    current = current.replace(/…/g, "");
+    // Remove apostrophes
+    current = current.replace(/’/g, "");
+    // Remove colons
+    current = current.replace(/:/g, "");
     // Remove all commas
     current = current.replace(/,/g, "");
     // Replace multiple spaces with single space
