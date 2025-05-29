@@ -11,8 +11,6 @@ export const fr = {
 
     // Vote phase
     startedVote: "{{player}} a lancé un vote, dépêchez-vous !",
-    voteInstructionsHunting: "💡 Trouvez l'IA = +1 🧠",
-    voteInstructionsDeception: "💡 Passez pour l'IA = +1 🧠",
 
     // Results/Scoring
     aiIdentityReveal: "Les résultats sont là ! Et l'IA était...",

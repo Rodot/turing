@@ -11,8 +11,6 @@ export const en = {
 
     // Vote phase
     startedVote: "{{player}} started a vote, hurry up!",
-    voteInstructionsHunting: "💡 Find the AI = +1 🧠",
-    voteInstructionsDeception: "💡 Pass as the AI = +1 🧠",
 
     // Results/Scoring
     aiIdentityReveal: "Results are in! And the AI was...",

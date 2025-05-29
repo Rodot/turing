@@ -50,18 +50,6 @@ Deno.serve(async (req) => {
       `🗳️ ${t("messages.startedVote", { player: player.name })}`,
     );
 
-    // Post AI control instructions after vote announcement
-    await postSystemMessage(
-      supabase,
-      gameId,
-      `${t("messages.voteInstructionsHunting")}`,
-    );
-    await postSystemMessage(
-      supabase,
-      gameId,
-      `${t("messages.voteInstructionsDeception")}`,
-    );
-
     // Start 30-second timeout for voting
     console.log("Starting 30s voting timeout", gameId);
     await new Promise((resolve) => setTimeout(resolve, 31000));
