@@ -251,6 +251,12 @@ async function processVotingOutcomes(
       case "missedAI":
         message = t("messages.missedAI", { player: outcome.playerName });
         break;
+      case "mostVotedHuman":
+        message = t("messages.mostVotedHuman", { player: outcome.playerName });
+        break;
+      case "invisibleAI":
+        message = t("messages.invisibleAI", { player: outcome.playerName });
+        break;
     }
 
     if (message) {
